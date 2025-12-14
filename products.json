@@ -1,0 +1,4466 @@
+{
+  "AK": {
+    "name": "Alaska",
+    "offices": [
+      {
+        "id": "AK-ANCH",
+        "name": "Anchorage Field Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Anchorage North",
+              "unit": "cord",
+              "price": 10,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Anchorage South",
+              "unit": "cord",
+              "price": 12,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Personal use only. Check seasonal restrictions and road access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Chugach Access",
+              "unit": "tree",
+              "price": 5,
+              "availableUntil": "2025-12-25",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Follow stump height and size limits.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Turnagain Arm",
+              "unit": "tree",
+              "price": 5,
+              "availableUntil": "2025-12-25",
+              "maxQty": 3,
+              "description": "Limited areas; verify winter travel conditions before departure.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 3,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "AK-FAIR",
+        "name": "Fairbanks District Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Fairbanks (Standard)",
+              "unit": "cord",
+              "price": 8,
+              "availableUntil": "2026-12-31",
+              "maxQty": 12,
+              "description": "Personal use permit. Check local restrictions before cutting.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Fairbanks (Roadside)",
+              "unit": "cord",
+              "price": 10,
+              "availableUntil": "2026-12-31",
+              "maxQty": 8,
+              "description": "Roadside designated areas only. Observe signage and closures.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Fairbanks East",
+              "unit": "tree",
+              "price": 5,
+              "availableUntil": "2025-12-25",
+              "maxQty": 5,
+              "description": "Harvest in designated areas. Follow stump height and size limits.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Fairbanks West",
+              "unit": "tree",
+              "price": 5,
+              "availableUntil": "2025-12-25",
+              "maxQty": 5,
+              "description": "Designated cutting areas only. Verify access conditions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 3,
+              "availableUntil": "2026-09-30",
+              "maxQty": 25,
+              "description": "Seasonal availability. Personal use only.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-10-31",
+              "maxQty": 20,
+              "description": "Personal use only; check collection areas.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "AK-JUN",
+        "name": "Juneau Field Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Juneau Coastal",
+              "unit": "cord",
+              "price": 10,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Personal use fuelwood. Verify access and seasonal closures.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Juneau Interior",
+              "unit": "cord",
+              "price": 12,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Designated areas only. Dead and down collection.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Juneau Limited",
+              "unit": "tree",
+              "price": 5,
+              "availableUntil": "2025-12-25",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and winter travel conditions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Juneau Standard",
+              "unit": "tree",
+              "price": 5,
+              "availableUntil": "2025-12-25",
+              "maxQty": 5,
+              "description": "Designated areas only.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use permit. No resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 3,
+              "availableUntil": "2026-09-30",
+              "maxQty": 15,
+              "description": "Seasonal permit; check collection areas.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "AZ": {
+    "name": "Arizona",
+    "offices": [
+      {
+        "id": "AZ-STRIP",
+        "name": "Arizona Strip Field Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Parashant",
+              "unit": "cord",
+              "price": 15,
+              "availableUntil": "2026-12-31",
+              "maxQty": 8,
+              "description": "Dead and down only; check closure areas.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Scenic Byways",
+              "unit": "cord",
+              "price": 17,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Designated corridors only. Verify access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas/Holiday Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Designated cutting areas only.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas/Holiday Tree Permit — Limited",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited permit; verify availability.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 3,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Seasonal availability.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "AZ-GILA",
+        "name": "Gila District Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Gila Standard",
+              "unit": "cord",
+              "price": 12,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use fuelwood.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Gila Roadside",
+              "unit": "cord",
+              "price": 14,
+              "availableUntil": "2026-12-31",
+              "maxQty": 8,
+              "description": "Roadside designated areas only.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Gila North",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Seasonal permit.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Gila South",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Designated cutting areas only.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 2.5,
+              "availableUntil": "2026-08-31",
+              "maxQty": 25,
+              "description": "Seasonal availability.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Mushroom Permit (Personal Use) — Mixed Species",
+              "unit": "pound",
+              "price": 3.5,
+              "availableUntil": "2026-10-31",
+              "maxQty": 20,
+              "description": "Personal use only; check collection areas.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "AZ-YUMA",
+        "name": "Yuma Field Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Desert Standard",
+              "unit": "cord",
+              "price": 10,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Desert fuelwood rules apply.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Desert Limited",
+              "unit": "cord",
+              "price": 12,
+              "availableUntil": "2026-12-31",
+              "maxQty": 4,
+              "description": "Limited zones; verify closures.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Yuma (Special)",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 2,
+              "description": "Limited seasonal offering.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Yuma (Standard)",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Designated areas only.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Mushroom Permit (Personal Use) — Spring",
+              "unit": "pound",
+              "price": 3,
+              "availableUntil": "2026-06-30",
+              "maxQty": 10,
+              "description": "Personal use only.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Mushroom Permit (Personal Use) — Fall",
+              "unit": "pound",
+              "price": 3,
+              "availableUntil": "2026-10-31",
+              "maxQty": 10,
+              "description": "Personal use only.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "CA": {
+    "name": "California",
+    "offices": [
+      {
+        "id": "CA-BISH",
+        "name": "Bishop Field Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Standard",
+              "unit": "cord",
+              "price": 20,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Limited Areas",
+              "unit": "cord",
+              "price": 22,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Limited zones. Review stipulations before purchase.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Tag tree before transport.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Limited",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and seasonal restrictions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 5,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "CA-ARC",
+        "name": "Arcata Field Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Standard",
+              "unit": "cord",
+              "price": 18,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Limited Areas",
+              "unit": "cord",
+              "price": 20,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Limited zones. Review stipulations before purchase.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Tag tree before transport.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Limited",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and seasonal restrictions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 5,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "CA-RDD",
+        "name": "Redding Field Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Standard",
+              "unit": "cord",
+              "price": 18,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Limited Areas",
+              "unit": "cord",
+              "price": 20,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Limited zones. Review stipulations before purchase.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Tag tree before transport.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Limited",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and seasonal restrictions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 5,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "CO": {
+    "name": "Colorado",
+    "offices": [
+      {
+        "id": "CO-KREM",
+        "name": "Kremmling Field Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Standard",
+              "unit": "cord",
+              "price": 10,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Limited Areas",
+              "unit": "cord",
+              "price": 12,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Limited zones. Review stipulations before purchase.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Tag tree before transport.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Limited",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and seasonal restrictions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 3,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "CO-GUNN",
+        "name": "Gunnison Field Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Standard",
+              "unit": "cord",
+              "price": 10,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Limited Areas",
+              "unit": "cord",
+              "price": 12,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Limited zones. Review stipulations before purchase.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Tag tree before transport.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Limited",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and seasonal restrictions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 3,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "CO-GJ",
+        "name": "Grand Junction Field Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Standard",
+              "unit": "cord",
+              "price": 12,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Limited Areas",
+              "unit": "cord",
+              "price": 14,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Limited zones. Review stipulations before purchase.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Tag tree before transport.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Limited",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and seasonal restrictions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 3,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "ID": {
+    "name": "Idaho",
+    "offices": [
+      {
+        "id": "ID-POCA",
+        "name": "Pocatello Field Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Standard",
+              "unit": "cord",
+              "price": 10,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Limited Areas",
+              "unit": "cord",
+              "price": 12,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Limited zones. Review stipulations before purchase.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 5,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Tag tree before transport.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Limited",
+              "unit": "tree",
+              "price": 5,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and seasonal restrictions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 3,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "ID-BOIS",
+        "name": "Boise District Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Standard",
+              "unit": "cord",
+              "price": 12,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Limited Areas",
+              "unit": "cord",
+              "price": 14,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Limited zones. Review stipulations before purchase.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 5,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Tag tree before transport.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Limited",
+              "unit": "tree",
+              "price": 5,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and seasonal restrictions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 3,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "ID-TWIN",
+        "name": "Twin Falls District Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Standard",
+              "unit": "cord",
+              "price": 10,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Limited Areas",
+              "unit": "cord",
+              "price": 12,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Limited zones. Review stipulations before purchase.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 5,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Tag tree before transport.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Limited",
+              "unit": "tree",
+              "price": 5,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and seasonal restrictions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 3,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "MT": {
+    "name": "Montana",
+    "offices": [
+      {
+        "id": "MT-MILES",
+        "name": "Miles City Field Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Standard",
+              "unit": "cord",
+              "price": 10,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Limited Areas",
+              "unit": "cord",
+              "price": 12,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Limited zones. Review stipulations before purchase.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 5,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Tag tree before transport.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Limited",
+              "unit": "tree",
+              "price": 5,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and seasonal restrictions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 3,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "MT-HELENA",
+        "name": "Helena-Lewis and Clark Field Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Standard",
+              "unit": "cord",
+              "price": 12,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Limited Areas",
+              "unit": "cord",
+              "price": 14,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Limited zones. Review stipulations before purchase.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 5,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Tag tree before transport.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Limited",
+              "unit": "tree",
+              "price": 5,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and seasonal restrictions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 3,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "MT-BILL",
+        "name": "Billings Field Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Standard",
+              "unit": "cord",
+              "price": 10,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Limited Areas",
+              "unit": "cord",
+              "price": 12,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Limited zones. Review stipulations before purchase.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 5,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Tag tree before transport.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Limited",
+              "unit": "tree",
+              "price": 5,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and seasonal restrictions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 3,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "NV": {
+    "name": "Nevada",
+    "offices": [
+      {
+        "id": "33",
+        "name": "Carson City District",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Standard",
+              "unit": "cord",
+              "price": 10,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Limited Areas",
+              "unit": "cord",
+              "price": 12,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Limited zones. Review stipulations before purchase.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 0,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Tag tree before transport.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Limited",
+              "unit": "tree",
+              "price": 0,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and seasonal restrictions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 3,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "NV-ELY",
+        "name": "Ely District Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Standard",
+              "unit": "cord",
+              "price": 10,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Limited Areas",
+              "unit": "cord",
+              "price": 12,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Limited zones. Review stipulations before purchase.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Tag tree before transport.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Limited",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and seasonal restrictions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 3,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "NV-LV",
+        "name": "Las Vegas Field Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Standard",
+              "unit": "cord",
+              "price": 12,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Limited Areas",
+              "unit": "cord",
+              "price": 14,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Limited zones. Review stipulations before purchase.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Tag tree before transport.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Limited",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and seasonal restrictions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 3,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "NM": {
+    "name": "New Mexico",
+    "offices": [
+      {
+        "id": "NM-ROSW",
+        "name": "Roswell Field Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Standard",
+              "unit": "cord",
+              "price": 15,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Limited Areas",
+              "unit": "cord",
+              "price": 17,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Limited zones. Review stipulations before purchase.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Tag tree before transport.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Limited",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and seasonal restrictions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 3,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "NM-TAOS",
+        "name": "Taos Field Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Standard",
+              "unit": "cord",
+              "price": 15,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Limited Areas",
+              "unit": "cord",
+              "price": 17,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Limited zones. Review stipulations before purchase.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Tag tree before transport.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Limited",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and seasonal restrictions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 3,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "NM-LAS",
+        "name": "Las Cruces District Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Standard",
+              "unit": "cord",
+              "price": 12,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Limited Areas",
+              "unit": "cord",
+              "price": 14,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Limited zones. Review stipulations before purchase.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Tag tree before transport.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Limited",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and seasonal restrictions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 3,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "OR": {
+    "name": "Oregon",
+    "offices": [
+      {
+        "id": "OR-SALEM",
+        "name": "Salem District Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Standard",
+              "unit": "cord",
+              "price": 20,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Limited Areas",
+              "unit": "cord",
+              "price": 22,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Limited zones. Review stipulations before purchase.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Tag tree before transport.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Limited",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and seasonal restrictions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 5,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 6,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "OR-PRIN",
+        "name": "Prineville District Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Standard",
+              "unit": "cord",
+              "price": 15,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Limited Areas",
+              "unit": "cord",
+              "price": 17,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Limited zones. Review stipulations before purchase.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Tag tree before transport.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Limited",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and seasonal restrictions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 5,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "OR-LAKE",
+        "name": "Lakeview District Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Standard",
+              "unit": "cord",
+              "price": 15,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Limited Areas",
+              "unit": "cord",
+              "price": 17,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Limited zones. Review stipulations before purchase.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Tag tree before transport.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Limited",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and seasonal restrictions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 5,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "UT": {
+    "name": "Utah",
+    "offices": [
+      {
+        "id": "UT-CCFO",
+        "name": "Cedar City Field Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Standard",
+              "unit": "cord",
+              "price": 1,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Limited Areas",
+              "unit": "cord",
+              "price": 3,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Limited zones. Review stipulations before purchase.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Tag tree before transport.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Limited",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and seasonal restrictions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 3,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "UT-STG",
+        "name": "St. George Field Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Standard",
+              "unit": "cord",
+              "price": 12,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Limited Areas",
+              "unit": "cord",
+              "price": 14,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Limited zones. Review stipulations before purchase.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Tag tree before transport.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Limited",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and seasonal restrictions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 3,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "UT-MOAB",
+        "name": "Moab Field Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Standard",
+              "unit": "cord",
+              "price": 15,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Limited Areas",
+              "unit": "cord",
+              "price": 17,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Limited zones. Review stipulations before purchase.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Tag tree before transport.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Limited",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and seasonal restrictions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 3,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "WA": {
+    "name": "Washington",
+    "offices": [
+      {
+        "id": "WA-SPK",
+        "name": "Spokane District Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Standard",
+              "unit": "cord",
+              "price": 20,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Limited Areas",
+              "unit": "cord",
+              "price": 22,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Limited zones. Review stipulations before purchase.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Tag tree before transport.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Limited",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and seasonal restrictions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 5,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 6,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "WA-WEN",
+        "name": "Wenatchee Field Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Standard",
+              "unit": "cord",
+              "price": 18,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Limited Areas",
+              "unit": "cord",
+              "price": 20,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Limited zones. Review stipulations before purchase.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Tag tree before transport.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Limited",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and seasonal restrictions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 5,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "WA-VAN",
+        "name": "Vancouver Field Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Standard",
+              "unit": "cord",
+              "price": 18,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Limited Areas",
+              "unit": "cord",
+              "price": 20,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Limited zones. Review stipulations before purchase.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Tag tree before transport.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Limited",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and seasonal restrictions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 5,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "WY": {
+    "name": "Wyoming",
+    "offices": [
+      {
+        "id": "WY-CASP",
+        "name": "Casper Field Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Standard",
+              "unit": "cord",
+              "price": 15,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Limited Areas",
+              "unit": "cord",
+              "price": 17,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Limited zones. Review stipulations before purchase.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Tag tree before transport.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Limited",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and seasonal restrictions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 3,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "WY-ROCK",
+        "name": "Rock Springs Field Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Standard",
+              "unit": "cord",
+              "price": 12,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Limited Areas",
+              "unit": "cord",
+              "price": 14,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Limited zones. Review stipulations before purchase.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Tag tree before transport.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Limited",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and seasonal restrictions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 3,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "WY-WORL",
+        "name": "Worland Field Office",
+        "products": {
+          "fuelwood": [
+            {
+              "name": "Fuelwood Permit — Standard",
+              "unit": "cord",
+              "price": 12,
+              "availableUntil": "2026-12-31",
+              "maxQty": 10,
+              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "How to Measure Fuelwood",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Limited Areas",
+              "unit": "cord",
+              "price": 14,
+              "availableUntil": "2026-12-31",
+              "maxQty": 6,
+              "description": "Limited zones. Review stipulations before purchase.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "christmas": [
+            {
+              "name": "Christmas Tree Permit — Designated Areas",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 5,
+              "description": "Harvest only within designated areas. Tag tree before transport.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                },
+                {
+                  "label": "Planning Your Trip",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Limited",
+              "unit": "tree",
+              "price": 10,
+              "availableUntil": "2025-12-24",
+              "maxQty": 3,
+              "description": "Limited availability. Verify access and seasonal restrictions.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ],
+          "mushrooms": [
+            {
+              "name": "Morel Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 3,
+              "availableUntil": "2026-09-30",
+              "maxQty": 20,
+              "description": "Personal use collection. Seasonal restrictions may apply.",
+              "requiredDocs": [
+                {
+                  "label": "Collection Areas",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Chanterelle Mushroom Permit (Personal Use)",
+              "unit": "pound",
+              "price": 4,
+              "availableUntil": "2026-10-31",
+              "maxQty": 15,
+              "description": "Personal use only. No commercial resale permitted.",
+              "requiredDocs": [
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
