@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Online Forest Product Permits — Prototype</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <section class="usa-banner" aria-label="Official website of the United States government">
+    <div class="wrap">
+      <div class="inner">
+        <div class="flag" aria-hidden="true">
+          <svg viewBox="0 0 190 100" width="18" height="12" preserveAspectRatio="none">
+            <rect width="190" height="100" fill="#b22234"></rect>
+            <g fill="#fff">
+              <rect y="7.69" width="190" height="7.69"></rect>
+              <rect y="23.07" width="190" height="7.69"></rect>
+              <rect y="38.46" width="190" height="7.69"></rect>
+              <rect y="53.84" width="190" height="7.69"></rect>
+              <rect y="69.23" width="190" height="7.69"></rect>
+              <rect y="84.61" width="190" height="7.69"></rect>
+            </g>
+            <rect width="76" height="53.85" fill="#3c3b6e"></rect>
+          </svg>
+        </div>
+        <div class="meta">An official website of the United States government</div>
+        <button type="button" id="bannerToggle" aria-expanded="false" aria-controls="bannerDetails">Here’s how you know</button>
+      </div>
+
+      <div class="usa-banner-details" id="bannerDetails">
+        <div class="grid">
+          <div class="info-card">
+            <div class="badge">.gov</div>
+            <div><strong>Official websites use .gov</strong>A .gov website belongs to an official U.S. government organization.</div>
+          </div>
+          <div class="info-card">
+            <div class="badge">🔒</div>
+            <div><strong>Secure .gov websites use HTTPS</strong>A lock or https:// means you’ve safely connected to the .gov website.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="agency-bar" role="banner">
+    <div class="wrap">
+      <div class="row">
+        <div class="seal" aria-hidden="true">DOI</div>
+        <div class="agency-title" aria-label="U.S. Department of the Interior, Bureau of Land Management">
+          <div class="top">U.S. DEPARTMENT OF THE INTERIOR</div>
+          <div class="bot">BUREAU OF LAND MANAGEMENT</div>
+        </div>
+        <div class="agency-actions">
+          <a href="#" id="helpLink">Help</a>
+          <a href="https://www.blm.gov/office/national-office" target="_blank" rel="noopener">Contact</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main id="main">
+    <div class="wrap">
+      <section class="pagehead" aria-label="Page title and instructions">
+        <h1>Online Forest Product Permits</h1>
+        <p>Select a state, BLM office, and product type to see available permits. Then choose a product, quantity, acknowledge required notices, and enter purchaser information—up to the Pay.gov handoff.</p>
+
+        <div class="alert" role="status" aria-live="polite">
+          <div class="icon" aria-hidden="true">i</div>
+          <div class="txt">
+            <strong>Notice</strong>
+            Pay.gov may be unavailable during scheduled maintenance. If checkout fails, please try again later.
+          </div>
+        </div>
+      </section>
+
+      <section class="stepper" aria-label="Purchase steps">
+        <div class="step active" id="s1"><div class="n">1</div><div><div class="t">Choose</div><div class="k">State, office, type</div></div></div>
+        <div class="step" id="s2"><div class="n">2</div><div><div class="t">Select</div><div class="k">Product</div></div></div>
+        <div class="step" id="s3"><div class="n">3</div><div><div class="t">Enter</div><div class="k">Quantity</div></div></div>
+        <div class="step" id="s4"><div class="n">4</div><div><div class="t">Accept</div><div class="k">Privacy + Terms</div></div></div>
+        <div class="step" id="s5"><div class="n">5</div><div><div class="t">Provide</div><div class="k">Purchaser info</div></div></div>
+      </section>
+
+      <section class="layout" style="margin-top: 16px;">
+        <div class="card" role="region" aria-label="Form content">
+
+          <div class="error" id="errorBox" aria-hidden="true" tabindex="-1">
+            <strong>Fix the following to continue:</strong>
+            <ul id="errorList"></ul>
+          </div>
+
+          <!-- Step 1 -->
+          <section id="step1" aria-label="Step 1: Choose location">
+            <h2 style="margin:0 0 6px;">Find available products</h2>
+            <div style="color:var(--muted); font-size:14px;">
+              Choose where you plan to harvest/collect and what you plan to gather. We’ll show the permits available for that selection.
+            </div>
+
+            <div class="grid2" style="margin-top:14px;">
+              <div class="row">
+                <label for="state">State <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+                <select id="state" required>
+                  <option value="">Select a state</option>
+                </select>
+              </div>
+
+              <div class="row">
+                <label for="officeInput">BLM office / district <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+                <div class="hint">Start typing to filter. Use ↑/↓ to navigate; Enter to select.</div>
+                <div class="combo" id="officeCombo" role="combobox" aria-haspopup="listbox" aria-expanded="false">
+                  <input id="officeInput" type="text" autocomplete="off" placeholder="Type to search offices" />
+                  <svg class="chev" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd"/>
+                  </svg>
+                  <div id="officeList" class="dropdown" role="listbox" aria-hidden="true"></div>
+                </div>
+                <input type="hidden" id="officeId" />
+              </div>
+
+              <div class="row" style="grid-column: 1 / -1;">
+                <label for="ptype">Product type <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+                <select id="ptype" required>
+                  <option value="">Select a product type</option>
+                  <option value="fuelwood">Fuelwood</option>
+                  <option value="christmas">Christmas trees</option>
+                  <option value="mushrooms">Mushrooms</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="primary" id="toStep2" type="button" disabled>Continue</button>
+              <button class="ghost" id="resetAll" type="button">Reset</button>
+            </div>
+          </section>
+
+          <!-- Step 2 -->
+          <section id="step2" aria-label="Step 2: Select product" style="display:none;">
+            <h2 style="margin:0 0 6px;">Select a product</h2>
+            <div style="color:var(--muted); font-size:14px;">Choose one product to continue. Review details and required documents before proceeding.</div>
+
+            <div class="summary" id="summary2"></div>
+            <div class="products" id="productList"></div>
+
+            <div class="actions">
+              <button class="ghost" type="button" id="back1">Back</button>
+              <button class="primary" type="button" id="toStep3" disabled>Continue</button>
+            </div>
+          </section>
+
+          <!-- Step 3 -->
+          <section id="step3" aria-label="Step 3: Quantity" style="display:none;">
+            <h2 style="margin:0 0 6px;">Quantity</h2>
+            <div style="color:var(--muted); font-size:14px;">Enter the number of units for the selected product.</div>
+
+            <div class="summary" id="summary3"></div>
+
+            <div class="grid2" style="margin-top:14px;">
+              <div class="row">
+                <label for="qty">Quantity <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+                <div class="hint" id="qtyHint"></div>
+                <input id="qty" type="number" min="1" step="1" inputmode="numeric" />
+              </div>
+              <div class="row">
+                <label>Total</label>
+                <div class="hint">Estimated total based on listed unit price.</div>
+                <input id="total" type="text" readonly />
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="ghost" type="button" id="back2">Back</button>
+              <button class="primary" type="button" id="toStep4" disabled>Continue</button>
+            </div>
+          </section>
+
+          <!-- Step 4 -->
+          <section id="step4" aria-label="Step 4: Privacy Act and Terms" style="display:none;">
+            <h2 style="margin:0 0 6px;">Privacy Act and Terms</h2>
+            <div style="color:var(--muted); font-size:14px;">You must read and accept both items before continuing.</div>
+
+            <div class="summary" id="summary4"></div>
+
+            <details>
+              <summary>Privacy Act Notification</summary>
+              <div class="body">NOTICE: The Privacy Act of 1974 and applicable regulations require that you be furnished with the following information in connection with information collected for this permit purchase.
+
+AUTHORITY: 30 U.S.C. 601 et seq.; 43 U.S.C. 1181a; and 43 CFR 5400 (as applicable).
+
+PRINCIPAL PURPOSE: The Bureau of Land Management (BLM) uses the information you provide to identify the permittee, document the authorization to remove vegetative materials from public lands, and administer and enforce permit terms.
+
+ROUTINE USES: The BLM may disclose information consistent with published routine uses for the relevant system of records, and as otherwise authorized by law.
+
+EFFECT OF NOT PROVIDING INFORMATION: Providing the requested information is voluntary; however, failure to provide required information may prevent us from issuing your permit.
+</div>
+            </details>
+
+            <details>
+              <summary>Terms and Conditions</summary>
+              <div class="body">Terms and Conditions (Demo Summary)
+
+• All purchases are final; no refunds.
+• Permit is for personal use unless stated otherwise and may be non-transferable.
+• You must comply with all permit stipulations, seasonal restrictions, closures, and area boundaries.
+• You must carry the permit (paper or digital, as allowed) while harvesting/collecting.
+• Violations may result in penalties and/or revocation of privileges.
+
+Replace this demo text with the authoritative terms and conditions used by your production system.
+</div>
+            </details>
+
+            <div class="grid2" style="margin-top:12px;">
+              <div class="row">
+                <label><input type="checkbox" id="ackPrivacy" /> I have read and understand the Privacy Act notification.</label>
+              </div>
+              <div class="row">
+                <label><input type="checkbox" id="ackTerms" /> I agree to the Terms and Conditions.</label>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="ghost" type="button" id="back3">Back</button>
+              <button class="primary" type="button" id="toStep5" disabled>Continue</button>
+            </div>
+          </section>
+
+          <!-- Step 5 -->
+          <section id="step5" aria-label="Step 5: Purchaser info" style="display:none;">
+            <h2 style="margin:0 0 6px;">Purchaser information</h2>
+            <div style="color:var(--muted); font-size:14px;">Complete the required fields, then proceed to Pay.gov.</div>
+
+            <div class="summary" id="summary5"></div>
+
+            <div class="grid2" style="margin-top:14px;">
+              <div class="row">
+                <label for="FirstName">First name <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+                <input id="FirstName" type="text" autocomplete="given-name" />
+              </div>
+              <div class="row">
+                <label for="MiddleName">Middle name</label>
+                <input id="MiddleName" type="text" autocomplete="additional-name" />
+              </div>
+              <div class="row">
+                <label for="LastName">Last name <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+                <input id="LastName" type="text" autocomplete="family-name" />
+              </div>
+              <div class="row">
+                <label for="Phone">Phone</label>
+                <input id="Phone" type="tel" autocomplete="tel" placeholder="Optional" />
+              </div>
+
+              <div class="row" style="grid-column: 1 / -1;">
+                <label for="AddressLine1">Street address line 1 <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+                <input id="AddressLine1" type="text" autocomplete="address-line1" />
+              </div>
+              <div class="row" style="grid-column: 1 / -1;">
+                <label for="AddressLine2">Street address line 2</label>
+                <input id="AddressLine2" type="text" autocomplete="address-line2" />
+              </div>
+
+              <div class="row">
+                <label for="City">City <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+                <input id="City" type="text" autocomplete="address-level2" />
+              </div>
+              <div class="row">
+                <label for="AddrState">State <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+                <select id="AddrState"></select>
+              </div>
+              <div class="row">
+                <label for="Zip">ZIP <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+                <input id="Zip" type="text" inputmode="numeric" autocomplete="postal-code" />
+              </div>
+              <div class="row"></div>
+
+              <div class="row" style="grid-column: 1 / -1;">
+                <label for="Email">Email address <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+                <input id="Email" type="email" autocomplete="email" />
+              </div>
+              <div class="row" style="grid-column: 1 / -1;">
+                <label for="Email2">Email address repeat <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+                <input id="Email2" type="email" autocomplete="email" />
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="ghost" type="button" id="back4">Back</button>
+              <button class="primary" type="button" id="proceedPaygov">Proceed to Pay.gov</button>
+            </div>
+
+            <div class="summary" id="handoff" style="display:none; margin-top:14px;"></div>
+          </section>
+        </div>
+
+        <aside class="card side" aria-label="Need help">
+          <h3>Need help?</h3>
+          <p>If you’re unsure which office manages your harvest area, use the BLM office directory.</p>
+          <ul>
+            <li><a href="https://www.blm.gov/about/contact" target="_blank" rel="noopener">Find a local BLM office</a></li>
+            <li>Review maps and stipulations before purchase and before you travel.</li>
+            <li>If Pay.gov is unavailable, try again later.</li>
+          </ul>
+          <p style="margin-top:12px; color:var(--muted); font-size:13.5px;">
+            This prototype stops at purchaser information collection and demonstrates the transaction payload that would be handed to Pay.gov.
+          </p>
+        </aside>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div><strong>forestproducts.blm.gov</strong> — Prototype (single-file demo)</div>
+      <div class="footer-links" aria-label="Footer links">
+        <a href="https://www.doi.gov/" target="_blank" rel="noopener">Department of the Interior</a>
+        <a href="https://www.doi.gov/about" target="_blank" rel="noopener">About DOI.gov</a>
+        <a href="https://www.doi.gov/pmb/eeo/no-fear-act" target="_blank" rel="noopener">No FEAR Act data</a>
+        <a href="https://www.doioig.gov/" target="_blank" rel="noopener">Office of Inspector General</a>
+        <a href="https://www.usa.gov/" target="_blank" rel="noopener">USA.gov</a>
+      </div>
+      <div class="smallprint">Single-file functional prototype. Data shown is representative demo content.</div>
+    </div>
+  </footer>
+  <script src="app.js" defer></script>
+</body>
+</html>
