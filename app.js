@@ -49,6 +49,7 @@
     const summary3 = document.getElementById('summary3');
     const summary4 = document.getElementById('summary4');
     const summary5 = document.getElementById('summary5');
+    const locationNotice = document.getElementById('locationNotice');
     const reviewSummary = document.getElementById('reviewSummary');
     const reviewNotice = document.getElementById('reviewNotice');
     const reviewActions = document.getElementById('reviewActions');
@@ -261,13 +262,20 @@
       mushrooms: [{ label: 'Foraging Guidelines', url: '#' }]
     };
 
+    function getLocationAttachments() {
+      const stateDocs = DATA[model.state]?.attachments || [];
+      const officeDocs = getSelectedOffice()?.attachments || [];
+      return [...stateDocs, ...officeDocs];
+    }
+
     function buildRequiredDocs(product) {
       const base = [
         { label: 'Map', url: '#' },
         { label: 'Stipulations', url: '#' }
       ];
       const typed = DOCS_BY_TYPE[model.ptype] || [];
-      const all = [...(product.requiredDocs || []), ...base, ...typed];
+      const locationDocs = getLocationAttachments();
+      const all = [...(product.requiredDocs || []), ...locationDocs, ...base, ...typed];
       const seen = new Set();
       return all.filter(doc => {
         const key = (doc.label || '').toLowerCase();
@@ -275,6 +283,39 @@
         seen.add(key);
         return true;
       });
+    }
+
+    function hideLocationNotice() {
+      if (!locationNotice) return;
+      locationNotice.style.display = 'none';
+      locationNotice.innerHTML = '';
+    }
+
+    function renderLocationNotice() {
+      if (!locationNotice) return;
+      const stateData = DATA[model.state];
+      const office = getSelectedOffice();
+      const attachments = getLocationAttachments();
+      const hasStateDesc = Boolean(stateData?.description);
+      const hasOfficeDesc = Boolean(office?.description);
+      const hasDocs = attachments.length > 0;
+
+      if (!hasStateDesc && !hasOfficeDesc && !hasDocs) {
+        hideLocationNotice();
+        return;
+      }
+
+      const docList = hasDocs
+        ? `<div class="detail"><strong>Attachments for this area:</strong><ul>${attachments.map(d => `<li><a href="${d.url}">${d.label}</a></li>`).join('')}</ul></div>`
+        : '';
+
+      locationNotice.innerHTML = `
+        <div class="title"><span class="badge" aria-hidden="true">i</span><span>Local details for your selection</span></div>
+        ${hasStateDesc ? `<div class="detail"><strong>${stateData.name}:</strong> ${stateData.description}</div>` : ''}
+        ${hasOfficeDesc ? `<div class="detail"><strong>${office.name}:</strong> ${office.description}</div>` : ''}
+        ${docList}
+      `;
+      locationNotice.style.display = 'block';
     }
 
     function renderSummary(el) {
@@ -342,6 +383,8 @@
       model.productIndex = null;
       model.product = null;
       toStep3Btn.disabled = true;
+
+      renderLocationNotice();
 
       if (!products.length) {
         productListEl.innerHTML = `<div style="color:var(--muted); font-size:14px;">
@@ -504,6 +547,7 @@
 
       validateStep1();
       hideReview();
+      hideLocationNotice();
     });
 
     officeInput.addEventListener('focus', () => {
@@ -573,6 +617,7 @@
       model.qty = 0;
       hideReview();
       validateStep1();
+      hideLocationNotice();
     });
 
     // Step buttons
@@ -717,6 +762,7 @@ ${JSON.stringify(payload, null, 2)}
       toStep2Btn.disabled = true;
       hideReview();
       hideErrors();
+      hideLocationNotice();
       setStep(0);
     });
 

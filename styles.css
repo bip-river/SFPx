@@ -127,6 +127,11 @@
     .docs{margin-top:10px; font-size:13px; color:var(--muted)}
     .docs a{color:var(--brand)}
     .docs a:hover{text-decoration:underline}
+    .location-note{margin-top:12px; border:1px solid rgba(11,15,25,.16); border-radius:14px; padding:12px; background:rgba(11,15,25,.02);}
+    .location-note .title{font-weight:900; font-size:14px; display:flex; align-items:center; gap:8px;}
+    .location-note .title .badge{width:22px; height:22px; border-radius:8px; background:rgba(11,92,171,.14); color:var(--brand); display:grid; place-items:center; font-weight:900;}
+    .location-note .detail{margin-top:8px; color:var(--muted); font-size:13px;}
+    .location-note ul{margin:8px 0 0 18px; color:var(--muted); font-size:13px}
     /* Summary */
     .summary{border:1px solid rgba(11,92,171,.22); background:rgba(11,92,171,.05); border-radius:14px; padding:12px; margin-top:10px;}
     .summary .k{color:var(--muted); font-size:12px}
