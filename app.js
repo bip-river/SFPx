@@ -49,6 +49,10 @@
     const summary3 = document.getElementById('summary3');
     const summary4 = document.getElementById('summary4');
     const summary5 = document.getElementById('summary5');
+    const reviewSummary = document.getElementById('reviewSummary');
+    const reviewNotice = document.getElementById('reviewNotice');
+    const reviewActions = document.getElementById('reviewActions');
+    const confirmPaygovBtn = document.getElementById('confirmPaygov');
     const handoff = document.getElementById('handoff');
 
     const resetAllBtn = document.getElementById('resetAll');
@@ -288,6 +292,50 @@
       `;
     }
 
+    function hideReview() {
+      reviewSummary.style.display = 'none';
+      reviewNotice.style.display = 'none';
+      reviewActions.style.display = 'none';
+      handoff.style.display = 'none';
+    }
+
+    function renderReviewSummary() {
+      const stateName = DATA[model.state]?.name || model.state || '—';
+      const fullName = [purchaser.FirstName.value.trim(), purchaser.MiddleName.value.trim(), purchaser.LastName.value.trim()].filter(Boolean).join(' ');
+      const addressParts = [
+        purchaser.AddressLine1.value.trim(),
+        purchaser.AddressLine2.value.trim(),
+        [purchaser.City.value.trim(), purchaser.AddrState.value, purchaser.Zip.value.trim()].filter(Boolean).join(' ')
+      ].filter(Boolean).join('<br />');
+      const phone = purchaser.Phone.value.trim() || 'Not provided';
+      const email = purchaser.Email.value.trim();
+      const total = (model.product?.price || 0) * (model.qty || 0);
+      const totalLabel = (model.product?.price === 0) ? 'Free' : money(total);
+      const qtyLabel = model.qty ? `${model.qty} ${model.product?.unit || 'unit'}${model.qty === 1 ? '' : 's'}` : '—';
+
+      handoff.style.display = 'none';
+      reviewSummary.innerHTML = `
+        <div class="k">Customer</div>
+        <div class="v">
+          ${fullName || '—'}<br />
+          ${addressParts || '—'}<br />
+          Phone: ${phone}<br />
+          Email: ${email}
+        </div>
+        <div class="k" style="margin-top:10px;">Product</div>
+        <div class="v">
+          ${stateName} — ${model.officeName || '—'}<br />
+          ${model.product?.name || '—'}<br />
+          ${qtyLabel}<br />
+          Estimated total: ${totalLabel}
+        </div>
+      `;
+
+      reviewSummary.style.display = 'block';
+      reviewNotice.style.display = 'flex';
+      reviewActions.style.display = 'flex';
+    }
+
     function renderProducts() {
       const products = getProductsForSelection();
       productListEl.innerHTML = '';
@@ -455,6 +503,7 @@
       activeIndex = -1;
 
       validateStep1();
+      hideReview();
     });
 
     officeInput.addEventListener('focus', () => {
@@ -522,6 +571,7 @@
       qtyEl.value = '';
       totalEl.value = '';
       model.qty = 0;
+      hideReview();
       validateStep1();
     });
 
@@ -577,6 +627,7 @@
       ackPrivacy.checked = false;
       ackTerms.checked = false;
       toStep5Btn.disabled = true;
+      hideReview();
       setStep(3);
     });
     document.getElementById('back3').addEventListener('click', () => setStep(2));
@@ -591,16 +642,25 @@
       if (!ackTerms.checked) errors.push('You must agree to the Terms and Conditions.');
       if (errors.length) return showErrors(errors);
       renderSummary(summary5);
+      hideReview();
       setStep(4);
       purchaser.FirstName.focus();
     });
-    document.getElementById('back4').addEventListener('click', () => setStep(3));
+    document.getElementById('back4').addEventListener('click', () => {
+      hideReview();
+      setStep(3);
+    });
 
     document.getElementById('proceedPaygov').addEventListener('click', () => {
       const errors = validatePurchaser();
       if (errors.length) return showErrors(errors);
       hideErrors();
+      renderReviewSummary();
+      reviewSummary.scrollIntoView({ behavior:'smooth', block:'start' });
+      confirmPaygovBtn.focus();
+    });
 
+    confirmPaygovBtn.addEventListener('click', () => {
       const payload = {
         state: model.state,
         officeId: model.officeId,
@@ -655,7 +715,7 @@ ${JSON.stringify(payload, null, 2)}
       setOfficeExpanded(false);
       productListEl.innerHTML = '';
       toStep2Btn.disabled = true;
-      handoff.style.display = 'none';
+      hideReview();
       hideErrors();
       setStep(0);
     });

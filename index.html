@@ -232,7 +232,7 @@ Replace this demo text with the authoritative terms and conditions used by your 
           <!-- Step 5 -->
           <section id="step5" aria-label="Step 5: Purchaser info" style="display:none;">
             <h2 style="margin:0 0 6px;">Purchaser information</h2>
-            <div style="color:var(--muted); font-size:14px;">Complete the required fields, then proceed to Pay.gov.</div>
+            <div style="color:var(--muted); font-size:14px;">Complete the required fields to review your purchase, then continue to Pay.gov for payment.</div>
 
             <div class="summary" id="summary5"></div>
 
@@ -289,7 +289,19 @@ Replace this demo text with the authoritative terms and conditions used by your 
 
             <div class="actions">
               <button class="ghost" type="button" id="back4">Back</button>
-              <button class="primary" type="button" id="proceedPaygov">Proceed to Pay.gov</button>
+              <button class="primary" type="button" id="proceedPaygov">Review and continue</button>
+            </div>
+
+            <div class="summary" id="reviewSummary" style="display:none; margin-top:14px;"></div>
+            <div class="alert" id="reviewNotice" style="display:none; margin-top:12px;">
+              <div class="icon" aria-hidden="true">i</div>
+              <div class="txt">
+                <strong>Next step</strong>
+                You will be sent to Pay.gov to complete payment. After payment, you will return here to download, save, and print your permit.
+              </div>
+            </div>
+            <div class="actions" id="reviewActions" style="display:none; margin-top:6px;">
+              <button class="primary" type="button" id="confirmPaygov">Continue to Pay.gov</button>
             </div>
 
             <div class="summary" id="handoff" style="display:none; margin-top:14px;"></div>
