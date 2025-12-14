@@ -1,10 +1,20 @@
 {
   "AK": {
     "name": "Alaska",
+    "description": "Seasonal fire and travel conditions change quickly in Alaska. Please review local access notices before your trip.",
+    "attachments": [
+      { "label": "Alaska travel advisory (PDF)", "url": "#" },
+      { "label": "Statewide fire restrictions", "url": "#" }
+    ],
     "offices": [
       {
         "id": "AK-ANCH",
         "name": "Anchorage Field Office",
+        "description": "Anchorage area permits may require weekend travel restrictions during breakup season.",
+        "attachments": [
+          { "label": "Anchorage access map", "url": "#" },
+          { "label": "Anchorage seasonal bulletin", "url": "#" }
+        ],
         "products": {
           "fuelwood": [
             {
@@ -2957,6 +2967,10 @@
   },
   "OR": {
     "name": "Oregon",
+    "description": "Oregon offices may close areas during wet weather to protect roads. Check the latest notices before you plan your route.",
+    "attachments": [
+      { "label": "Oregon seasonal road guidance", "url": "#" }
+    ],
     "offices": [
       {
         "id": "OR-SALEM",
@@ -3085,6 +3099,10 @@
       {
         "id": "OR-PRIN",
         "name": "Prineville District Office",
+        "description": "North Fork area requires self-issue access pass when snow gates are closed.",
+        "attachments": [
+          { "label": "Prineville winter travel map", "url": "#" }
+        ],
         "products": {
           "fuelwood": [
             {
