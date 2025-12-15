@@ -55,7 +55,7 @@
           <div class="bot">BUREAU OF LAND MANAGEMENT</div>
         </div>
         <div class="agency-actions">
-          <a href="#" id="helpLink">Help</a>
+          <a href="help.html">Help</a>
           <a href="https://www.blm.gov/office/national-office" target="_blank" rel="noopener">Contact</a>
         </div>
       </div>
@@ -67,19 +67,19 @@
       <section class="pagehead" aria-label="Page title and instructions">
         <h1>Online Forest Product Permits</h1>
         <p>Purchase a permit to collect forest products on BLM-managed public lands.</p>
-        <p>Select a state, BLM office, and product type to begin.</p>
+        <p>Choose what you’re collecting, then select the state and BLM office to begin.</p>
 
         <div class="alert" role="status" aria-live="polite">
           <div class="icon" aria-hidden="true">i</div>
           <div class="txt">
             <strong>Notice</strong>
-            Pay.gov may be unavailable during scheduled maintenance. If checkout fails, please try again later.
+            Pay.gov maintenance or email delays can interrupt checkout or permit delivery. If Pay.gov is down, try later or use the Help page for next steps. After paying, check spam folders for your permit email.
           </div>
         </div>
       </section>
 
       <section class="stepper" aria-label="Purchase steps">
-        <div class="step active" id="s1"><div class="n">1</div><div><div class="t">Choose</div><div class="k">State, office, type</div></div></div>
+        <div class="step active" id="s1"><div class="n">1</div><div><div class="t">Choose</div><div class="k">What, state, office</div></div></div>
         <div class="step" id="s2"><div class="n">2</div><div><div class="t">Select</div><div class="k">Product</div></div></div>
         <div class="step" id="s3"><div class="n">3</div><div><div class="t">Enter</div><div class="k">Quantity</div></div></div>
         <div class="step" id="s4"><div class="n">4</div><div><div class="t">Accept</div><div class="k">Privacy + Terms</div></div></div>
@@ -98,10 +98,20 @@
           <section id="step1" aria-label="Step 1: Choose location">
             <h2 style="margin:0 0 6px;">Find available products</h2>
             <div style="color:var(--muted); font-size:14px;">
-              Choose where you plan to harvest/collect and what you plan to gather. We’ll show the permits available for that selection.
+              Choose what you plan to gather and where you’ll collect it. We’ll show the permits available for that selection.
             </div>
 
             <div class="grid2" style="margin-top:14px;">
+              <div class="row" style="grid-column: 1 / -1;">
+                <label for="ptype">What are you collecting? <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+                <select id="ptype" required>
+                  <option value="">Select what you’re collecting</option>
+                  <option value="fuelwood">Fuelwood</option>
+                  <option value="christmas">Christmas trees</option>
+                  <option value="mushrooms">Mushrooms</option>
+                </select>
+              </div>
+
               <div class="row">
                 <label for="state">State <span aria-hidden="true" style="color:var(--danger)">*</span></label>
                 <select id="state" required>
@@ -120,16 +130,6 @@
                   <div id="officeList" class="dropdown" role="listbox" aria-hidden="true"></div>
                 </div>
                 <input type="hidden" id="officeId" />
-              </div>
-
-              <div class="row" style="grid-column: 1 / -1;">
-                <label for="ptype">Product type <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                <select id="ptype" required>
-                  <option value="">Select a product type</option>
-                  <option value="fuelwood">Fuelwood</option>
-                  <option value="christmas">Christmas trees</option>
-                  <option value="mushrooms">Mushrooms</option>
-                </select>
               </div>
             </div>
 
@@ -311,11 +311,11 @@ Replace this demo text with the authoritative terms and conditions used by your 
 
         <aside class="card side" aria-label="Need help">
           <h3>Need help?</h3>
-          <p>If you’re unsure which office manages your harvest area, use the BLM office directory.</p>
+          <p>Visit the Help page for quick answers and troubleshooting steps.</p>
           <ul>
-            <li><a href="https://experience.arcgis.com/experience/9a89ee80c604431e8f8d939a186fbdbb" target="_blank" rel="noopener">Find a local BLM office</a></li>
+            <li>If Pay.gov is unavailable, return later or pay at a local office.</li>
+            <li>If you paid but did not receive a permit email, check spam or download from the confirmation page.</li>
             <li>Review maps and stipulations before purchase and before you travel.</li>
-            <li>If Pay.gov is unavailable, try again later.</li>
           </ul>
           <p style="margin-top:12px; color:var(--muted); font-size:13.5px;">
             This prototype stops at purchaser information collection and demonstrates the transaction payload that would be handed to Pay.gov.
