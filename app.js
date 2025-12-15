@@ -24,15 +24,12 @@
     const officeList = document.getElementById('officeList');
     const ptypeEl = document.getElementById('ptype');
 
-    const toStep2Btn = document.getElementById('toStep2');
-    const toStep3Btn = document.getElementById('toStep3');
-    const toStep4Btn = document.getElementById('toStep4');
-    const toStep5Btn = document.getElementById('toStep5');
-
     const productListEl = document.getElementById('productList');
     const qtyEl = document.getElementById('qty');
     const qtyHint = document.getElementById('qtyHint');
     const totalEl = document.getElementById('total');
+
+    const qtySection = document.getElementById('qtySection');
 
     const ackPrivacy = document.getElementById('ackPrivacy');
     const ackTerms = document.getElementById('ackTerms');
@@ -40,19 +37,20 @@
     const errorBox = document.getElementById('errorBox');
     const errorList = document.getElementById('errorList');
 
-    const steps = ['s1','s2','s3','s4','s5'].map(id => document.getElementById(id));
+    const steps = ['s1','s2','s3'].map(id => document.getElementById(id));
     const stepSections = [
       document.getElementById('step1'),
       document.getElementById('step2'),
-      document.getElementById('step3'),
-      document.getElementById('step4'),
-      document.getElementById('step5')
+      document.getElementById('step3')
+    ];
+    const stepToggles = Array.from(document.querySelectorAll('.step-toggle'));
+    const stepStatuses = [
+      document.getElementById('status1'),
+      document.getElementById('status2'),
+      document.getElementById('status3')
     ];
 
-    const summary2 = document.getElementById('summary2');
-    const summary3 = document.getElementById('summary3');
-    const summary4 = document.getElementById('summary4');
-    const summary5 = document.getElementById('summary5');
+    const progressSummary = document.getElementById('progressSummary');
     const locationNotice = document.getElementById('locationNotice');
     const reviewSummary = document.getElementById('reviewSummary');
     const reviewNotice = document.getElementById('reviewNotice');
@@ -87,6 +85,12 @@
       productIndex: null,
       product: null,
       qty: 0
+    };
+
+    const stepState = {
+      available: [true, false, false],
+      completed: [false, false, false],
+      open: [true, false, false]
     };
 
     // Populate state dropdown
@@ -215,8 +219,10 @@
       qtyEl.value = '';
       totalEl.value = '';
       model.qty = 0;
-
-      validateStep1();
+      qtySection.style.display = 'none';
+      resetFollowingSteps(0);
+      stepState.open = [true, false, false];
+      attemptAdvanceFromStep1();
     }
 
     // Products
@@ -340,6 +346,8 @@
       reviewNotice.style.display = 'none';
       reviewActions.style.display = 'none';
       handoff.style.display = 'none';
+      stepState.completed[2] = false;
+      confirmPaygovBtn.disabled = true;
     }
 
     function renderReviewSummary() {
@@ -385,7 +393,9 @@
       productListEl.innerHTML = '';
       model.productIndex = null;
       model.product = null;
-      toStep3Btn.disabled = true;
+      qtySection.style.display = 'none';
+      stepState.completed[1] = false;
+      stepState.available[2] = false;
 
       renderLocationNotice();
 
@@ -426,8 +436,6 @@
             <div class="meta">${saleEnd}</div>
             <div class="kv">
               <span class="chip">${validity}</span>
-              <span class="chip">Max: ${p.maxQty} ${p.unit}(s)</span>
-              <span class="chip">Unit: ${p.unit}</span>
             </div>
             <div class="docs">${docs ? 'Required documents: ' + docs : ''}</div>
           </div>
@@ -436,35 +444,52 @@
         card.querySelector('input').addEventListener('change', () => {
           model.productIndex = idx;
           model.product = p;
-          toStep3Btn.disabled = false;
-          renderSummary(summary3);
-          renderSummary(summary4);
-          renderSummary(summary5);
+          qtyHint.textContent = `Enter 1–${p.maxQty} ${p.unit}(s). Price: ${p.price===0?'Free':money(p.price)} per ${p.unit}.`;
+          qtyEl.min = 1;
+          qtyEl.max = p.maxQty || '';
+          qtyEl.value = '';
+          totalEl.value = '';
+          qtySection.style.display = 'block';
+          model.qty = 0;
+          stepState.completed[1] = false;
+          stepState.available[2] = false;
+          ackPrivacy.checked = false;
+          ackTerms.checked = false;
+          hideReview();
+          renderSummary(progressSummary);
+          setOpenStep(1);
+          qtyEl.focus();
         });
 
         productListEl.appendChild(card);
       });
     }
 
-    // Step navigation
-    function setStep(idx) {
-      model.step = idx;
-      stepSections.forEach((sec, i) => {
-        sec.style.display = (i === idx) ? 'block' : 'none';
-      });
+    function updateStepUI(activeIdx = model.step) {
+      model.step = activeIdx;
       steps.forEach((el, i) => {
-        el.classList.toggle('active', i === idx);
-        el.classList.toggle('done', i < idx);
+        const isActive = stepState.open[i];
+        el.classList.toggle('active', isActive);
+        el.classList.toggle('done', stepState.completed[i]);
       });
-      hideErrors();
 
-      if (idx >= 1) renderSummary(summary2);
-      if (idx >= 2) renderSummary(summary3);
-      if (idx >= 3) renderSummary(summary4);
-      if (idx >= 4) renderSummary(summary5);
-
-      const h = stepSections[idx].querySelector('h2');
-      if (h) h.scrollIntoView({ behavior:'smooth', block:'start' });
+      stepSections.forEach((sec, i) => {
+        const open = stepState.open[i] && stepState.available[i];
+        sec.classList.toggle('collapsed', !open);
+        const body = sec.querySelector('.step-body');
+        const toggle = sec.querySelector('.step-toggle');
+        if (body) body.style.display = open ? 'block' : 'none';
+        if (toggle) toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        const statusEl = stepStatuses[i];
+        if (statusEl) {
+          const status = !stepState.available[i]
+            ? 'Locked'
+            : stepState.completed[i]
+              ? 'Completed'
+              : 'In progress';
+          statusEl.textContent = status;
+        }
+      });
     }
 
     function showErrors(messages) {
@@ -487,7 +512,7 @@
 
     function validateStep1() {
       const ok = Boolean(model.state) && Boolean(model.officeId) && Boolean(model.ptype);
-      toStep2Btn.disabled = !ok;
+      stepState.completed[0] = ok;
       return ok;
     }
 
@@ -500,14 +525,7 @@
       model.qty = v;
       const total = v * (p.price || 0);
       totalEl.value = p.price === 0 ? 'Free' : money(total);
-      toStep4Btn.disabled = false;
       return true;
-    }
-
-    function validateAcks() {
-      const ok = ackPrivacy.checked && ackTerms.checked;
-      toStep5Btn.disabled = !ok;
-      return ok;
     }
 
     function validatePurchaser() {
@@ -544,6 +562,98 @@
       return msgs;
     }
 
+    function setOpenStep(idx) {
+      if (!stepState.available[idx]) return;
+      stepState.open = stepState.open.map((_, i) => i === idx);
+      updateStepUI(idx);
+      hideErrors();
+      const head = stepSections[idx]?.querySelector('.step-head');
+      if (head) head.scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+
+    function resetFollowingSteps(startIdx) {
+      for (let i = startIdx + 1; i < stepState.available.length; i++) {
+        stepState.available[i] = false;
+        stepState.completed[i] = false;
+        stepState.open[i] = false;
+      }
+      updateStepUI(startIdx);
+    }
+
+    function attemptAdvanceFromStep1() {
+      const ok = validateStep1();
+      stepState.available[1] = ok;
+      if (!ok) {
+        resetFollowingSteps(0);
+        stepState.open = [true, false, false];
+        renderSummary(progressSummary);
+        hideLocationNotice();
+        productListEl.innerHTML = '';
+        qtySection.style.display = 'none';
+        return;
+      }
+
+      renderSummary(progressSummary);
+      renderProducts();
+      setOpenStep(1);
+      updateStepUI(1);
+    }
+
+    function handleQuantityProgress() {
+      const ok = validateQty();
+      stepState.completed[1] = ok;
+      stepState.available[2] = ok;
+      if (ok) {
+        renderSummary(progressSummary);
+        setOpenStep(2);
+      } else {
+        model.qty = 0;
+        stepState.completed[2] = false;
+        stepState.open = [stepState.open[0], true, false];
+        renderSummary(progressSummary);
+        reviewSummary.style.display = 'none';
+        reviewNotice.style.display = 'none';
+        reviewActions.style.display = 'none';
+        confirmPaygovBtn.disabled = true;
+      }
+      updateStepUI(model.step);
+    }
+
+    function evaluateFinalStep({ showErrorsOnFail = false } = {}) {
+      const ackOk = ackPrivacy.checked && ackTerms.checked;
+      const purchaserErrors = validatePurchaser();
+      const purchaserValid = purchaserErrors.length === 0;
+
+      if (!ackOk || !purchaserValid) {
+        stepState.completed[2] = false;
+        reviewSummary.style.display = 'none';
+        reviewNotice.style.display = 'none';
+        reviewActions.style.display = 'none';
+        confirmPaygovBtn.disabled = true;
+        if (showErrorsOnFail) {
+          const errs = [];
+          if (!ackOk) {
+            if (!ackPrivacy.checked) errs.push('You must acknowledge the Privacy Act notification.');
+            if (!ackTerms.checked) errs.push('You must agree to the Terms and Conditions.');
+          }
+          showErrors(errs.concat(purchaserErrors));
+        }
+        updateStepUI(model.step);
+        return false;
+      }
+
+      hideErrors();
+      stepState.completed[2] = true;
+      renderSummary(progressSummary);
+      renderReviewSummary();
+      reviewSummary.style.display = 'block';
+      reviewNotice.style.display = 'flex';
+      reviewActions.style.display = 'flex';
+      confirmPaygovBtn.disabled = false;
+      updateStepUI(2);
+      return true;
+    }
+
     // Events
     stateEl.addEventListener('change', () => {
       model.state = stateEl.value;
@@ -558,6 +668,11 @@
       qtyEl.value = '';
       totalEl.value = '';
       model.qty = 0;
+      qtySection.style.display = 'none';
+
+      stepState.completed[0] = false;
+      resetFollowingSteps(0);
+      stepState.open = [true, false, false];
 
       // Prime office dropdown
       officeOptions = filterOfficeOptions('');
@@ -568,6 +683,8 @@
       validateStep1();
       hideReview();
       hideLocationNotice();
+      renderSummary(progressSummary);
+      updateStepUI(0);
     });
 
     officeInput.addEventListener('focus', () => {
@@ -599,7 +716,7 @@
       activeIndex = officeOptions.length ? 0 : -1;
       highlightOffice(activeIndex);
 
-      validateStep1();
+      attemptAdvanceFromStep1();
     });
 
     officeInput.addEventListener('keydown', (e) => {
@@ -636,96 +753,39 @@
       totalEl.value = '';
       model.qty = 0;
       hideReview();
-      validateStep1();
+      qtySection.style.display = 'none';
+      resetFollowingSteps(0);
+      stepState.open = [true, false, false];
+      attemptAdvanceFromStep1();
       hideLocationNotice();
     });
 
-    // Step buttons
-    toStep2Btn.addEventListener('click', () => {
-      const errors = [];
-      if (!model.state) errors.push('Select a state.');
-      if (!model.officeId) errors.push('Select a BLM office / district.');
-      if (!model.ptype) errors.push('Select what you are collecting.');
-      if (errors.length) return showErrors(errors);
-
-      renderSummary(summary2);
-      renderProducts();
-      setStep(1);
+    stepToggles.forEach((btn, idx) => {
+      btn.addEventListener('click', () => {
+        if (!stepState.available[idx]) return;
+        setOpenStep(idx);
+      });
     });
-    document.getElementById('back1').addEventListener('click', () => setStep(0));
-
-    toStep3Btn.addEventListener('click', () => {
-      if (!model.product) return showErrors(['Select a product to continue.']);
-      renderSummary(summary3);
-      const p = model.product;
-      qtyHint.textContent = `Enter 1–${p.maxQty} ${p.unit}(s). Price: ${p.price===0?'Free':money(p.price)} per ${p.unit}.`;
-      qtyEl.min = 1;
-      qtyEl.max = p.maxQty || '';
-      qtyEl.value = '';
-      totalEl.value = '';
-      model.qty = 0;
-      toStep4Btn.disabled = true;
-      setStep(2);
-      qtyEl.focus();
-    });
-    document.getElementById('back2').addEventListener('click', () => setStep(1));
 
     qtyEl.addEventListener('input', () => {
-      const ok = validateQty();
-      if (!ok) {
+      if (!validateQty()) {
         totalEl.value = '';
-        toStep4Btn.disabled = true;
       }
+      handleQuantityProgress();
     });
 
-    toStep4Btn.addEventListener('click', () => {
-      const p = model.product;
-      const v = Number(qtyEl.value);
-      const errors = [];
-      if (!p) errors.push('No product selected.');
-      if (!Number.isFinite(v) || v < 1) errors.push('Enter a quantity of at least 1.');
-      if (p?.maxQty && v > p.maxQty) errors.push(`Quantity exceeds the maximum for this product (${p.maxQty}).`);
-      if (errors.length) return showErrors(errors);
-
-      model.qty = v;
-      renderSummary(summary4);
-      ackPrivacy.checked = false;
-      ackTerms.checked = false;
-      toStep5Btn.disabled = true;
-      hideReview();
-      setStep(3);
-    });
-    document.getElementById('back3').addEventListener('click', () => setStep(2));
-
-    function onAckChange() { validateAcks(); }
+    function onAckChange() { evaluateFinalStep(); }
     ackPrivacy.addEventListener('change', onAckChange);
     ackTerms.addEventListener('change', onAckChange);
 
-    toStep5Btn.addEventListener('click', () => {
-      const errors = [];
-      if (!ackPrivacy.checked) errors.push('You must acknowledge the Privacy Act notification.');
-      if (!ackTerms.checked) errors.push('You must agree to the Terms and Conditions.');
-      if (errors.length) return showErrors(errors);
-      renderSummary(summary5);
-      hideReview();
-      setStep(4);
-      purchaser.FirstName.focus();
-    });
-    document.getElementById('back4').addEventListener('click', () => {
-      hideReview();
-      setStep(3);
-    });
-
-    document.getElementById('proceedPaygov').addEventListener('click', () => {
-      const errors = validatePurchaser();
-      if (errors.length) return showErrors(errors);
-      hideErrors();
-      renderReviewSummary();
-      reviewSummary.scrollIntoView({ behavior:'smooth', block:'start' });
-      confirmPaygovBtn.focus();
+    Object.values(purchaser).forEach((el) => {
+      el.addEventListener('input', () => evaluateFinalStep());
+      el.addEventListener('blur', () => evaluateFinalStep());
     });
 
     confirmPaygovBtn.addEventListener('click', () => {
+      const ok = evaluateFinalStep({ showErrorsOnFail: true });
+      if (!ok) return;
       const payload = {
         state: model.state,
         officeId: model.officeId,
@@ -777,19 +837,24 @@ ${JSON.stringify(payload, null, 2)}
       qtyEl.value = '';
       totalEl.value = '';
       model.qty = 0;
+      qtySection.style.display = 'none';
       setOfficeExpanded(false);
       productListEl.innerHTML = '';
-      toStep2Btn.disabled = true;
+      stepState.available = [true, false, false];
+      stepState.completed = [false, false, false];
+      stepState.open = [true, false, false];
       hideReview();
       hideErrors();
       hideLocationNotice();
-      setStep(0);
+      renderSummary(progressSummary);
+      updateStepUI(0);
     });
 
     async function boot() {
       await loadProductData();
       populateUSStates(purchaser.AddrState);
-      setStep(0);
+      renderSummary(progressSummary);
+      updateStepUI(0);
     }
 
     boot();

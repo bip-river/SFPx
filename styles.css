@@ -77,6 +77,12 @@
     .step.done .n{background: rgba(6,118,71,.16); color: var(--ok)}
     .step .t{font-size:13px; color:var(--muted)}
     .step .k{font-weight:850; font-size:14px}
+    .flow-step{border:1px solid rgba(11,15,25,.12); border-radius:14px; padding:12px; margin-top:12px; background:#fff;}
+    .flow-step .step-head{display:flex; align-items:center; gap:10px;}
+    .flow-step .step-toggle{background:transparent; border:0; padding:0; font-weight:900; font-size:16px; cursor:pointer; text-align:left; flex:1;}
+    .flow-step .step-status{font-size:13px; color:var(--muted);}
+    .flow-step .step-body{margin-top:10px;}
+    .flow-step.collapsed .step-body{display:none;}
     /* Forms */
     label{font-weight:750; font-size:14px}
     .hint{font-size:13px; color:var(--muted); margin-top:4px}
