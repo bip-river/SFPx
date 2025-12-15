@@ -1,7 +1,11 @@
     let DATA = {};
     const DATA_SOURCE = 'products.json';
 
-    const PRODUCT_TYPES = [{"id": "fuelwood", "label": "Fuelwood"}, {"id": "christmas", "label": "Christmas trees"}, {"id": "mushrooms", "label": "Mushrooms"}];
+    const PRODUCT_TYPES = [
+      { id: 'fuelwood', label: 'Fuelwood' },
+      { id: 'christmas', label: 'Christmas trees' },
+      { id: 'mushrooms', label: 'Mushrooms' }
+    ];
 
     // Banner toggle
     const bannerToggle = document.getElementById('bannerToggle');
@@ -206,8 +210,6 @@
       setOfficeExpanded(false);
 
       // Reset downstream selections
-      model.ptype = '';
-      ptypeEl.value = '';
       model.productIndex = null;
       model.product = null;
       qtyEl.value = '';
@@ -378,6 +380,7 @@
     }
 
     function renderProducts() {
+      const office = getSelectedOffice();
       const products = getProductsForSelection();
       productListEl.innerHTML = '';
       model.productIndex = null;
@@ -386,9 +389,20 @@
 
       renderLocationNotice();
 
+      const hasAnyOfficeProducts = (office?.products && Object.values(office.products).some(arr => (arr || []).length > 0));
+
       if (!products.length) {
-        productListEl.innerHTML = `<div style="color:var(--muted); font-size:14px;">
-          No products are available for the selected office and product type (demo data).
+        const ptypeLabel = PRODUCT_TYPES.find(t => t.id === model.ptype)?.label || 'this permit type';
+        const msg = hasAnyOfficeProducts
+          ? `${office?.name || 'This office'} does not offer ${ptypeLabel.toLowerCase()} permits online right now. Try another collection type or office.`
+          : `${office?.name || 'This office'} does not have online permits available right now. Please choose another office or check back later.`;
+
+        productListEl.innerHTML = `<div class="alert" role="status" aria-live="polite">
+          <div class="icon" aria-hidden="true">i</div>
+          <div class="txt">
+            <strong>Nothing to select</strong>
+            ${msg}
+          </div>
         </div>`;
         return;
       }
@@ -516,8 +530,17 @@
       const e1 = (purchaser.Email.value || '').trim();
       const e2 = (purchaser.Email2.value || '').trim();
       if (e1 && e2 && e1.toLowerCase() !== e2.toLowerCase()) msgs.push('Email addresses must match.');
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (e1 && !emailPattern.test(e1)) msgs.push('Enter a valid email address.');
       const zip = (purchaser.Zip.value || '').trim();
       if (zip && !/^\d{5}(-\d{4})?$/.test(zip)) msgs.push('ZIP must be 5 digits (or ZIP+4).');
+      const phone = (purchaser.Phone.value || '').trim();
+      const digits = phone.replace(/\D/g, '');
+      if (phone && digits.length < 10) msgs.push('Enter a valid phone number with area code.');
+      const address = (purchaser.AddressLine1.value || '').trim();
+      if (address && address.length < 5) msgs.push('Enter a full street address.');
+      const city = (purchaser.City.value || '').trim();
+      if (city && city.length < 2) msgs.push('Enter a valid city name.');
       return msgs;
     }
 
@@ -529,9 +552,6 @@
       officeIdEl.value = '';
       model.officeId = '';
       model.officeName = '';
-
-      model.ptype = '';
-      ptypeEl.value = '';
 
       model.productIndex = null;
       model.product = null;
@@ -625,7 +645,7 @@
       const errors = [];
       if (!model.state) errors.push('Select a state.');
       if (!model.officeId) errors.push('Select a BLM office / district.');
-      if (!model.ptype) errors.push('Select a product type.');
+      if (!model.ptype) errors.push('Select what you are collecting.');
       if (errors.length) return showErrors(errors);
 
       renderSummary(summary2);
@@ -764,12 +784,6 @@ ${JSON.stringify(payload, null, 2)}
       hideErrors();
       hideLocationNotice();
       setStep(0);
-    });
-
-    // Help link (demo)
-    document.getElementById('helpLink').addEventListener('click', (e) => {
-      e.preventDefault();
-      alert('Demo: Help would include FAQs, troubleshooting, and office selection guidance.');
     });
 
     async function boot() {
