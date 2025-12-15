@@ -148,6 +148,9 @@
     .error{border-left:4px solid var(--danger); background:#fff1f0; border-radius:14px; padding:10px 12px; color:#5a0b0b; margin-top:12px; display:none;}
     .error[aria-hidden="false"]{display:block}
     .error ul{margin:8px 0 0 18px}
+    .field-error{color:var(--danger); font-size:13px; margin-top:6px; display:none;}
+    .field-error.active{display:block}
+    input[aria-invalid="true"], select[aria-invalid="true"], textarea[aria-invalid="true"]{border-color:var(--danger); box-shadow:0 0 0 1px rgba(219,68,55,.35);}
     /* Accordions */
     details{border:1px solid rgba(11,15,25,.14); border-radius:14px; background:#fff; padding:10px 12px; margin-top:10px;}
     summary{cursor:pointer; font-weight:900}
