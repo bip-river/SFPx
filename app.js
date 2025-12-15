@@ -988,12 +988,12 @@
           if (needsType) parts.push('select what you are collecting');
           if (needsState) parts.push('choose a state');
           if (needsOffice) parts.push('pick a BLM office');
-          lockNotes[1].textContent = `Complete step 1 (${parts.join(', ')}) to unlock product selection.`;
+          lockNotes[1].textContent = `Complete step 1 to unlock.`;
         }
       }
       if (lockNotes[2]) {
         if (!model.product) {
-          lockNotes[2].textContent = 'Choose a product to unlock purchaser information and acknowledgements.';
+          lockNotes[2].textContent = 'Complete step 2 to unlock.';
         } else if (!model.qty) {
           lockNotes[2].textContent = 'Enter a quantity within the allowed range to continue.';
         }
