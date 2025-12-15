@@ -218,6 +218,9 @@ Replace this demo text with the authoritative terms and conditions used by your 
                 </div>
               </div>
 
+              <p class="hint" id="purchaserBlockedHint" style="margin-top:10px;">Customer contact information will unlock after you agree to both statements above.</p>
+
+              <fieldset id="purchaserFieldset" class="purchaser-block locked" aria-describedby="purchaserBlockedHint" disabled>
               <div class="grid2" style="margin-top:14px;">
                 <div class="row">
                   <label for="FirstName">First name <span aria-hidden="true" style="color:var(--danger)">*</span></label>
@@ -268,6 +271,7 @@ Replace this demo text with the authoritative terms and conditions used by your 
                   <input id="Email2" type="email" autocomplete="email" />
                 </div>
               </div>
+              </fieldset>
 
               <div class="summary" id="reviewSummary" style="display:none; margin-top:14px;"></div>
               <div class="alert" id="reviewNotice" style="display:none; margin-top:12px;">
@@ -278,7 +282,7 @@ Replace this demo text with the authoritative terms and conditions used by your 
                 </div>
               </div>
               <div class="actions" id="reviewActions" style="display:none; margin-top:6px;">
-                <button class="primary" type="button" id="confirmPaygov">Continue to Pay.gov</button>
+                <button class="primary" type="button" id="confirmPaygov" disabled>Continue to Pay.gov</button>
               </div>
 
               <div class="summary" id="handoff" style="display:none; margin-top:14px;"></div>
