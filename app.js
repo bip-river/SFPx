@@ -580,12 +580,8 @@
             <div class="name">${p.name}</div>
             <div class="meta">${model.officeName} · ${priceLine}</div>
             <div class="meta">${saleEnd}</div>
+            <div class="desc">${p.description || 'Permit details provided at checkout.'}</div>
             <div class="prod-panels">
-              <div class="panel">
-                <div class="panel-title">What you get</div>
-                <div class="desc">${p.description || 'Permit details provided at checkout.'}</div>
-                <div class="kv"><span class="chip">${priceLine}</span></div>
-              </div>
               <div class="panel">
                 <div class="panel-title">Rules & constraints</div>
                 <ul class="rule-list">
