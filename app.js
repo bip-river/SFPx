@@ -1,4 +1,5 @@
     let DATA = {};
+    const STORAGE_KEY = 'sfp-demo-state';
     const DATA_SOURCE = 'products.json';
 
     const PRODUCT_TYPES = [
@@ -57,6 +58,8 @@
     const reviewActions = document.getElementById('reviewActions');
     const confirmPaygovBtn = document.getElementById('confirmPaygov');
     const handoff = document.getElementById('handoff');
+    const purchaserFieldset = document.getElementById('purchaserFieldset');
+    const purchaserBlockedHint = document.getElementById('purchaserBlockedHint');
 
     const resetAllBtn = document.getElementById('resetAll');
 
@@ -92,6 +95,101 @@
       completed: [false, false, false],
       open: [true, false, false]
     };
+
+    function persistState() {
+      const payload = {
+        model: {
+          state: model.state,
+          officeId: model.officeId,
+          officeName: model.officeName,
+          officeInput: officeInput.value,
+          ptype: model.ptype,
+          productIndex: model.productIndex,
+          qty: model.qty,
+        },
+        purchaser: Object.fromEntries(Object.entries(purchaser).map(([k, el]) => [k, el.value])),
+        acknowledgements: {
+          privacy: ackPrivacy.checked,
+          terms: ackTerms.checked
+        }
+      };
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      } catch (err) {
+        console.warn('Unable to persist form state', err);
+      }
+    }
+
+    function clearPersistedState() {
+      try { localStorage.removeItem(STORAGE_KEY); } catch (err) { console.warn(err); }
+    }
+
+    function restoreState() {
+      let saved;
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        saved = JSON.parse(raw);
+      } catch (err) {
+        console.warn('Unable to restore form state', err);
+        return;
+      }
+
+      const savedModel = saved?.model || {};
+      const savedAcknowledgements = saved?.acknowledgements || {};
+      const savedPurchaser = saved?.purchaser || {};
+
+      if (savedModel.state && DATA[savedModel.state]) {
+        stateEl.value = savedModel.state;
+        model.state = savedModel.state;
+      }
+
+      if (savedModel.ptype) {
+        ptypeEl.value = savedModel.ptype;
+        model.ptype = savedModel.ptype;
+      }
+
+      if (savedModel.officeId) {
+        const offices = getOfficesForState(model.state);
+        const match = offices.find(o => o.id === savedModel.officeId);
+        if (match) {
+          officeIdEl.value = match.id;
+          model.officeId = match.id;
+          model.officeName = match.name;
+          officeInput.value = savedModel.officeInput || match.name;
+        }
+      } else if (savedModel.officeInput) {
+        officeInput.value = savedModel.officeInput;
+      }
+
+      attemptAdvanceFromStep1();
+
+      const products = getProductsForSelection();
+      if (products.length && Number.isInteger(savedModel.productIndex) && products[savedModel.productIndex]) {
+        const p = products[savedModel.productIndex];
+        model.productIndex = savedModel.productIndex;
+        model.product = p;
+        const radio = document.getElementById(`prod_${savedModel.productIndex}`);
+        if (radio) radio.checked = true;
+        qtyHint.textContent = `Enter 1–${p.maxQty} ${p.unit}(s). Price: ${p.price===0?'Free':money(p.price)} per ${p.unit}.`;
+        qtyEl.min = 1;
+        qtyEl.max = p.maxQty || '';
+        qtySection.style.display = 'block';
+        if (savedModel.qty) {
+          qtyEl.value = savedModel.qty;
+        }
+        handleQuantityProgress();
+      }
+
+      ackPrivacy.checked = Boolean(savedAcknowledgements.privacy);
+      ackTerms.checked = Boolean(savedAcknowledgements.terms);
+      Object.entries(savedPurchaser).forEach(([key, val]) => {
+        if (purchaser[key]) purchaser[key].value = val;
+      });
+
+      evaluateFinalStep();
+      syncPurchaserAccess();
+    }
 
     // Populate state dropdown
     function populateStates() {
@@ -455,10 +553,13 @@
           stepState.available[2] = false;
           ackPrivacy.checked = false;
           ackTerms.checked = false;
+          syncPurchaserAccess();
           hideReview();
           renderSummary(progressSummary);
           setOpenStep(1);
           qtyEl.focus();
+          updateReviewActions();
+          persistState();
         });
 
         productListEl.appendChild(card);
@@ -490,6 +591,24 @@
           statusEl.textContent = status;
         }
       });
+    }
+
+    function updateReviewActions() {
+      if (!reviewActions) return;
+      const show = stepState.available[2];
+      reviewActions.style.display = show ? 'flex' : 'none';
+      confirmPaygovBtn.disabled = !stepState.completed[2];
+    }
+
+    function syncPurchaserAccess() {
+      const unlocked = ackPrivacy.checked && ackTerms.checked;
+      if (purchaserFieldset) {
+        purchaserFieldset.disabled = !unlocked;
+        purchaserFieldset.classList.toggle('locked', !unlocked);
+      }
+      if (purchaserBlockedHint) {
+        purchaserBlockedHint.style.display = unlocked ? 'none' : 'block';
+      }
     }
 
     function showErrors(messages) {
@@ -590,6 +709,8 @@
         hideLocationNotice();
         productListEl.innerHTML = '';
         qtySection.style.display = 'none';
+        updateReviewActions();
+        persistState();
         return;
       }
 
@@ -597,6 +718,8 @@
       renderProducts();
       setOpenStep(1);
       updateStepUI(1);
+      updateReviewActions();
+      persistState();
     }
 
     function handleQuantityProgress() {
@@ -613,10 +736,10 @@
         renderSummary(progressSummary);
         reviewSummary.style.display = 'none';
         reviewNotice.style.display = 'none';
-        reviewActions.style.display = 'none';
-        confirmPaygovBtn.disabled = true;
       }
       updateStepUI(model.step);
+      updateReviewActions();
+      persistState();
     }
 
     function evaluateFinalStep({ showErrorsOnFail = false } = {}) {
@@ -624,11 +747,12 @@
       const purchaserErrors = validatePurchaser();
       const purchaserValid = purchaserErrors.length === 0;
 
+      syncPurchaserAccess();
+
       if (!ackOk || !purchaserValid) {
         stepState.completed[2] = false;
         reviewSummary.style.display = 'none';
         reviewNotice.style.display = 'none';
-        reviewActions.style.display = 'none';
         confirmPaygovBtn.disabled = true;
         if (showErrorsOnFail) {
           const errs = [];
@@ -639,6 +763,8 @@
           showErrors(errs.concat(purchaserErrors));
         }
         updateStepUI(model.step);
+        updateReviewActions();
+        persistState();
         return false;
       }
 
@@ -651,6 +777,8 @@
       reviewActions.style.display = 'flex';
       confirmPaygovBtn.disabled = false;
       updateStepUI(2);
+      updateReviewActions();
+      persistState();
       return true;
     }
 
@@ -685,6 +813,8 @@
       hideLocationNotice();
       renderSummary(progressSummary);
       updateStepUI(0);
+      updateReviewActions();
+      persistState();
     });
 
     officeInput.addEventListener('focus', () => {
@@ -758,6 +888,8 @@
       stepState.open = [true, false, false];
       attemptAdvanceFromStep1();
       hideLocationNotice();
+      updateReviewActions();
+      persistState();
     });
 
     stepToggles.forEach((btn, idx) => {
@@ -774,7 +906,7 @@
       handleQuantityProgress();
     });
 
-    function onAckChange() { evaluateFinalStep(); }
+    function onAckChange() { syncPurchaserAccess(); evaluateFinalStep(); }
     ackPrivacy.addEventListener('change', onAckChange);
     ackTerms.addEventListener('change', onAckChange);
 
@@ -848,12 +980,17 @@ ${JSON.stringify(payload, null, 2)}
       hideLocationNotice();
       renderSummary(progressSummary);
       updateStepUI(0);
+      updateReviewActions();
+      clearPersistedState();
     });
 
     async function boot() {
       await loadProductData();
       populateUSStates(purchaser.AddrState);
       renderSummary(progressSummary);
+      restoreState();
+      syncPurchaserAccess();
+      updateReviewActions();
       updateStepUI(0);
     }
 
