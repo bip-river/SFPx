@@ -46,6 +46,10 @@
     </div>
   </section>
 
+  <div class="prototype-banner" role="status" aria-live="polite">
+    Prototype preview — non-production. Hosted on github.io for testing only.
+  </div>
+
   <div class="agency-bar" role="banner">
     <div class="wrap">
       <div class="row">
@@ -92,6 +96,8 @@
             <ul id="errorList"></ul>
           </div>
 
+          <div id="stepLiveRegion" class="sr-only" aria-live="polite"></div>
+
           <div class="summary" id="progressSummary"></div>
 
           <!-- Step 1 -->
@@ -126,8 +132,10 @@
                 <div class="row">
                   <label for="officeInput">BLM office / district <span aria-hidden="true" style="color:var(--danger)">*</span></label>
                   <div class="hint">Start typing to filter. Use ↑/↓ to navigate; Enter to select.</div>
-                  <div class="combo" id="officeCombo" role="combobox" aria-haspopup="listbox" aria-expanded="false">
-                    <input id="officeInput" type="text" autocomplete="off" placeholder="Type to search offices" />
+                  <div class="combo" id="officeCombo">
+                    <input id="officeInput" type="text" autocomplete="off" placeholder="Type to search offices"
+                      role="combobox" aria-expanded="false" aria-controls="officeList" aria-autocomplete="list"
+                      aria-activedescendant="" aria-haspopup="listbox" />
                     <svg class="chev" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                       <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd"/>
                     </svg>
@@ -149,6 +157,7 @@
               <button class="step-toggle" type="button" aria-expanded="false">Select a product and quantity</button>
               <div class="step-status" id="status2">Locked</div>
             </div>
+            <div class="lock-note" id="step2LockNote">Complete step 1 to unlock product selection. Summary and heading stay available while locked.</div>
             <div class="step-body" style="display:none;">
               <div style="color:var(--muted); font-size:14px;">Choose one product, then enter your quantity to continue.</div>
 
@@ -178,6 +187,7 @@
               <button class="step-toggle" type="button" aria-expanded="false">Agreements and purchaser information</button>
               <div class="step-status" id="status3">Locked</div>
             </div>
+            <div class="lock-note" id="step3LockNote">Complete step 2 to unlock agreements and purchaser information. Headings remain visible while locked.</div>
             <div class="step-body" style="display:none;">
               <div style="color:var(--muted); font-size:14px;">Review the terms, provide your details, and continue to Pay.gov.</div>
 
@@ -224,33 +234,33 @@ Replace this demo text with the authoritative terms and conditions used by your 
               <div class="grid2" style="margin-top:14px;">
                 <div class="row">
                   <label for="FirstName">First name <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                  <input id="FirstName" type="text" autocomplete="given-name" />
+                  <input id="FirstName" type="text" autocomplete="given-name" maxlength="50" />
                 </div>
                 <div class="row">
                   <label for="MiddleName">Middle name</label>
-                  <input id="MiddleName" type="text" autocomplete="additional-name" />
+                  <input id="MiddleName" type="text" autocomplete="additional-name" maxlength="50" />
                 </div>
                 <div class="row">
                   <label for="LastName">Last name <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                  <input id="LastName" type="text" autocomplete="family-name" />
+                  <input id="LastName" type="text" autocomplete="family-name" maxlength="50" />
                 </div>
                 <div class="row">
                   <label for="Phone">Phone</label>
-                  <input id="Phone" type="tel" autocomplete="tel" placeholder="Optional" />
+                  <input id="Phone" type="tel" autocomplete="tel" placeholder="Optional" maxlength="20" />
                 </div>
 
                 <div class="row" style="grid-column: 1 / -1;">
                   <label for="AddressLine1">Street address line 1 <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                  <input id="AddressLine1" type="text" autocomplete="address-line1" />
+                  <input id="AddressLine1" type="text" autocomplete="address-line1" maxlength="120" />
                 </div>
                 <div class="row" style="grid-column: 1 / -1;">
                   <label for="AddressLine2">Street address line 2</label>
-                  <input id="AddressLine2" type="text" autocomplete="address-line2" />
+                  <input id="AddressLine2" type="text" autocomplete="address-line2" maxlength="120" />
                 </div>
 
                 <div class="row">
                   <label for="City">City <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                  <input id="City" type="text" autocomplete="address-level2" />
+                  <input id="City" type="text" autocomplete="address-level2" maxlength="80" />
                 </div>
                 <div class="row">
                   <label for="AddrState">State <span aria-hidden="true" style="color:var(--danger)">*</span></label>
@@ -258,17 +268,17 @@ Replace this demo text with the authoritative terms and conditions used by your 
                 </div>
                 <div class="row">
                   <label for="Zip">ZIP <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                  <input id="Zip" type="text" inputmode="numeric" autocomplete="postal-code" />
+                  <input id="Zip" type="text" inputmode="numeric" autocomplete="postal-code" maxlength="10" />
                 </div>
                 <div class="row"></div>
 
                 <div class="row" style="grid-column: 1 / -1;">
                   <label for="Email">Email address <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                  <input id="Email" type="email" autocomplete="email" />
+                  <input id="Email" type="email" autocomplete="email" maxlength="120" />
                 </div>
                 <div class="row" style="grid-column: 1 / -1;">
                   <label for="Email2">Email address repeat <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                  <input id="Email2" type="email" autocomplete="email" />
+                  <input id="Email2" type="email" autocomplete="email" maxlength="120" />
                 </div>
               </div>
               </fieldset>
@@ -278,7 +288,7 @@ Replace this demo text with the authoritative terms and conditions used by your 
                 <div class="icon" aria-hidden="true">i</div>
                 <div class="txt">
                   <strong>Next step</strong>
-                  You will be sent to Pay.gov to complete payment. After payment, you will return here to download, save, and print your permit.
+                  You will be sent to Pay.gov to complete payment. After payment, you will return here to download, save, and print your permit with a transaction reference we confirm server-side.
                 </div>
               </div>
               <div class="actions" id="reviewActions" style="display:none; margin-top:6px;">
