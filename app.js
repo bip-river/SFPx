@@ -623,7 +623,10 @@
             } else {
               el.removeAttribute('tabindex');
             }
-            if (el.dataset.lockPrevDisabled === 'false') {
+            const wasDisabled = el.dataset.lockPrevDisabled === 'true';
+            if (wasDisabled) {
+              el.disabled = true;
+            } else {
               el.removeAttribute('disabled');
             }
             el.removeAttribute('aria-disabled');
