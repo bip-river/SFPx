@@ -584,9 +584,7 @@
           stepState.completed[1] = false;
           stepState.available[2] = false;
           stepState.completed[2] = false;
-          ackPrivacy.checked = false;
-          ackTerms.checked = false;
-          syncPurchaserAccess();
+          resetAcknowledgements();
           hideReview();
           setFieldError(qtyEl, '');
           renderSummary(progressSummary);
@@ -699,6 +697,16 @@
       if (!unlocked) {
         Object.values(purchaser).forEach(el => setFieldError(el, ''));
       }
+    }
+
+    function resetAcknowledgements() {
+      ackPrivacy.checked = false;
+      ackTerms.checked = false;
+      ackPrivacy.disabled = false;
+      ackTerms.disabled = false;
+      ackPrivacy.removeAttribute('aria-disabled');
+      ackTerms.removeAttribute('aria-disabled');
+      syncPurchaserAccess();
     }
 
     function getFieldContainer(el) {
@@ -904,6 +912,9 @@
         stepState.available[i] = false;
         stepState.completed[i] = false;
         stepState.open[i] = false;
+      }
+      if (startIdx <= 1) {
+        resetAcknowledgements();
       }
       updateStepUI(startIdx);
     }
@@ -1234,6 +1245,7 @@ ${JSON.stringify(payload, null, 2)}
       stepState.available = [true, false, false];
       stepState.completed = [false, false, false];
       stepState.open = [true, false, false];
+      resetAcknowledgements();
       hideReview();
       hideErrors();
       hideLocationNotice();
