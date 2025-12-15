@@ -72,7 +72,10 @@
     .card{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px;}
     /* Stepper */
     .stepper{display:flex; flex-wrap:wrap; gap:10px; padding:12px; border-radius:14px; border:1px solid rgba(11,15,25,.10); background:rgba(255,255,255,.75); backdrop-filter:saturate(140%) blur(4px);}
-    .step{display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:12px; border:1px solid rgba(11,15,25,.10); background:#fff; min-width: 210px;}
+    .step{display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; border:1px solid rgba(11,15,25,.10); background:#fff; min-width: 210px; cursor:pointer; text-align:left; transition: border-color .12s ease, box-shadow .12s ease, transform .12s ease;}
+    .step:hover{border-color: rgba(11,92,171,.28); box-shadow:0 6px 18px rgba(11,92,171,.12); transform:translateY(-1px);}
+    .step:disabled{cursor:not-allowed; opacity:.65; box-shadow:none; transform:none;}
+    .step:focus-visible{outline:3px solid var(--accent); outline-offset:3px;}
     .step .n{width:26px; height:26px; border-radius:10px; display:grid; place-items:center; font-weight:900; background:rgba(11,92,171,.10); color:var(--brand); flex:0 0 auto;}
     .step.active{border-color: rgba(11,92,171,.35)}
     .step.active .n{background: var(--brand); color:#fff}
@@ -80,8 +83,9 @@
     .step .t{font-size:13px; color:var(--muted)}
     .step .k{font-weight:850; font-size:14px}
     .flow-step{border:1px solid rgba(11,15,25,.12); border-radius:14px; padding:12px; margin-top:12px; background:#fff;}
-    .flow-step .step-head{display:flex; align-items:center; gap:10px;}
+    .flow-step .step-head{display:flex; align-items:center; gap:10px; padding:10px; border-radius:12px; background:rgba(11,92,171,.05);}
     .flow-step .step-toggle{background:transparent; border:0; padding:0; font-weight:900; font-size:16px; cursor:pointer; text-align:left; flex:1;}
+    .flow-step .step-toggle:hover{text-decoration:underline;}
     .flow-step .step-status{font-size:13px; color:var(--muted);}
     .flow-step .step-body{margin-top:10px;}
     .flow-step.collapsed .step-body{display:none;}
@@ -103,6 +107,13 @@
     .ghost{background:transparent; border:1px solid rgba(11,15,25,.18); color:var(--ink)}
     .ghost:hover{background:rgba(11,15,25,.04)}
     .purchaser-block.locked{opacity:.6;}
+    .agreements{border:1px solid rgba(11,15,25,.12); border-radius:14px; padding:14px; background:rgba(11,92,171,.04); display:grid; gap:12px; margin-top:12px;}
+    @media(min-width: 860px){.agreements{grid-template-columns: 1.1fr 1fr; align-items:center; gap:16px;}}
+    .agreements .title{font-weight:900; font-size:17px; margin-top:4px;}
+    .agreements .eyebrow{display:inline-block; padding:4px 8px; border-radius:999px; background:rgba(11,92,171,.12); color:var(--brand); font-size:12px; font-weight:800;}
+    .agreements-list{display:grid; gap:10px;}
+    .checkline{display:flex; gap:10px; font-weight:750; align-items:flex-start;}
+    .checkline input{width:auto; margin-top:2px;}
     /* Combobox */
     .combo{position:relative}
     .combo input{padding-right:38px}
@@ -163,6 +174,12 @@
     .side p{margin:8px 0 0; color:var(--muted); font-size:13.5px}
     .side ul{margin:10px 0 0 18px; color:var(--muted); font-size:13.5px}
     .side li{margin:6px 0}
+    .eyebrow{display:inline-block; padding:3px 8px; border-radius:999px; background:rgba(11,15,25,.06); color:var(--muted); font-size:12px; font-weight:800; letter-spacing:.01em;}
+    .help-grid{display:grid; gap:12px; margin-top:10px;}
+    @media(min-width: 760px){.help-grid{grid-template-columns: 1fr 1fr;}}
+    .help-card{border:1px solid rgba(11,15,25,.12); border-radius:12px; padding:12px; background:rgba(11,15,25,.02);}
+    .help-card .help-title{font-weight:900; margin-top:6px;}
+    .help-links{margin:12px 0 0 16px; color:var(--muted); font-size:13.5px}
     /* Footer */
     footer{border-top:1px solid rgba(0,0,0,.12); background:#fff; padding:18px 0; color:var(--muted); font-size:13px;}
     .footer-links{display:flex; flex-wrap:wrap; gap:10px 14px; margin-top:10px}

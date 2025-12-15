@@ -19,7 +19,6 @@
       Zip: 10,
       Email: 120,
       Email2: 120,
-      Phone: 20
     };
     const MAX_PAYLOAD_BYTES = 4096;
 
@@ -87,7 +86,6 @@
       FirstName: document.getElementById('FirstName'),
       MiddleName: document.getElementById('MiddleName'),
       LastName: document.getElementById('LastName'),
-      Phone: document.getElementById('Phone'),
       AddressLine1: document.getElementById('AddressLine1'),
       AddressLine2: document.getElementById('AddressLine2'),
       City: document.getElementById('City'),
@@ -198,7 +196,7 @@
         if (savedModel.qty) {
           qtyEl.value = savedModel.qty;
         }
-        handleQuantityProgress();
+        commitQuantity({ showErrors: false, openNext: true });
       }
 
       ackPrivacy.checked = Boolean(savedAcknowledgements.privacy);
@@ -390,7 +388,10 @@
       endByDuration.setDate(endByDuration.getDate() + validForDays);
       const harvestEnd = parseDate(product.harvestEndDate || product.availableUntil);
       const expirationDate = harvestEnd ? new Date(Math.min(endByDuration.getTime(), harvestEnd.getTime())) : endByDuration;
-      return { validForDays, expirationDate };
+      const msPerDay = 1000 * 60 * 60 * 24;
+      const actualDays = Math.max(1, Math.ceil((expirationDate.getTime() - startDate.getTime()) / msPerDay));
+      const shortened = Boolean(harvestEnd && harvestEnd.getTime() < endByDuration.getTime());
+      return { validForDays, expirationDate, startDate, actualDays, shortened };
     }
 
     const DOCS_BY_TYPE = {
@@ -487,7 +488,6 @@
         purchaser.AddressLine2.value.trim(),
         [purchaser.City.value.trim(), purchaser.AddrState.value, purchaser.Zip.value.trim()].filter(Boolean).join(' ')
       ].filter(Boolean).join('<br />');
-      const phone = purchaser.Phone.value.trim() || 'Not provided';
       const email = purchaser.Email.value.trim();
       const total = (model.product?.price || 0) * (model.qty || 0);
       const totalLabel = (model.product?.price === 0) ? 'Free' : money(total);
@@ -499,7 +499,6 @@
         <div class="v">
           ${fullName || '—'}<br />
           ${addressParts || '—'}<br />
-          Phone: ${phone}<br />
           Email: ${email}
         </div>
         <div class="k" style="margin-top:10px;">Product</div>
@@ -550,8 +549,10 @@
         const id = `prod_${idx}`;
         const priceLine = p.price === 0 ? 'Free' : `${money(p.price)} per ${p.unit}`;
         const saleEnd = p.availableUntil ? `Available until ${formatDate(p.availableUntil)}` : 'Availability varies';
-        const { validForDays, expirationDate } = calculatePermitValidity(p);
-        const validity = `Valid for ${validForDays} days • Permit expires ${formatDate(expirationDate)}`;
+        const { validForDays, expirationDate, actualDays, shortened } = calculatePermitValidity(p);
+        const validity = shortened
+          ? `Valid for ${actualDays} day${actualDays === 1 ? '' : 's'} (limited by harvest end on ${formatDate(expirationDate)})`
+          : `Valid for ${validForDays} days • Permit expires ${formatDate(expirationDate)}`;
         const docs = buildRequiredDocs(p).map(d => `<a href="${d.url}">${d.label}</a>`).join(' · ');
 
         const card = document.createElement('label');
@@ -582,10 +583,12 @@
           model.qty = 0;
           stepState.completed[1] = false;
           stepState.available[2] = false;
+          stepState.completed[2] = false;
           ackPrivacy.checked = false;
           ackTerms.checked = false;
           syncPurchaserAccess();
           hideReview();
+          setFieldError(qtyEl, '');
           renderSummary(progressSummary);
           setOpenStep(1);
           qtyEl.focus();
@@ -640,8 +643,15 @@
       model.step = activeIdx;
       steps.forEach((el, i) => {
         const isActive = stepState.open[i];
+        const isAvailable = stepState.available[i];
         el.classList.toggle('active', isActive);
         el.classList.toggle('done', stepState.completed[i]);
+        el.disabled = !isAvailable;
+        el.setAttribute('aria-disabled', String(!isAvailable));
+        el.setAttribute('aria-pressed', String(isActive));
+        el.setAttribute('aria-current', isActive ? 'step' : 'false');
+        el.setAttribute('aria-expanded', String(isActive && isAvailable));
+        el.setAttribute('aria-controls', stepSections[i]?.id || '');
       });
 
       stepSections.forEach((sec, i) => {
@@ -797,12 +807,6 @@
         if (primary && primary.toLowerCase() !== val.toLowerCase()) return 'Repeat email must match the first email.';
         if (val.length > LENGTH_LIMITS.Email2) return `Email must be ${LENGTH_LIMITS.Email2} characters or fewer.`;
       }
-      if (id === 'Phone') {
-        if (!val) return '';
-        const digits = val.replace(/\D/g, '');
-        if (digits.length < 10) return 'Include area code (at least 10 digits).';
-        if (val.length > LENGTH_LIMITS.Phone) return `Phone must be ${LENGTH_LIMITS.Phone} characters or fewer.`;
-      }
       return '';
     }
 
@@ -830,6 +834,50 @@
       return true;
     }
 
+    function resetQuantityState() {
+      model.qty = 0;
+      totalEl.value = '';
+      stepState.completed[1] = false;
+      stepState.available[2] = false;
+      stepState.completed[2] = false;
+      stepState.open = [stepState.open[0], true, false];
+      renderSummary(progressSummary);
+      hideReview();
+      reviewSummary.style.display = 'none';
+      reviewNotice.style.display = 'none';
+      updateStepUI(model.step);
+      updateReviewActions();
+    }
+
+    function commitQuantity({ showErrors = true, focusOnError = false, openNext = false } = {}) {
+      const msg = getFieldErrorMessage(qtyEl);
+      if (showErrors) {
+        setFieldError(qtyEl, msg);
+      } else {
+        setFieldError(qtyEl, '');
+      }
+
+      if (msg) {
+        resetQuantityState();
+        if (focusOnError) qtyEl.focus();
+        persistState();
+        return false;
+      }
+
+      const ok = validateQty();
+      stepState.completed[1] = ok;
+      stepState.available[2] = ok;
+      renderSummary(progressSummary);
+      if (openNext && ok) {
+        setOpenStep(2);
+      } else {
+        updateStepUI(model.step);
+      }
+      updateReviewActions();
+      persistState();
+      return ok;
+    }
+
     function validatePurchaser({ touchFields = false } = {}) {
       const msgs = [];
       const required = ['FirstName','LastName','AddressLine1','City','AddrState','Zip','Email','Email2'];
@@ -839,9 +887,6 @@
         if (msg) msgs.push(msg);
         if (touchFields) setFieldError(el, msg);
       }
-      const phoneMsg = getFieldErrorMessage(purchaser.Phone);
-      if (phoneMsg) msgs.push(phoneMsg);
-      if (touchFields) setFieldError(purchaser.Phone, phoneMsg);
       return msgs;
     }
 
@@ -882,26 +927,6 @@
       renderProducts();
       setOpenStep(1);
       updateStepUI(1);
-      updateReviewActions();
-      persistState();
-    }
-
-    function handleQuantityProgress() {
-      const ok = validateQty();
-      stepState.completed[1] = ok;
-      stepState.available[2] = ok;
-      if (ok) {
-        renderSummary(progressSummary);
-        setOpenStep(2);
-      } else {
-        model.qty = 0;
-        stepState.completed[2] = false;
-        stepState.open = [stepState.open[0], true, false];
-        renderSummary(progressSummary);
-        reviewSummary.style.display = 'none';
-        reviewNotice.style.display = 'none';
-      }
-      updateStepUI(model.step);
       updateReviewActions();
       persistState();
     }
@@ -1081,15 +1106,42 @@
       });
     });
 
-    qtyEl.addEventListener('input', () => {
-      validateField(qtyEl);
-      if (!validateQty()) {
-        totalEl.value = '';
-      }
-      handleQuantityProgress();
+    steps.forEach((btn, idx) => {
+      btn.addEventListener('click', () => {
+        if (!stepState.available[idx]) return;
+        setOpenStep(idx);
+        stepSections[idx]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
     });
 
-    qtyEl.addEventListener('blur', () => validateField(qtyEl));
+    qtyEl.addEventListener('input', () => {
+      setFieldError(qtyEl, '');
+      totalEl.value = '';
+      model.qty = 0;
+      stepState.completed[1] = false;
+      stepState.completed[2] = false;
+      renderSummary(progressSummary);
+      hideReview();
+      persistState();
+    });
+
+    qtyEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        commitQuantity({ focusOnError: true, openNext: true });
+      } else if (e.key === 'Tab') {
+        const ok = commitQuantity({ focusOnError: true, openNext: true });
+        if (!ok) {
+          e.preventDefault();
+          qtyEl.focus();
+        }
+      }
+    });
+
+    qtyEl.addEventListener('blur', () => {
+      const ok = commitQuantity({ focusOnError: true, openNext: true });
+      if (!ok) setTimeout(() => qtyEl.focus(), 0);
+    });
 
     function onAckChange() { syncPurchaserAccess(); evaluateFinalStep(); }
     ackPrivacy.addEventListener('change', onAckChange);
@@ -1132,7 +1184,6 @@
           FirstName: purchaser.FirstName.value.trim(),
           MiddleName: purchaser.MiddleName.value.trim(),
           LastName: purchaser.LastName.value.trim(),
-          Phone: purchaser.Phone.value.trim(),
           AddressLine1: purchaser.AddressLine1.value.trim(),
           AddressLine2: purchaser.AddressLine2.value.trim(),
           City: purchaser.City.value.trim(),
