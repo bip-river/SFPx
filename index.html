@@ -80,10 +80,8 @@
 
       <section class="stepper" aria-label="Purchase steps">
         <div class="step active" id="s1"><div class="n">1</div><div><div class="t">Choose</div><div class="k">What, state, office</div></div></div>
-        <div class="step" id="s2"><div class="n">2</div><div><div class="t">Select</div><div class="k">Product</div></div></div>
-        <div class="step" id="s3"><div class="n">3</div><div><div class="t">Enter</div><div class="k">Quantity</div></div></div>
-        <div class="step" id="s4"><div class="n">4</div><div><div class="t">Accept</div><div class="k">Privacy + Terms</div></div></div>
-        <div class="step" id="s5"><div class="n">5</div><div><div class="t">Provide</div><div class="k">Purchaser info</div></div></div>
+        <div class="step" id="s2"><div class="n">2</div><div><div class="t">Select</div><div class="k">Product + quantity</div></div></div>
+        <div class="step" id="s3"><div class="n">3</div><div><div class="t">Provide</div><div class="k">Agreements + purchaser info</div></div></div>
       </section>
 
       <section class="layout" style="margin-top: 16px;">
@@ -94,102 +92,98 @@
             <ul id="errorList"></ul>
           </div>
 
+          <div class="summary" id="progressSummary"></div>
+
           <!-- Step 1 -->
-          <section id="step1" aria-label="Step 1: Choose location">
-            <h2 style="margin:0 0 6px;">Find available products</h2>
-            <div style="color:var(--muted); font-size:14px;">
-              Choose what you plan to gather and where you’ll collect it. We’ll show the permits available for that selection.
+          <section id="step1" class="flow-step" aria-label="Step 1: Choose location">
+            <div class="step-head">
+              <button class="step-toggle" type="button" aria-expanded="true">Find available products</button>
+              <div class="step-status" id="status1">In progress</div>
             </div>
-
-            <div class="grid2" style="margin-top:14px;">
-              <div class="row" style="grid-column: 1 / -1;">
-                <label for="ptype">What are you collecting? <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                <select id="ptype" required>
-                  <option value="">Select what you’re collecting</option>
-                  <option value="fuelwood">Fuelwood</option>
-                  <option value="christmas">Christmas trees</option>
-                  <option value="mushrooms">Mushrooms</option>
-                </select>
+            <div class="step-body">
+              <div style="color:var(--muted); font-size:14px;">
+                Choose what you plan to gather and where you’ll collect it. We’ll show the permits available for that selection.
               </div>
 
-              <div class="row">
-                <label for="state">State <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                <select id="state" required>
-                  <option value="">Select a state</option>
-                </select>
-              </div>
-
-              <div class="row">
-                <label for="officeInput">BLM office / district <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                <div class="hint">Start typing to filter. Use ↑/↓ to navigate; Enter to select.</div>
-                <div class="combo" id="officeCombo" role="combobox" aria-haspopup="listbox" aria-expanded="false">
-                  <input id="officeInput" type="text" autocomplete="off" placeholder="Type to search offices" />
-                  <svg class="chev" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd"/>
-                  </svg>
-                  <div id="officeList" class="dropdown" role="listbox" aria-hidden="true"></div>
+              <div class="grid2" style="margin-top:14px;">
+                <div class="row" style="grid-column: 1 / -1;">
+                  <label for="ptype">What are you collecting? <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+                  <select id="ptype" required>
+                    <option value="">Select what you’re collecting</option>
+                    <option value="fuelwood">Fuelwood</option>
+                    <option value="christmas">Christmas trees</option>
+                    <option value="mushrooms">Mushrooms</option>
+                  </select>
                 </div>
-                <input type="hidden" id="officeId" />
-              </div>
-            </div>
 
-            <div class="actions">
-              <button class="primary" id="toStep2" type="button" disabled>Continue</button>
-              <button class="ghost" id="resetAll" type="button">Reset</button>
+                <div class="row">
+                  <label for="state">State <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+                  <select id="state" required>
+                    <option value="">Select a state</option>
+                  </select>
+                </div>
+
+                <div class="row">
+                  <label for="officeInput">BLM office / district <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+                  <div class="hint">Start typing to filter. Use ↑/↓ to navigate; Enter to select.</div>
+                  <div class="combo" id="officeCombo" role="combobox" aria-haspopup="listbox" aria-expanded="false">
+                    <input id="officeInput" type="text" autocomplete="off" placeholder="Type to search offices" />
+                    <svg class="chev" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd"/>
+                    </svg>
+                    <div id="officeList" class="dropdown" role="listbox" aria-hidden="true"></div>
+                  </div>
+                  <input type="hidden" id="officeId" />
+                </div>
+              </div>
+
+              <div class="actions">
+                <button class="ghost" id="resetAll" type="button">Reset</button>
+              </div>
             </div>
           </section>
 
           <!-- Step 2 -->
-          <section id="step2" aria-label="Step 2: Select product" style="display:none;">
-            <h2 style="margin:0 0 6px;">Select a product</h2>
-            <div style="color:var(--muted); font-size:14px;">Choose one product to continue. Review details and required documents before proceeding.</div>
+          <section id="step2" class="flow-step" aria-label="Step 2: Select product">
+            <div class="step-head">
+              <button class="step-toggle" type="button" aria-expanded="false">Select a product and quantity</button>
+              <div class="step-status" id="status2">Locked</div>
+            </div>
+            <div class="step-body" style="display:none;">
+              <div style="color:var(--muted); font-size:14px;">Choose one product, then enter your quantity to continue.</div>
 
-            <div class="summary" id="summary2"></div>
-            <div id="locationNotice" class="location-note" style="display:none;" aria-live="polite"></div>
-            <div class="products" id="productList"></div>
+              <div id="locationNotice" class="location-note" style="display:none;" aria-live="polite"></div>
+              <div class="products" id="productList"></div>
 
-            <div class="actions">
-              <button class="ghost" type="button" id="back1">Back</button>
-              <button class="primary" type="button" id="toStep3" disabled>Continue</button>
+              <div id="qtySection" style="display:none;">
+                <div class="grid2" style="margin-top:14px;">
+                  <div class="row">
+                    <label for="qty">Quantity <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+                    <div class="hint" id="qtyHint"></div>
+                    <input id="qty" type="number" min="1" step="1" inputmode="numeric" />
+                  </div>
+                  <div class="row">
+                    <label>Total</label>
+                    <div class="hint">Estimated total based on listed unit price.</div>
+                    <input id="total" type="text" readonly />
+                  </div>
+                </div>
+              </div>
             </div>
           </section>
 
           <!-- Step 3 -->
-          <section id="step3" aria-label="Step 3: Quantity" style="display:none;">
-            <h2 style="margin:0 0 6px;">Quantity</h2>
-            <div style="color:var(--muted); font-size:14px;">Enter the number of units for the selected product.</div>
-
-            <div class="summary" id="summary3"></div>
-
-            <div class="grid2" style="margin-top:14px;">
-              <div class="row">
-                <label for="qty">Quantity <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                <div class="hint" id="qtyHint"></div>
-                <input id="qty" type="number" min="1" step="1" inputmode="numeric" />
-              </div>
-              <div class="row">
-                <label>Total</label>
-                <div class="hint">Estimated total based on listed unit price.</div>
-                <input id="total" type="text" readonly />
-              </div>
+          <section id="step3" class="flow-step" aria-label="Step 3: Agreements and purchaser info">
+            <div class="step-head">
+              <button class="step-toggle" type="button" aria-expanded="false">Agreements and purchaser information</button>
+              <div class="step-status" id="status3">Locked</div>
             </div>
+            <div class="step-body" style="display:none;">
+              <div style="color:var(--muted); font-size:14px;">Review the terms, provide your details, and continue to Pay.gov.</div>
 
-            <div class="actions">
-              <button class="ghost" type="button" id="back2">Back</button>
-              <button class="primary" type="button" id="toStep4" disabled>Continue</button>
-            </div>
-          </section>
-
-          <!-- Step 4 -->
-          <section id="step4" aria-label="Step 4: Privacy Act and Terms" style="display:none;">
-            <h2 style="margin:0 0 6px;">Privacy Act and Terms</h2>
-            <div style="color:var(--muted); font-size:14px;">You must read and accept both items before continuing.</div>
-
-            <div class="summary" id="summary4"></div>
-
-            <details>
-              <summary>Privacy Act Notification</summary>
-              <div class="body">NOTICE: The Privacy Act of 1974 and applicable regulations require that you be furnished with the following information in connection with information collected for this permit purchase.
+              <details>
+                <summary>Privacy Act Notification</summary>
+                <div class="body">NOTICE: The Privacy Act of 1974 and applicable regulations require that you be furnished with the following information in connection with information collected for this permit purchase.
 
 AUTHORITY: 30 U.S.C. 601 et seq.; 43 U.S.C. 1181a; and 43 CFR 5400 (as applicable).
 
@@ -199,11 +193,11 @@ ROUTINE USES: The BLM may disclose information consistent with published routine
 
 EFFECT OF NOT PROVIDING INFORMATION: Providing the requested information is voluntary; however, failure to provide required information may prevent us from issuing your permit.
 </div>
-            </details>
+              </details>
 
-            <details>
-              <summary>Terms and Conditions</summary>
-              <div class="body">Terms and Conditions (Demo Summary)
+              <details>
+                <summary>Terms and Conditions</summary>
+                <div class="body">Terms and Conditions (Demo Summary)
 
 • All purchases are final; no refunds.
 • Permit is for personal use unless stated otherwise and may be non-transferable.
@@ -213,99 +207,82 @@ EFFECT OF NOT PROVIDING INFORMATION: Providing the requested information is volu
 
 Replace this demo text with the authoritative terms and conditions used by your production system.
 </div>
-            </details>
+              </details>
 
-            <div class="grid2" style="margin-top:12px;">
-              <div class="row">
-                <label><input type="checkbox" id="ackPrivacy" /> I have read and understand the Privacy Act notification.</label>
+              <div class="grid2" style="margin-top:12px;">
+                <div class="row">
+                  <label><input type="checkbox" id="ackPrivacy" /> I have read and understand the Privacy Act notification.</label>
+                </div>
+                <div class="row">
+                  <label><input type="checkbox" id="ackTerms" /> I agree to the Terms and Conditions.</label>
+                </div>
               </div>
-              <div class="row">
-                <label><input type="checkbox" id="ackTerms" /> I agree to the Terms and Conditions.</label>
+
+              <div class="grid2" style="margin-top:14px;">
+                <div class="row">
+                  <label for="FirstName">First name <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+                  <input id="FirstName" type="text" autocomplete="given-name" />
+                </div>
+                <div class="row">
+                  <label for="MiddleName">Middle name</label>
+                  <input id="MiddleName" type="text" autocomplete="additional-name" />
+                </div>
+                <div class="row">
+                  <label for="LastName">Last name <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+                  <input id="LastName" type="text" autocomplete="family-name" />
+                </div>
+                <div class="row">
+                  <label for="Phone">Phone</label>
+                  <input id="Phone" type="tel" autocomplete="tel" placeholder="Optional" />
+                </div>
+
+                <div class="row" style="grid-column: 1 / -1;">
+                  <label for="AddressLine1">Street address line 1 <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+                  <input id="AddressLine1" type="text" autocomplete="address-line1" />
+                </div>
+                <div class="row" style="grid-column: 1 / -1;">
+                  <label for="AddressLine2">Street address line 2</label>
+                  <input id="AddressLine2" type="text" autocomplete="address-line2" />
+                </div>
+
+                <div class="row">
+                  <label for="City">City <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+                  <input id="City" type="text" autocomplete="address-level2" />
+                </div>
+                <div class="row">
+                  <label for="AddrState">State <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+                  <select id="AddrState"></select>
+                </div>
+                <div class="row">
+                  <label for="Zip">ZIP <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+                  <input id="Zip" type="text" inputmode="numeric" autocomplete="postal-code" />
+                </div>
+                <div class="row"></div>
+
+                <div class="row" style="grid-column: 1 / -1;">
+                  <label for="Email">Email address <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+                  <input id="Email" type="email" autocomplete="email" />
+                </div>
+                <div class="row" style="grid-column: 1 / -1;">
+                  <label for="Email2">Email address repeat <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+                  <input id="Email2" type="email" autocomplete="email" />
+                </div>
               </div>
+
+              <div class="summary" id="reviewSummary" style="display:none; margin-top:14px;"></div>
+              <div class="alert" id="reviewNotice" style="display:none; margin-top:12px;">
+                <div class="icon" aria-hidden="true">i</div>
+                <div class="txt">
+                  <strong>Next step</strong>
+                  You will be sent to Pay.gov to complete payment. After payment, you will return here to download, save, and print your permit.
+                </div>
+              </div>
+              <div class="actions" id="reviewActions" style="display:none; margin-top:6px;">
+                <button class="primary" type="button" id="confirmPaygov">Continue to Pay.gov</button>
+              </div>
+
+              <div class="summary" id="handoff" style="display:none; margin-top:14px;"></div>
             </div>
-
-            <div class="actions">
-              <button class="ghost" type="button" id="back3">Back</button>
-              <button class="primary" type="button" id="toStep5" disabled>Continue</button>
-            </div>
-          </section>
-
-          <!-- Step 5 -->
-          <section id="step5" aria-label="Step 5: Purchaser info" style="display:none;">
-            <h2 style="margin:0 0 6px;">Purchaser information</h2>
-            <div style="color:var(--muted); font-size:14px;">Complete the required fields to review your purchase, then continue to Pay.gov for payment.</div>
-
-            <div class="summary" id="summary5"></div>
-
-            <div class="grid2" style="margin-top:14px;">
-              <div class="row">
-                <label for="FirstName">First name <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                <input id="FirstName" type="text" autocomplete="given-name" />
-              </div>
-              <div class="row">
-                <label for="MiddleName">Middle name</label>
-                <input id="MiddleName" type="text" autocomplete="additional-name" />
-              </div>
-              <div class="row">
-                <label for="LastName">Last name <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                <input id="LastName" type="text" autocomplete="family-name" />
-              </div>
-              <div class="row">
-                <label for="Phone">Phone</label>
-                <input id="Phone" type="tel" autocomplete="tel" placeholder="Optional" />
-              </div>
-
-              <div class="row" style="grid-column: 1 / -1;">
-                <label for="AddressLine1">Street address line 1 <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                <input id="AddressLine1" type="text" autocomplete="address-line1" />
-              </div>
-              <div class="row" style="grid-column: 1 / -1;">
-                <label for="AddressLine2">Street address line 2</label>
-                <input id="AddressLine2" type="text" autocomplete="address-line2" />
-              </div>
-
-              <div class="row">
-                <label for="City">City <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                <input id="City" type="text" autocomplete="address-level2" />
-              </div>
-              <div class="row">
-                <label for="AddrState">State <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                <select id="AddrState"></select>
-              </div>
-              <div class="row">
-                <label for="Zip">ZIP <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                <input id="Zip" type="text" inputmode="numeric" autocomplete="postal-code" />
-              </div>
-              <div class="row"></div>
-
-              <div class="row" style="grid-column: 1 / -1;">
-                <label for="Email">Email address <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                <input id="Email" type="email" autocomplete="email" />
-              </div>
-              <div class="row" style="grid-column: 1 / -1;">
-                <label for="Email2">Email address repeat <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                <input id="Email2" type="email" autocomplete="email" />
-              </div>
-            </div>
-
-            <div class="actions">
-              <button class="ghost" type="button" id="back4">Back</button>
-              <button class="primary" type="button" id="proceedPaygov">Review and continue</button>
-            </div>
-
-            <div class="summary" id="reviewSummary" style="display:none; margin-top:14px;"></div>
-            <div class="alert" id="reviewNotice" style="display:none; margin-top:12px;">
-              <div class="icon" aria-hidden="true">i</div>
-              <div class="txt">
-                <strong>Next step</strong>
-                You will be sent to Pay.gov to complete payment. After payment, you will return here to download, save, and print your permit.
-              </div>
-            </div>
-            <div class="actions" id="reviewActions" style="display:none; margin-top:6px;">
-              <button class="primary" type="button" id="confirmPaygov">Continue to Pay.gov</button>
-            </div>
-
-            <div class="summary" id="handoff" style="display:none; margin-top:14px;"></div>
           </section>
         </div>
 
