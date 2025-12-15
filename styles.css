@@ -175,8 +175,7 @@
     .side ul{margin:10px 0 0 18px; color:var(--muted); font-size:13.5px}
     .side li{margin:6px 0}
     .eyebrow{display:inline-block; padding:3px 8px; border-radius:999px; background:rgba(11,15,25,.06); color:var(--muted); font-size:12px; font-weight:800; letter-spacing:.01em;}
-    .help-grid{display:grid; gap:12px; margin-top:10px;}
-    @media(min-width: 760px){.help-grid{grid-template-columns: 1fr 1fr;}}
+    .help-grid{display:grid; gap:12px; margin-top:10px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));}
     .help-card{border:1px solid rgba(11,15,25,.12); border-radius:12px; padding:12px; background:rgba(11,15,25,.02);}
     .help-card .help-title{font-weight:900; margin-top:6px;}
     .help-links{margin:12px 0 0 16px; color:var(--muted); font-size:13.5px}
