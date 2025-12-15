@@ -30,6 +30,7 @@
     .wrap{max-width:var(--max); margin:0 auto; padding:0 18px}
     .skip-link{position:absolute; left:-999px; top:auto; width:1px; height:1px; overflow:hidden;}
     .skip-link:focus{left:16px; top:16px; width:auto; height:auto; padding:10px 12px; background:#000; color:#fff; border-radius:10px; z-index:9999;}
+    .sr-only{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0;}
     /* USA banner */
     .usa-banner{background:#f1f1f1; border-bottom:1px solid rgba(0,0,0,.12); font-size:13px;}
     .usa-banner .inner{display:flex; align-items:center; gap:10px; padding:9px 0;}
@@ -58,6 +59,7 @@
     .pagehead{padding:18px 0 8px}
     .pagehead h1{margin:0; font-size:26px; letter-spacing:-.02em}
     .pagehead p{margin:6px 0 0; color:var(--muted); max-width:80ch}
+    .prototype-banner{background:#b42318; color:#fff; text-align:center; padding:10px 14px; font-weight:800; letter-spacing:.02em;}
     /* Alerts */
     .alert{display:flex; gap:10px; align-items:flex-start; border:1px solid rgba(11,92,171,.35); background:rgba(11,92,171,.08); border-radius:14px; padding:12px 14px; margin-top:14px;}
     .alert .icon{width:24px; height:24px; border-radius:8px; background:var(--brand); color:#fff; display:grid; place-items:center; font-weight:900; flex:0 0 auto;}
@@ -83,6 +85,7 @@
     .flow-step .step-status{font-size:13px; color:var(--muted);}
     .flow-step .step-body{margin-top:10px;}
     .flow-step.collapsed .step-body{display:none;}
+    .lock-note{margin-top:8px; font-size:13px; color:var(--muted); background:rgba(11,15,25,.04); border:1px dashed rgba(11,15,25,.22); padding:10px 12px; border-radius:12px;}
     /* Forms */
     label{font-weight:750; font-size:14px}
     .hint{font-size:13px; color:var(--muted); margin-top:4px}

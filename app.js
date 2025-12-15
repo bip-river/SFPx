@@ -9,6 +9,19 @@
     ];
 
     const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const LENGTH_LIMITS = {
+      FirstName: 50,
+      MiddleName: 50,
+      LastName: 50,
+      AddressLine1: 120,
+      AddressLine2: 120,
+      City: 80,
+      Zip: 10,
+      Email: 120,
+      Email2: 120,
+      Phone: 20
+    };
+    const MAX_PAYLOAD_BYTES = 4096;
 
     // Banner toggle
     const bannerToggle = document.getElementById('bannerToggle');
@@ -62,6 +75,10 @@
     const handoff = document.getElementById('handoff');
     const purchaserFieldset = document.getElementById('purchaserFieldset');
     const purchaserBlockedHint = document.getElementById('purchaserBlockedHint');
+    const stepLiveRegion = document.getElementById('stepLiveRegion');
+    const lockNotes = [null, document.getElementById('step2LockNote'), document.getElementById('step3LockNote')];
+
+    const transactionRefKey = 'sfp-demo-transaction-ref';
 
     const resetAllBtn = document.getElementById('resetAll');
 
@@ -97,6 +114,7 @@
       completed: [false, false, false],
       open: [true, false, false]
     };
+    let prevAvailability = [...stepState.available];
 
     function persistState() {
       const payload = {
@@ -254,7 +272,7 @@
     let activeIndex = -1;
 
     function setOfficeExpanded(expanded) {
-      officeCombo.setAttribute('aria-expanded', String(expanded));
+      officeInput.setAttribute('aria-expanded', String(expanded));
       officeList.setAttribute('aria-hidden', String(!expanded));
     }
 
@@ -268,15 +286,19 @@
         const div = document.createElement('div');
         div.className = 'opt';
         div.setAttribute('role','option');
+        div.id = 'officeOptionEmpty';
         div.setAttribute('aria-selected','false');
+        div.setAttribute('aria-disabled','true');
         div.textContent = query ? 'No matches. Try another search.' : 'Start typing to search offices.';
         officeList.appendChild(div);
+        officeInput.removeAttribute('aria-activedescendant');
         return;
       }
       items.forEach((item, idx) => {
         const div = document.createElement('div');
         div.className = 'opt';
         div.setAttribute('role','option');
+        div.id = `officeOption_${idx}`;
         div.dataset.index = String(idx);
         div.innerHTML = `<div>${item.name}</div><span class="small">${item.id}</span>`;
         div.addEventListener('mousedown', (e) => {
@@ -301,6 +323,11 @@
         el.setAttribute('aria-selected', String(selected));
         if (selected) el.scrollIntoView({ block:'nearest' });
       });
+      if (idx >= 0 && items[idx]) {
+        officeInput.setAttribute('aria-activedescendant', items[idx].id);
+      } else {
+        officeInput.removeAttribute('aria-activedescendant');
+      }
     }
 
     function selectOffice(idx) {
@@ -310,6 +337,7 @@
       officeIdEl.value = item.id;
       model.officeId = item.id;
       model.officeName = item.name;
+      officeInput.removeAttribute('aria-activedescendant');
       validateField(officeInput);
       activeIndex = -1;
       setOfficeExpanded(false);
@@ -569,6 +597,42 @@
       });
     }
 
+    function announce(message) {
+      if (!stepLiveRegion || !message) return;
+      stepLiveRegion.textContent = '';
+      requestAnimationFrame(() => { stepLiveRegion.textContent = message; });
+    }
+
+    function applyLockState() {
+      stepSections.forEach((sec, i) => {
+        const available = stepState.available[i];
+        const lockNote = lockNotes[i];
+        if (lockNote) lockNote.style.display = available ? 'none' : 'block';
+        const focusables = sec.querySelectorAll('.step-body input, .step-body select, .step-body textarea, .step-body button');
+        focusables.forEach(el => {
+          if (!available) {
+            el.dataset.lockPrevTab = el.getAttribute('tabindex') || '';
+            el.dataset.lockPrevDisabled = el.hasAttribute('disabled') ? 'true' : 'false';
+            el.setAttribute('tabindex', '-1');
+            el.disabled = true;
+            el.setAttribute('aria-disabled', 'true');
+          } else {
+            if (Object.prototype.hasOwnProperty.call(el.dataset, 'lockPrevTab')) {
+              if (el.dataset.lockPrevTab) el.setAttribute('tabindex', el.dataset.lockPrevTab); else el.removeAttribute('tabindex');
+              delete el.dataset.lockPrevTab;
+            } else {
+              el.removeAttribute('tabindex');
+            }
+            if (el.dataset.lockPrevDisabled === 'false') {
+              el.removeAttribute('disabled');
+            }
+            el.removeAttribute('aria-disabled');
+            delete el.dataset.lockPrevDisabled;
+          }
+        });
+      });
+    }
+
     function updateStepUI(activeIdx = model.step) {
       model.step = activeIdx;
       steps.forEach((el, i) => {
@@ -594,6 +658,13 @@
           statusEl.textContent = status;
         }
       });
+      applyLockState();
+      stepState.available.forEach((available, i) => {
+        if (available && !prevAvailability[i]) {
+          announce(`Step ${i + 1} unlocked. You can now complete this section.`);
+        }
+      });
+      prevAvailability = [...stepState.available];
     }
 
     function updateReviewActions() {
@@ -687,35 +758,47 @@
         if (v < 1) return 'Quantity must be at least 1.';
         if (p.maxQty && v > p.maxQty) return `Enter ${p.maxQty} or fewer ${p.unit}(s).`;
       }
-      if (id === 'FirstName' && !val) return 'Enter a first name.';
+      if (id === 'FirstName') {
+        if (!val) return 'Enter a first name.';
+        if (val.length > LENGTH_LIMITS.FirstName) return `First name must be ${LENGTH_LIMITS.FirstName} characters or fewer.`;
+      }
       if (id === 'LastName' && !val) return 'Enter a last name.';
+      if (id === 'LastName' && val.length > LENGTH_LIMITS.LastName) return `Last name must be ${LENGTH_LIMITS.LastName} characters or fewer.`;
+      if (id === 'MiddleName' && val.length > LENGTH_LIMITS.MiddleName) return `Middle name must be ${LENGTH_LIMITS.MiddleName} characters or fewer.`;
       if (id === 'AddressLine1') {
         if (!val) return 'Enter a street address.';
         if (val.length < 5) return 'Enter a full street address (5 characters or more).';
+        if (val.length > LENGTH_LIMITS.AddressLine1) return `Street address line 1 must be ${LENGTH_LIMITS.AddressLine1} characters or fewer.`;
       }
+      if (id === 'AddressLine2' && val && val.length > LENGTH_LIMITS.AddressLine2) return `Street address line 2 must be ${LENGTH_LIMITS.AddressLine2} characters or fewer.`;
       if (id === 'City') {
         if (!val) return 'Enter a city.';
         if (val.length < 2) return 'City name must be at least 2 letters.';
+        if (val.length > LENGTH_LIMITS.City) return `City name must be ${LENGTH_LIMITS.City} characters or fewer.`;
       }
       if (id === 'AddrState' && !val) return 'Choose a state.';
       if (id === 'Zip') {
         if (!val) return 'Enter a ZIP code.';
         if (!/^\d{5}(-\d{4})?$/.test(val)) return 'Enter a ZIP in 5-digit or ZIP+4 format (##### or #####-####).';
+        if (val.length > LENGTH_LIMITS.Zip) return `ZIP must be ${LENGTH_LIMITS.Zip} characters or fewer.`;
       }
       if (id === 'Email') {
         if (!val) return 'Enter an email address.';
         if (!EMAIL_PATTERN.test(val)) return 'Enter an email in the format name@example.com.';
+        if (val.length > LENGTH_LIMITS.Email) return `Email must be ${LENGTH_LIMITS.Email} characters or fewer.`;
       }
       if (id === 'Email2') {
         if (!val) return 'Re-enter your email address.';
         if (!EMAIL_PATTERN.test(val)) return 'Enter an email in the format name@example.com.';
         const primary = (purchaser.Email.value || '').trim();
         if (primary && primary.toLowerCase() !== val.toLowerCase()) return 'Repeat email must match the first email.';
+        if (val.length > LENGTH_LIMITS.Email2) return `Email must be ${LENGTH_LIMITS.Email2} characters or fewer.`;
       }
       if (id === 'Phone') {
         if (!val) return '';
         const digits = val.replace(/\D/g, '');
         if (digits.length < 10) return 'Include area code (at least 10 digits).';
+        if (val.length > LENGTH_LIMITS.Phone) return `Phone must be ${LENGTH_LIMITS.Phone} characters or fewer.`;
       }
       return '';
     }
@@ -932,9 +1015,17 @@
       attemptAdvanceFromStep1();
     });
 
-    officeInput.addEventListener('blur', () => validateField(officeInput));
+    officeInput.addEventListener('blur', () => {
+      setTimeout(() => setOfficeExpanded(false), 120);
+      validateField(officeInput);
+    });
 
     officeInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        setOfficeExpanded(false);
+        officeInput.removeAttribute('aria-activedescendant');
+        return;
+      }
       if (officeList.getAttribute('aria-hidden') === 'true') setOfficeExpanded(true);
       if (!officeOptions.length) return;
 
@@ -1009,7 +1100,22 @@
     confirmPaygovBtn.addEventListener('click', () => {
       const ok = evaluateFinalStep({ showErrorsOnFail: true });
       if (!ok) return;
+      const transactionReference = (() => {
+        let ref = '';
+        try {
+          ref = localStorage.getItem(transactionRefKey) || '';
+        } catch (err) {
+          ref = '';
+        }
+        if (!ref) {
+          ref = `TX-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+          try { localStorage.setItem(transactionRefKey, ref); } catch (err) { /* no-op */ }
+        }
+        return ref;
+      })();
       const payload = {
+        idempotencyKey: transactionReference,
+        transactionReference,
         state: model.state,
         officeId: model.officeId,
         officeName: model.officeName,
@@ -1031,8 +1137,16 @@
           Zip: purchaser.Zip.value.trim(),
           Email: purchaser.Email.value.trim()
         },
-        nextStep: "Redirect to Pay.gov (secure payment processing), then return to forestproducts.blm.gov to download the permit."
+        nextStep: "Redirect to Pay.gov (secure payment processing), verify payment status server-side, then return to forestproducts.blm.gov to download the permit with this reference.",
+        deliveryPlan: 'After Pay.gov returns, the permit download page uses the transaction reference to fetch verified payment status. Duplicate submissions reuse the same idempotent transaction.',
+        serverChecks: { verifyEmailMatch: true, enforcePayloadLimitBytes: MAX_PAYLOAD_BYTES }
       };
+
+      const payloadSize = new TextEncoder().encode(JSON.stringify(payload)).length;
+      if (payloadSize > MAX_PAYLOAD_BYTES) {
+        showErrors([`Form data is too large (${payloadSize} bytes). Shorten text entries and try again.`]);
+        return;
+      }
 
       handoff.style.display = 'block';
       handoff.className = 'summary';
