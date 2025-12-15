@@ -42,7 +42,9 @@
     const productListEl = document.getElementById('productList');
     const qtyEl = document.getElementById('qty');
     const qtyHint = document.getElementById('qtyHint');
+    const qtyGuard = document.getElementById('qtyGuard');
     const totalEl = document.getElementById('total');
+    const totalCalc = document.getElementById('totalCalc');
 
     const qtySection = document.getElementById('qtySection');
 
@@ -80,6 +82,8 @@
     const transactionRefKey = 'sfp-demo-transaction-ref';
 
     const resetAllBtn = document.getElementById('resetAll');
+
+    let purchaserWasLocked = true;
 
     // Purchaser fields
     const purchaser = {
@@ -275,7 +279,11 @@
     }
 
     function getOfficesForState(code) {
-      return (DATA[code]?.offices || []).map(o => ({ id:o.id, name:o.name }));
+      const base = DATA[code]?.offices || [];
+      const filtered = (!model.ptype)
+        ? base
+        : base.filter(o => Array.isArray(o.products?.[model.ptype]) && o.products[model.ptype].length > 0);
+      return filtered.map(o => ({ id:o.id, name:o.name }));
     }
 
     function renderOfficeList(items, query) {
@@ -287,7 +295,13 @@
         div.id = 'officeOptionEmpty';
         div.setAttribute('aria-selected','false');
         div.setAttribute('aria-disabled','true');
-        div.textContent = query ? 'No matches. Try another search.' : 'Start typing to search offices.';
+        if (!model.ptype && !query) {
+          div.textContent = 'Start typing to search offices.';
+        } else if (model.ptype && !query) {
+          div.textContent = 'No BLM offices in this state offer that collection type online.';
+        } else {
+          div.textContent = 'No matches. Try another search.';
+        }
         officeList.appendChild(div);
         officeInput.removeAttribute('aria-activedescendant');
         return;
@@ -554,20 +568,34 @@
           ? `Valid for ${actualDays} day${actualDays === 1 ? '' : 's'} (limited by harvest end on ${formatDate(expirationDate)})`
           : `Valid for ${validForDays} days • Permit expires ${formatDate(expirationDate)}`;
         const docs = buildRequiredDocs(p).map(d => `<a href="${d.url}">${d.label}</a>`).join(' · ');
+        const docLine = docs ? `Required documents: ${docs}` : '';
+        const maxLine = p.maxQty ? `Maximum allowed per permit: ${p.maxQty} ${p.unit}${p.maxQty === 1 ? '' : 's'}` : '';
 
         const card = document.createElement('label');
         card.className = 'prod';
         card.setAttribute('for', id);
         card.innerHTML = `
           <input type="radio" name="product" id="${id}" value="${idx}" />
-          <div>
+          <div class="prod-body">
             <div class="name">${p.name}</div>
             <div class="meta">${model.officeName} · ${priceLine}</div>
             <div class="meta">${saleEnd}</div>
-            <div class="kv">
-              <span class="chip">${validity}</span>
+            <div class="prod-panels">
+              <div class="panel">
+                <div class="panel-title">What you get</div>
+                <div class="desc">${p.description || 'Permit details provided at checkout.'}</div>
+                <div class="kv"><span class="chip">${priceLine}</span></div>
+              </div>
+              <div class="panel">
+                <div class="panel-title">Rules & constraints</div>
+                <ul class="rule-list">
+                  <li>${validity}</li>
+                  ${maxLine ? `<li>${maxLine}</li>` : ''}
+                  <li>Bring your permit and ID while collecting.</li>
+                </ul>
+                <div class="docs">${docLine}</div>
+              </div>
             </div>
-            <div class="docs">${docs ? 'Required documents: ' + docs : ''}</div>
           </div>
         `;
 
@@ -575,10 +603,12 @@
           model.productIndex = idx;
           model.product = p;
           qtyHint.textContent = `Enter 1–${p.maxQty} ${p.unit}(s). Price: ${p.price===0?'Free':money(p.price)} per ${p.unit}.`;
+          qtyGuard.textContent = maxLine || '';
           qtyEl.min = 1;
           qtyEl.max = p.maxQty || '';
           qtyEl.value = '';
           totalEl.value = '';
+          totalCalc.textContent = '';
           qtySection.style.display = 'block';
           model.qty = 0;
           stepState.completed[1] = false;
@@ -650,6 +680,10 @@
         el.setAttribute('aria-current', isActive ? 'step' : 'false');
         el.setAttribute('aria-expanded', String(isActive && isAvailable));
         el.setAttribute('aria-controls', stepSections[i]?.id || '');
+        const pill = el.querySelector('.step-pill');
+        if (pill) {
+          pill.textContent = !isAvailable ? 'Locked' : stepState.completed[i] ? 'Complete' : 'Active';
+        }
       });
 
       stepSections.forEach((sec, i) => {
@@ -669,6 +703,7 @@
           statusEl.textContent = status;
         }
       });
+      updateLockNotes();
       applyLockState();
       stepState.available.forEach((available, i) => {
         if (available && !prevAvailability[i]) {
@@ -696,7 +731,10 @@
       }
       if (!unlocked) {
         Object.values(purchaser).forEach(el => setFieldError(el, ''));
+      } else if (purchaserWasLocked) {
+        purchaser.FirstName.focus();
       }
+      purchaserWasLocked = !unlocked ? true : false;
     }
 
     function resetAcknowledgements() {
@@ -839,12 +877,14 @@
       model.qty = v;
       const total = v * (p.price || 0);
       totalEl.value = p.price === 0 ? 'Free' : money(total);
+      totalCalc.textContent = `${p.price === 0 ? 'Free permit' : `${money(p.price)} × ${v} ${p.unit}${v === 1 ? '' : 's'} = ${totalEl.value}`}`;
       return true;
     }
 
     function resetQuantityState() {
       model.qty = 0;
       totalEl.value = '';
+      totalCalc.textContent = '';
       stepState.completed[1] = false;
       stepState.available[2] = false;
       stepState.completed[2] = false;
@@ -940,6 +980,28 @@
       updateStepUI(1);
       updateReviewActions();
       persistState();
+    }
+
+    function updateLockNotes() {
+      if (lockNotes[1]) {
+        const needsType = !model.ptype;
+        const needsState = !model.state;
+        const needsOffice = !model.officeId;
+        if (needsType || needsState || needsOffice) {
+          const parts = [];
+          if (needsType) parts.push('select what you are collecting');
+          if (needsState) parts.push('choose a state');
+          if (needsOffice) parts.push('pick a BLM office');
+          lockNotes[1].textContent = `Complete step 1 (${parts.join(', ')}) to unlock product selection.`;
+        }
+      }
+      if (lockNotes[2]) {
+        if (!model.product) {
+          lockNotes[2].textContent = 'Choose a product to unlock purchaser information and acknowledgements.';
+        } else if (!model.qty) {
+          lockNotes[2].textContent = 'Enter a quantity within the allowed range to continue.';
+        }
+      }
     }
 
     function evaluateFinalStep({ showErrorsOnFail = false } = {}) {
@@ -1096,9 +1158,21 @@
       model.product = null;
       qtyEl.value = '';
       totalEl.value = '';
+      totalCalc.textContent = '';
+      qtyGuard.textContent = '';
       model.qty = 0;
       hideReview();
       qtySection.style.display = 'none';
+      const offices = getOfficesForState(model.state);
+      const officeStillValid = offices.some(o => o.id === model.officeId);
+      if (!officeStillValid) {
+        officeIdEl.value = '';
+        model.officeId = '';
+        model.officeName = '';
+        officeInput.value = '';
+      }
+      officeOptions = filterOfficeOptions(officeInput.value);
+      renderOfficeList(officeOptions, officeInput.value);
       resetFollowingSteps(0);
       stepState.open = [true, false, false];
       attemptAdvanceFromStep1();
@@ -1127,13 +1201,20 @@
 
     qtyEl.addEventListener('input', () => {
       setFieldError(qtyEl, '');
-      totalEl.value = '';
-      model.qty = 0;
-      stepState.completed[1] = false;
+      const max = Number(qtyEl.max || '');
+      const val = Number(qtyEl.value);
+      if (Number.isFinite(max) && Number.isFinite(val) && val > max) {
+        qtyEl.value = String(max);
+      }
+      totalCalc.textContent = '';
+      const ok = validateQty();
+      stepState.completed[1] = ok;
+      stepState.available[2] = ok;
       stepState.completed[2] = false;
       renderSummary(progressSummary);
       hideReview();
       persistState();
+      updateReviewActions();
     });
 
     qtyEl.addEventListener('keydown', (e) => {
@@ -1225,6 +1306,16 @@ ${JSON.stringify(payload, null, 2)}
       handoff.scrollIntoView({ behavior:'smooth', block:'start' });
     });
 
+    document.querySelectorAll('[data-open-detail]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const target = document.querySelector(btn.dataset.openDetail);
+        if (target && target.tagName === 'DETAILS') {
+          target.open = true;
+          target.querySelector('summary')?.focus();
+        }
+      });
+    });
+
     resetAllBtn.addEventListener('click', () => {
       stateEl.value = '';
       model.state = '';
@@ -1238,6 +1329,8 @@ ${JSON.stringify(payload, null, 2)}
       model.product = null;
       qtyEl.value = '';
       totalEl.value = '';
+      totalCalc.textContent = '';
+      qtyGuard.textContent = '';
       model.qty = 0;
       qtySection.style.display = 'none';
       setOfficeExpanded(false);
@@ -1263,6 +1356,7 @@ ${JSON.stringify(payload, null, 2)}
       restoreState();
       syncPurchaserAccess();
       updateReviewActions();
+      updateLockNotes();
       updateStepUI(0);
     }
 

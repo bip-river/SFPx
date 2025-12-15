@@ -71,7 +71,8 @@
       <section class="pagehead" aria-label="Page title and instructions">
         <h1>Online Forest Product Permits</h1>
         <p>Purchase a permit to collect forest products on BLM-managed public lands.</p>
-        <p>Choose what you’re collecting, then select the state and BLM office to begin.</p>
+        <p class="federal-note">This permit is issued by the Bureau of Land Management.</p>
+        <div class="save-note" role="status" aria-live="polite">You can return to this page later to finish your permit.</div>
 
         <div class="alert" role="status" aria-live="polite">
           <div class="icon" aria-hidden="true">i</div>
@@ -84,8 +85,8 @@
 
       <section class="stepper" aria-label="Purchase steps">
         <button class="step active" id="s1" type="button" aria-controls="step1"><div class="n">1</div><div><div class="t">Choose</div><div class="k">What, state, office</div></div></button>
-        <button class="step" id="s2" type="button" aria-controls="step2"><div class="n">2</div><div><div class="t">Select</div><div class="k">Product + quantity</div></div></button>
-        <button class="step" id="s3" type="button" aria-controls="step3"><div class="n">3</div><div><div class="t">Provide</div><div class="k">Agreements + purchaser info</div></div></button>
+        <button class="step" id="s2" type="button" aria-controls="step2"><div class="n">2</div><div><div class="t">Select</div><div class="k">Product + quantity</div></div><span class="step-pill" aria-hidden="true">Locked</span></button>
+        <button class="step" id="s3" type="button" aria-controls="step3"><div class="n">3</div><div><div class="t">Provide</div><div class="k">Agreements + purchaser info</div></div><span class="step-pill" aria-hidden="true">Locked</span></button>
       </section>
 
       <section class="layout" style="margin-top: 16px;">
@@ -157,7 +158,7 @@
               <button class="step-toggle" type="button" aria-expanded="false">Select a product and quantity</button>
               <div class="step-status" id="status2">Locked</div>
             </div>
-            <div class="lock-note" id="step2LockNote">Complete step 1 to unlock product selection.</div>
+            <div class="lock-note" id="step2LockNote">Select what you’re collecting, then choose a state and BLM office to unlock product selection.</div>
             <div class="step-body" style="display:none;">
               <div style="color:var(--muted); font-size:14px;">Choose one product, then enter your quantity to continue.</div>
 
@@ -169,12 +170,14 @@
                   <div class="row">
                     <label for="qty">Quantity <span aria-hidden="true" style="color:var(--danger)">*</span></label>
                     <div class="hint" id="qtyHint"></div>
+                    <div class="hint" id="qtyGuard"></div>
                     <input id="qty" type="number" min="1" step="1" inputmode="numeric" />
                   </div>
                   <div class="row">
                     <label>Total</label>
                     <div class="hint">Estimated total based on listed unit price.</div>
-                    <input id="total" type="text" readonly />
+                    <input id="total" type="text" readonly aria-live="polite" />
+                    <div class="calc" id="totalCalc" aria-live="polite"></div>
                   </div>
                 </div>
               </div>
@@ -187,11 +190,11 @@
               <button class="step-toggle" type="button" aria-expanded="false">Agreements and purchaser information</button>
               <div class="step-status" id="status3">Locked</div>
             </div>
-            <div class="lock-note" id="step3LockNote">Complete step 2 to unlock agreements and purchaser information.</div>
+            <div class="lock-note" id="step3LockNote">Choose a product and quantity to review agreements and enter purchaser information.</div>
             <div class="step-body" style="display:none;">
               <div style="color:var(--muted); font-size:14px;">Review the terms, provide your details, and continue to Pay.gov.</div>
 
-              <details>
+              <details id="privacyDetail">
                 <summary>Privacy Act Notification</summary>
                 <div class="body">NOTICE: The Privacy Act of 1974 and applicable regulations require that you be furnished with the following information in connection with information collected for this permit purchase.
 
@@ -205,7 +208,7 @@ EFFECT OF NOT PROVIDING INFORMATION: Providing the requested information is volu
 </div>
               </details>
 
-              <details>
+              <details id="termsDetail">
                 <summary>Terms and Conditions</summary>
                 <div class="body">Terms and Conditions (Demo Summary)
 
@@ -223,11 +226,17 @@ Replace this demo text with the authoritative terms and conditions used by your 
                 <div class="agreements-copy">
                   <div class="eyebrow">Step 3</div>
                   <div class="title">Review and accept</div>
-                  <p class="hint">Read the Privacy Act notice and Terms and Conditions, then check both boxes to continue.</p>
+                  <p class="hint">Read the summaries below. You can open the full text before acknowledging.</p>
                 </div>
                 <div class="agreements-list">
-                  <label class="checkline"><input type="checkbox" id="ackPrivacy" /> I have read and understand the Privacy Act notification.</label>
-                  <label class="checkline"><input type="checkbox" id="ackTerms" /> I agree to the Terms and Conditions.</label>
+                  <label class="checkline"><input type="checkbox" id="ackPrivacy" />
+                    I understand how my information will be used (Privacy Act).
+                    <button class="inline-link" type="button" data-open-detail="#privacyDetail">View full text</button>
+                  </label>
+                  <label class="checkline"><input type="checkbox" id="ackTerms" />
+                    I understand the rules for this permit (Terms and Conditions).
+                    <button class="inline-link" type="button" data-open-detail="#termsDetail">View full text</button>
+                  </label>
                 </div>
               </div>
 
@@ -286,8 +295,12 @@ Replace this demo text with the authoritative terms and conditions used by your 
               <div class="alert" id="reviewNotice" style="display:none; margin-top:12px;">
                 <div class="icon" aria-hidden="true">i</div>
                 <div class="txt">
-                  <strong>Next step</strong>
-                  You will be sent to Pay.gov to complete payment. After payment, you will return here to download, save, and print your permit.
+                  <strong>What happens next</strong>
+                  <ul>
+                    <li>You will be redirected to Pay.gov to complete payment.</li>
+                    <li>After payment, you will return here to download and save your permit.</li>
+                    <li>Keep your confirmation email for your records.</li>
+                  </ul>
                 </div>
               </div>
               <div class="actions" id="reviewActions" style="display:none; margin-top:6px;">
@@ -314,12 +327,10 @@ Replace this demo text with the authoritative terms and conditions used by your 
             </div>
             <div class="help-card">
               <div class="eyebrow">Selecting products</div>
-              <p>If an office shows no online permits for the collection type you chose, select another office or check back later. Some offices may pause online sales during seasonal closures.</p>
+              <p>Only BLM offices that offer online permits for the collection type you selected are shown. If an office does not appear, it does not currently offer online permits for that collection type. Availability may change seasonally.</p>
             </div>
           </div>
-          <ul class="help-links">
-            <li>Call your <a href="https://www.blm.gov/office/national-office">local BLM office</a> for maps, closures, and in-person payment options.</li>
-          </ul>
+          <p>Call your <a href="https://www.blm.gov/office/national-office">local BLM office</a> for maps, closures, and in-person payment options.</p>
         </aside>
       </section>
     </div>
