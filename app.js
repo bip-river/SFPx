@@ -8,6 +8,8 @@
       { id: 'mushrooms', label: 'Mushrooms' }
     ];
 
+    const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     // Banner toggle
     const bannerToggle = document.getElementById('bannerToggle');
     const bannerDetails = document.getElementById('bannerDetails');
@@ -308,6 +310,7 @@
       officeIdEl.value = item.id;
       model.officeId = item.id;
       model.officeName = item.name;
+      validateField(officeInput);
       activeIndex = -1;
       setOfficeExpanded(false);
 
@@ -609,6 +612,42 @@
       if (purchaserBlockedHint) {
         purchaserBlockedHint.style.display = unlocked ? 'none' : 'block';
       }
+      if (!unlocked) {
+        Object.values(purchaser).forEach(el => setFieldError(el, ''));
+      }
+    }
+
+    function getFieldContainer(el) {
+      return el?.closest('.row') || el?.parentElement;
+    }
+
+    function setFieldError(el, message) {
+      if (!el) return;
+      const container = getFieldContainer(el);
+      if (!container) return;
+      let target = container.querySelector('.field-error');
+      if (!target) {
+        target = document.createElement('div');
+        target.className = 'field-error';
+        container.appendChild(target);
+      }
+      if (message) {
+        target.textContent = message;
+        target.classList.add('active');
+        el.setAttribute('aria-invalid', 'true');
+      } else {
+        target.textContent = '';
+        target.classList.remove('active');
+        el.removeAttribute('aria-invalid');
+      }
+    }
+
+    function clearAllFieldErrors() {
+      document.querySelectorAll('.field-error').forEach(el => {
+        el.textContent = '';
+        el.classList.remove('active');
+      });
+      document.querySelectorAll('[aria-invalid="true"]').forEach(el => el.removeAttribute('aria-invalid'));
     }
 
     function showErrors(messages) {
@@ -629,6 +668,64 @@
       errorList.innerHTML = '';
     }
 
+    function getFieldErrorMessage(el) {
+      if (!el || el.disabled) return '';
+      const id = el.id;
+      const val = (el.value || '').trim();
+      if (id === 'ptype' && !val) return 'Select what you are collecting to view available permits.';
+      if (id === 'state' && !val) return 'Choose a state to see offices in that area.';
+      if (id === 'officeInput') {
+        if (!model.state) return 'Select a state to choose a BLM office.';
+        if (!model.officeId) return 'Select a BLM office from the list to continue.';
+      }
+      if (id === 'qty') {
+        const p = model.product;
+        if (!p) return '';
+        if (!val) return 'Enter a quantity to continue.';
+        const v = Number(val);
+        if (!Number.isFinite(v)) return 'Enter a quantity using numbers only.';
+        if (v < 1) return 'Quantity must be at least 1.';
+        if (p.maxQty && v > p.maxQty) return `Enter ${p.maxQty} or fewer ${p.unit}(s).`;
+      }
+      if (id === 'FirstName' && !val) return 'Enter a first name.';
+      if (id === 'LastName' && !val) return 'Enter a last name.';
+      if (id === 'AddressLine1') {
+        if (!val) return 'Enter a street address.';
+        if (val.length < 5) return 'Enter a full street address (5 characters or more).';
+      }
+      if (id === 'City') {
+        if (!val) return 'Enter a city.';
+        if (val.length < 2) return 'City name must be at least 2 letters.';
+      }
+      if (id === 'AddrState' && !val) return 'Choose a state.';
+      if (id === 'Zip') {
+        if (!val) return 'Enter a ZIP code.';
+        if (!/^\d{5}(-\d{4})?$/.test(val)) return 'Enter a ZIP in 5-digit or ZIP+4 format (##### or #####-####).';
+      }
+      if (id === 'Email') {
+        if (!val) return 'Enter an email address.';
+        if (!EMAIL_PATTERN.test(val)) return 'Enter an email in the format name@example.com.';
+      }
+      if (id === 'Email2') {
+        if (!val) return 'Re-enter your email address.';
+        if (!EMAIL_PATTERN.test(val)) return 'Enter an email in the format name@example.com.';
+        const primary = (purchaser.Email.value || '').trim();
+        if (primary && primary.toLowerCase() !== val.toLowerCase()) return 'Repeat email must match the first email.';
+      }
+      if (id === 'Phone') {
+        if (!val) return '';
+        const digits = val.replace(/\D/g, '');
+        if (digits.length < 10) return 'Include area code (at least 10 digits).';
+      }
+      return '';
+    }
+
+    function validateField(el) {
+      const msg = getFieldErrorMessage(el);
+      if (el) setFieldError(el, msg);
+      return !msg;
+    }
+
     function validateStep1() {
       const ok = Boolean(model.state) && Boolean(model.officeId) && Boolean(model.ptype);
       stepState.completed[0] = ok;
@@ -647,37 +744,18 @@
       return true;
     }
 
-    function validatePurchaser() {
+    function validatePurchaser({ touchFields = false } = {}) {
       const msgs = [];
-      const required = [
-        ['FirstName','First name is required.'],
-        ['LastName','Last name is required.'],
-        ['AddressLine1','Street address line 1 is required.'],
-        ['City','City is required.'],
-        ['AddrState','State is required.'],
-        ['Zip','ZIP is required.'],
-        ['Email','Email is required.'],
-        ['Email2','Repeat email is required.']
-      ];
-      for (const [k,msg] of required) {
+      const required = ['FirstName','LastName','AddressLine1','City','AddrState','Zip','Email','Email2'];
+      for (const k of required) {
         const el = purchaser[k];
-        const val = (el.value || '').trim();
-        if (!val) msgs.push(msg);
+        const msg = getFieldErrorMessage(el);
+        if (msg) msgs.push(msg);
+        if (touchFields) setFieldError(el, msg);
       }
-      const e1 = (purchaser.Email.value || '').trim();
-      const e2 = (purchaser.Email2.value || '').trim();
-      if (e1 && e2 && e1.toLowerCase() !== e2.toLowerCase()) msgs.push('Email addresses must match.');
-      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (e1 && !emailPattern.test(e1)) msgs.push('Enter a valid email address.');
-      const zip = (purchaser.Zip.value || '').trim();
-      if (zip && !/^\d{5}(-\d{4})?$/.test(zip)) msgs.push('ZIP must be 5 digits (or ZIP+4).');
-      const phone = (purchaser.Phone.value || '').trim();
-      const digits = phone.replace(/\D/g, '');
-      if (phone && digits.length < 10) msgs.push('Enter a valid phone number with area code.');
-      const address = (purchaser.AddressLine1.value || '').trim();
-      if (address && address.length < 5) msgs.push('Enter a full street address.');
-      const city = (purchaser.City.value || '').trim();
-      if (city && city.length < 2) msgs.push('Enter a valid city name.');
+      const phoneMsg = getFieldErrorMessage(purchaser.Phone);
+      if (phoneMsg) msgs.push(phoneMsg);
+      if (touchFields) setFieldError(purchaser.Phone, phoneMsg);
       return msgs;
     }
 
@@ -744,7 +822,7 @@
 
     function evaluateFinalStep({ showErrorsOnFail = false } = {}) {
       const ackOk = ackPrivacy.checked && ackTerms.checked;
-      const purchaserErrors = validatePurchaser();
+      const purchaserErrors = validatePurchaser({ touchFields: showErrorsOnFail });
       const purchaserValid = purchaserErrors.length === 0;
 
       syncPurchaserAccess();
@@ -808,6 +886,8 @@
       setOfficeExpanded(true);
       activeIndex = -1;
 
+      validateField(stateEl);
+      setFieldError(officeInput, '');
       validateStep1();
       hideReview();
       hideLocationNotice();
@@ -816,6 +896,8 @@
       updateReviewActions();
       persistState();
     });
+
+    stateEl.addEventListener('blur', () => validateField(stateEl));
 
     officeInput.addEventListener('focus', () => {
       if (!model.state) return;
@@ -834,6 +916,7 @@
         officeIdEl.value = exact.id;
         model.officeId = exact.id;
         model.officeName = exact.name;
+        setFieldError(officeInput, '');
       } else {
         officeIdEl.value = '';
         model.officeId = '';
@@ -848,6 +931,8 @@
 
       attemptAdvanceFromStep1();
     });
+
+    officeInput.addEventListener('blur', () => validateField(officeInput));
 
     officeInput.addEventListener('keydown', (e) => {
       if (officeList.getAttribute('aria-hidden') === 'true') setOfficeExpanded(true);
@@ -890,7 +975,10 @@
       hideLocationNotice();
       updateReviewActions();
       persistState();
+      validateField(ptypeEl);
     });
+
+    ptypeEl.addEventListener('blur', () => validateField(ptypeEl));
 
     stepToggles.forEach((btn, idx) => {
       btn.addEventListener('click', () => {
@@ -900,19 +988,22 @@
     });
 
     qtyEl.addEventListener('input', () => {
+      validateField(qtyEl);
       if (!validateQty()) {
         totalEl.value = '';
       }
       handleQuantityProgress();
     });
 
+    qtyEl.addEventListener('blur', () => validateField(qtyEl));
+
     function onAckChange() { syncPurchaserAccess(); evaluateFinalStep(); }
     ackPrivacy.addEventListener('change', onAckChange);
     ackTerms.addEventListener('change', onAckChange);
 
     Object.values(purchaser).forEach((el) => {
-      el.addEventListener('input', () => evaluateFinalStep());
-      el.addEventListener('blur', () => evaluateFinalStep());
+      el.addEventListener('input', () => { validateField(el); evaluateFinalStep(); });
+      el.addEventListener('blur', () => { validateField(el); evaluateFinalStep(); });
     });
 
     confirmPaygovBtn.addEventListener('click', () => {
@@ -978,6 +1069,7 @@ ${JSON.stringify(payload, null, 2)}
       hideReview();
       hideErrors();
       hideLocationNotice();
+      clearAllFieldErrors();
       renderSummary(progressSummary);
       updateStepUI(0);
       updateReviewActions();
