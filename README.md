@@ -1,111 +1,72 @@
 # BLM Forest Products Permits — Customer Flow Prototype (Static)
 
-This repo contains a clean, customer-focused static prototype for **forestproducts.blm.gov** that demonstrates the flow **up to (and including) purchaser info + quantity collection** and outputs a **demo Pay.gov handoff payload**.
+This repository is a static, front-end-only prototype demonstrating a customer flow for selecting a forest products permit (by **collection type → state → BLM office/district → product → quantity**) and collecting purchaser information. It **does not** process payments or generate permits.
 
-> Scope: This is a front-end prototype only. It does **not** process payments, store data, or generate permits.
+**Prototype behavior:** the “Continue to Pay.gov” action **prints a demo handoff payload** on-screen rather than redirecting to Pay.gov.
 
-## Contents
+## What this is (and isn’t)
 
-- `index.html` — Markup and page structure
-- `styles.css` — Styling (single theme, responsive layout)
-- `app.js` — Client-side logic (state → office → type → products, validations, step flow)
-- No build system required
+### This is
+- A lightweight HTML/CSS/JS prototype for interaction and content review.
+- A working step flow with validations, locking/unlocking, and a typeahead office selector.
+- A demo “handoff payload” generator that simulates what would be sent to payment.
 
-## Run locally
+### This is not
+- A production implementation.
+- A payment integration (no Pay.gov redirect).
+- A backend workflow (no transaction creation, storage, permit issuance, or downloads).
 
-Option A — open directly:
-- Double-click `index.html` to open in a browser.
+## Repository contents
+- `index.html` — markup and content (includes demo Privacy Act + Terms blocks)
+- `styles.css` — styling for the prototype UI
+- `app.js` — all client-side behavior (stepper, validation, persistence, demo payload)
+- `products.json` — demo catalog (states → offices → products)
 
-Option B — serve locally (recommended for consistent behavior):
-- Python:
-  - `python -m http.server 8000`
-  - Open `http://localhost:8000`
-- Node:
-  - `npx serve .`
-  - Follow the printed URL
+No build system is required.
 
-## What the prototype supports
+## Run locally (recommended)
+Because the catalog is loaded via `fetch()` from `products.json`, run a local static server for consistent browser behavior.
 
-1. Customer selects:
-   - **State**
-   - **BLM office / district** (typeahead combobox)
-   - **Product type** (Fuelwood / Christmas trees / Mushrooms)
-2. System displays **available products** for that office/type
-3. Customer selects a product
-4. Customer enters **quantity**
-5. Customer reads/accepts:
-   - **Privacy Act notification**
-   - **Terms and Conditions**
-6. Customer enters required purchaser information
-7. Prototype prints a **demo “handoff payload”** that would be used to redirect to Pay.gov
-
-## Data model
-
-All data is embedded in `app.js` as a `DATA` constant:
-
-```js
-const DATA = {
-  "AK": {
-    name: "Alaska",
-    offices: [
-      {
-        id: "AK-ANCH",
-        name: "Anchorage Field Office",
-        products: {
-          fuelwood: [
-            {
-              name: "Fuelwood Permit — Anchorage North",
-              unit: "cord",
-              price: 10.00,
-              availableUntil: "2026-12-31",
-              maxQty: 10,
-              description: "…",
-              requiredDocs: [
-                { label: "Map", url: "#" }
-              ]
-            }
-          ],
-          christmas: [ ... ],
-          mushrooms: [ ... ]
-        }
-      }
-    ]
-  }
-}
+### Python
+```bash
+python -m http.server 8000
 ```
+Open: `http://localhost:8000`
 
-### Requirements satisfied in this prototype
-- Includes **Alaska**
-- Every office has **at least two products** for each product type
-- Product cards are simplified (no SKU), with normal-sized radio selection
-- “Contact” header button points to: `https://www.blm.gov/office/national-office`
+### Node
+```bash
+npx serve .
+```
+Open the URL printed by the command.
 
-## Key customization points
+## User flow overview
 
-### 1) Replace demo data with production data
-- Replace the `DATA` constant in `app.js` with your real state/office/product catalog.
-- If your production system already has an API endpoint, you can:
-  - Fetch data at runtime, then populate the state dropdown accordingly.
-  - Keep the same UI + validation flow.
+### Step 1 — Find available products
+1. Choose **What are you collecting?** (Fuelwood / Christmas trees / Mushrooms)
+2. Choose **State**
+3. Choose **BLM office / district** (typeahead combobox)
 
-### 2) Replace Privacy Act + Terms
-- In `index.html`, replace the text blocks in:
-  - `Privacy Act Notification`
-  - `Terms and Conditions`
-- If you want those items to be links or PDFs instead, convert the `<details>` bodies to links.
+### Step 2 — Select product and quantity
+- Products display for the chosen office + type.
+- If no products exist for that selection, the UI shows a “Nothing to select” message and prompts the user to try another office or collection type.
 
-### 3) Pay.gov handoff integration (future)
-This prototype stops before payment. In production you typically:
-- Create a transaction record (Sale ID) server-side
-- Redirect to Pay.gov with transaction context
-- On return, validate payment status server-side and allow permit download
+### Step 3 — Review, accept, and enter purchaser info
+- The purchaser form remains locked until both acknowledgements are checked:
+  - Privacy Act notification
+  - Terms and Conditions
+- When acknowledgements are complete and purchaser fields validate, “Continue to Pay.gov” becomes available.
+- Clicking “Continue to Pay.gov” prints a demo payload.
 
-The current prototype only prints a JSON payload to represent that handoff.
+## Demo Pay.gov handoff payload
+Clicking “Continue to Pay.gov” prints a JSON object that includes:
+- Selected state, office, product, quantity, and total
+- Purchaser contact fields
+- A generated transaction reference stored in `localStorage`
 
-## Accessibility notes
-- Includes a skip link
-- Combobox supports keyboard navigation (↑/↓, Enter, Escape)
-- Focus styles are visible
+A **4096-byte payload size limit** is enforced to simulate real Pay.gov constraints.
 
-## License / disclaimer
-This is an illustrative prototype for design and interaction review. Demo text and product data are placeholders and must be replaced with authoritative content for production use.
+## State persistence
+In-progress form state is saved in `localStorage` so a refresh does not reset the session.
+
+## Disclaimer
+This is an illustrative prototype for design and interaction review only. Demo data and text must be replaced for production use.
