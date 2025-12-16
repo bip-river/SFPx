@@ -1,6 +1,6 @@
-# BLM Forest Products Permits — Customer Flow Prototype (Static)
+# BWL Forest Products Permits — Customer Flow Prototype (Static)
 
-This repository is a static, front-end-only prototype demonstrating a customer flow for selecting a forest products permit (by **collection type → state → BLM office/district → product → quantity**) and collecting purchaser information. It **does not** process payments or generate permits.
+This repository is a static, front-end-only prototype demonstrating a customer flow for selecting a forest products permit (by **collection type → state → BWL office/district → product → quantity**) and collecting purchaser information. It **does not** process payments or generate permits.
 
 **Prototype behavior:** the “Continue to Pay.gov” action **prints a demo handoff payload** on-screen rather than redirecting to Pay.gov.
 
@@ -44,7 +44,7 @@ Open the URL printed by the command.
 ### Step 1 — Find available products
 1. Choose **What are you collecting?** (Fuelwood / Christmas trees / Mushrooms)
 2. Choose **State**
-3. Choose **BLM office / district** (typeahead combobox)
+3. Choose **BWL office / district** (typeahead combobox)
 
 ### Step 2 — Select product and quantity
 - Products display for the chosen office + type.

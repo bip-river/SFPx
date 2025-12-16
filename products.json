@@ -3,17 +3,29 @@
     "name": "Alaska",
     "description": "Seasonal fire and travel conditions change quickly in Alaska. Please review local access notices before your trip.",
     "attachments": [
-      { "label": "Alaska travel advisory (PDF)", "url": "#" },
-      { "label": "Statewide fire restrictions", "url": "#" }
+      {
+        "label": "Alaska travel advisory (PDF)",
+        "url": "#"
+      },
+      {
+        "label": "Statewide fire restrictions",
+        "url": "#"
+      }
     ],
     "offices": [
       {
         "id": "AK-ANCH",
-        "name": "Anchorage Field Office",
+        "name": "Anchorage Aurora Outpost",
         "description": "Anchorage area permits may require weekend travel restrictions during breakup season.",
         "attachments": [
-          { "label": "Anchorage access map", "url": "#" },
-          { "label": "Anchorage seasonal bulletin", "url": "#" }
+          {
+            "label": "Anchorage access map",
+            "url": "#"
+          },
+          {
+            "label": "Anchorage seasonal bulletin",
+            "url": "#"
+          }
         ],
         "products": {
           "fuelwood": [
@@ -138,14 +150,13 @@
       },
       {
         "id": "AK-FAIR",
-        "name": "Fairbanks District Office",
+        "name": "Fairbanks Frost District",
         "description": "Online permits from this office are temporarily unavailable. Contact the office for alternatives.",
         "products": {}
       },
-
       {
         "id": "AK-JUN",
-        "name": "Juneau Field Office",
+        "name": "Juneau Harbor Outpost",
         "products": {
           "fuelwood": [
             {
@@ -266,7 +277,7 @@
     "offices": [
       {
         "id": "AZ-STRIP",
-        "name": "Arizona Strip Field Office",
+        "name": "Arizona Strip Sunspan Outpost",
         "products": {
           "fuelwood": [
             {
@@ -386,7 +397,7 @@
       },
       {
         "id": "AZ-GILA",
-        "name": "Gila District Office",
+        "name": "Gila Ripple District",
         "products": {
           "fuelwood": [
             {
@@ -494,7 +505,7 @@
       },
       {
         "id": "AZ-YUMA",
-        "name": "Yuma Field Office",
+        "name": "Yuma Dune Outpost",
         "products": {
           "fuelwood": [
             {
@@ -599,7 +610,7 @@
     "offices": [
       {
         "id": "CA-BISH",
-        "name": "Bishop Field Office",
+        "name": "Bishop Basin Outpost",
         "products": {
           "fuelwood": [
             {
@@ -723,7 +734,7 @@
       },
       {
         "id": "CA-ARC",
-        "name": "Arcata Field Office",
+        "name": "Arcata Mist Outpost",
         "products": {
           "fuelwood": [
             {
@@ -847,7 +858,7 @@
       },
       {
         "id": "CA-RDD",
-        "name": "Redding Field Office",
+        "name": "Redding Riverbend Outpost",
         "products": {
           "fuelwood": [
             {
@@ -976,7 +987,7 @@
     "offices": [
       {
         "id": "CO-KREM",
-        "name": "Kremmling Field Office",
+        "name": "Kremmling Ridge Outpost",
         "products": {
           "fuelwood": [
             {
@@ -1100,7 +1111,7 @@
       },
       {
         "id": "CO-GUNN",
-        "name": "Gunnison Field Office",
+        "name": "Gunnison Gorge Outpost",
         "products": {
           "fuelwood": [
             {
@@ -1224,7 +1235,7 @@
       },
       {
         "id": "CO-GJ",
-        "name": "Grand Junction Field Office",
+        "name": "Grand Junction Mesa Outpost",
         "products": {
           "fuelwood": [
             {
@@ -1353,7 +1364,7 @@
     "offices": [
       {
         "id": "ID-POCA",
-        "name": "Pocatello Field Office",
+        "name": "Pocatello Prairie Outpost",
         "products": {
           "fuelwood": [
             {
@@ -1477,7 +1488,7 @@
       },
       {
         "id": "ID-BOIS",
-        "name": "Boise District Office",
+        "name": "Boise Bluff District",
         "products": {
           "fuelwood": [
             {
@@ -1601,7 +1612,7 @@
       },
       {
         "id": "ID-TWIN",
-        "name": "Twin Falls District Office",
+        "name": "Twin Falls Cascade District",
         "products": {
           "fuelwood": [
             {
@@ -1730,7 +1741,7 @@
     "offices": [
       {
         "id": "MT-MILES",
-        "name": "Miles City Field Office",
+        "name": "Miles City Meadow Outpost",
         "products": {
           "fuelwood": [
             {
@@ -1854,7 +1865,7 @@
       },
       {
         "id": "MT-HELENA",
-        "name": "Helena-Lewis and Clark Field Office",
+        "name": "Helena Discovery Outpost",
         "products": {
           "fuelwood": [
             {
@@ -1978,7 +1989,7 @@
       },
       {
         "id": "MT-BILL",
-        "name": "Billings Field Office",
+        "name": "Billings Bison Outpost",
         "products": {
           "fuelwood": [
             {
@@ -2107,7 +2118,7 @@
     "offices": [
       {
         "id": "33",
-        "name": "Carson City District",
+        "name": "Carson City Comet District",
         "products": {
           "fuelwood": [
             {
@@ -2231,7 +2242,7 @@
       },
       {
         "id": "NV-ELY",
-        "name": "Ely District Office",
+        "name": "Ely Echo District",
         "products": {
           "fuelwood": [
             {
@@ -2355,7 +2366,7 @@
       },
       {
         "id": "NV-LV",
-        "name": "Las Vegas Field Office",
+        "name": "Las Vegas Mirage Outpost",
         "products": {
           "fuelwood": [
             {
@@ -2484,7 +2495,7 @@
     "offices": [
       {
         "id": "NM-ROSW",
-        "name": "Roswell Field Office",
+        "name": "Roswell Orbit Outpost",
         "products": {
           "fuelwood": [
             {
@@ -2608,7 +2619,7 @@
       },
       {
         "id": "NM-TAOS",
-        "name": "Taos Field Office",
+        "name": "Taos Canyon Outpost",
         "products": {
           "fuelwood": [
             {
@@ -2732,7 +2743,7 @@
       },
       {
         "id": "NM-LAS",
-        "name": "Las Cruces District Office",
+        "name": "Las Cruces Suntrail District",
         "products": {
           "fuelwood": [
             {
@@ -2860,12 +2871,15 @@
     "name": "Oregon",
     "description": "Oregon offices may close areas during wet weather to protect roads. Check the latest notices before you plan your route.",
     "attachments": [
-      { "label": "Oregon seasonal road guidance", "url": "#" }
+      {
+        "label": "Oregon seasonal road guidance",
+        "url": "#"
+      }
     ],
     "offices": [
       {
         "id": "OR-SALEM",
-        "name": "Salem District Office",
+        "name": "Salem Starlight District",
         "products": {
           "fuelwood": [
             {
@@ -2989,10 +3003,13 @@
       },
       {
         "id": "OR-PRIN",
-        "name": "Prineville District Office",
+        "name": "Prineville Pinecone District",
         "description": "North Fork area requires self-issue access pass when snow gates are closed.",
         "attachments": [
-          { "label": "Prineville winter travel map", "url": "#" }
+          {
+            "label": "Prineville winter travel map",
+            "url": "#"
+          }
         ],
         "products": {
           "fuelwood": [
@@ -3117,7 +3134,7 @@
       },
       {
         "id": "OR-LAKE",
-        "name": "Lakeview District Office",
+        "name": "Lakeview Loon District",
         "products": {
           "fuelwood": [
             {
@@ -3246,7 +3263,7 @@
     "offices": [
       {
         "id": "UT-CCFO",
-        "name": "Cedar City Field Office",
+        "name": "Cedar City Cedarwind Outpost",
         "products": {
           "fuelwood": [
             {
@@ -3370,13 +3387,13 @@
       },
       {
         "id": "UT-STG",
-        "name": "St. George Field Office",
+        "name": "St. George Sandstone Outpost",
         "description": "Online permits are currently unavailable from this office. Please select another office.",
         "products": {}
       },
       {
         "id": "UT-MOAB",
-        "name": "Moab Field Office",
+        "name": "Moab Redrock Outpost",
         "products": {
           "fuelwood": [
             {
@@ -3505,7 +3522,7 @@
     "offices": [
       {
         "id": "WA-SPK",
-        "name": "Spokane District Office",
+        "name": "Spokane Spruce District",
         "products": {
           "fuelwood": [
             {
@@ -3629,7 +3646,7 @@
       },
       {
         "id": "WA-WEN",
-        "name": "Wenatchee Field Office",
+        "name": "Wenatchee Wildflower Outpost",
         "products": {
           "fuelwood": [
             {
@@ -3753,7 +3770,7 @@
       },
       {
         "id": "WA-VAN",
-        "name": "Vancouver Field Office",
+        "name": "Vancouver Evergreen Outpost",
         "products": {
           "fuelwood": [
             {
@@ -3882,7 +3899,7 @@
     "offices": [
       {
         "id": "WY-CASP",
-        "name": "Casper Field Office",
+        "name": "Casper Cloudvale Outpost",
         "products": {
           "fuelwood": [
             {
@@ -4006,7 +4023,7 @@
       },
       {
         "id": "WY-ROCK",
-        "name": "Rock Springs Field Office",
+        "name": "Rock Springs Starwell Outpost",
         "products": {
           "fuelwood": [
             {
@@ -4130,7 +4147,7 @@
       },
       {
         "id": "WY-WORL",
-        "name": "Worland Field Office",
+        "name": "Worland Wash Outpost",
         "products": {
           "fuelwood": [
             {

@@ -413,7 +413,7 @@
         if (!model.ptype && !query) {
           div.textContent = 'Start typing to search offices.';
         } else if (model.ptype && !query) {
-          div.textContent = 'No BLM offices in this state offer that collection type online.';
+          div.textContent = 'No BWL offices in this state offer that collection type online.';
         } else {
           div.textContent = 'No matches. Try another search.';
         }
@@ -1069,8 +1069,8 @@
       if (id === 'ptypeGroup' && !model.ptype) return 'Select what you are collecting to view available permits.';
       if (id === 'state' && !val) return 'Choose a state to see offices in that area.';
       if (id === 'officeInput') {
-        if (!model.state) return 'Select a state to choose a BLM office.';
-        if (!model.officeId) return 'Select a BLM office from the list to continue.';
+        if (!model.state) return 'Select a state to choose a BWL office.';
+        if (!model.officeId) return 'Select a BWL office from the list to continue.';
       }
       if (id === 'qty') {
         const p = model.product;
@@ -1274,7 +1274,7 @@
           const parts = [];
           if (needsType) parts.push('select what you are collecting');
           if (needsState) parts.push('choose a state');
-          if (needsOffice) parts.push('pick a BLM office');
+          if (needsOffice) parts.push('pick a BWL office');
           lockNotes[1].textContent = `Complete step 1 to unlock.`;
         }
       }
