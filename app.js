@@ -679,7 +679,7 @@
       const saleEnd = p.availableUntil ? `Available until ${formatDate(p.availableUntil)}` : 'Availability varies';
       const { validForDays, expirationDate, actualDays, shortened } = calculatePermitValidity(p);
       const validity = shortened
-        ? `Valid for ${actualDays} day${actualDays === 1 ? '' : 's'} (limited by harvest end on ${formatDate(expirationDate)})`
+        ? `Valid for ${actualDays} day${actualDays === 1 ? '' : 's'} • Permit expires ${formatDate(expirationDate)}`
         : `Valid for ${validForDays} days • Permit expires ${formatDate(expirationDate)}`;
       const docs = buildRequiredDocs(p);
       const maxLine = p.maxQty ? `Maximum allowed per permit: ${p.maxQty} ${p.unit}${p.maxQty === 1 ? '' : 's'}` : '';
