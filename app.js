@@ -6,9 +6,9 @@
     const DATA_SOURCE = 'products.json';
 
     const PRODUCT_TYPES = [
-      { id: 'fuelwood', label: 'Fuelwood' },
-      { id: 'christmas', label: 'Christmas trees' },
-      { id: 'mushrooms', label: 'Mushrooms' }
+      { id: 'fuelwood', label: 'Fuelwood', image: 'firewood.png' },
+      { id: 'christmas', label: 'Christmas tree', image: 'xmas.png' },
+      { id: 'mushrooms', label: 'Mushrooms', image: 'mushrooms.png' }
     ];
 
     const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -40,7 +40,9 @@
     const officeIdEl = document.getElementById('officeId');
     const officeCombo = document.getElementById('officeCombo');
     const officeList = document.getElementById('officeList');
-    const ptypeEl = document.getElementById('ptype');
+    const ptypeGroup = document.getElementById('ptypeGroup');
+    const ptypeOptions = document.getElementById('ptypeOptions');
+    let ptypeRadios = [];
 
     const productListEl = document.getElementById('productList');
     const qtyEl = document.getElementById('qty');
@@ -121,6 +123,30 @@
     };
     let prevAvailability = [...stepState.available];
 
+    function setControlEnabled(el, enabled) {
+      if (!el) return;
+      if (enabled) {
+        delete el.dataset.persistDisabled;
+        if (Object.prototype.hasOwnProperty.call(el.dataset, 'persistPrevTab')) {
+          const prev = el.dataset.persistPrevTab;
+          if (prev) el.setAttribute('tabindex', prev); else el.removeAttribute('tabindex');
+          delete el.dataset.persistPrevTab;
+        } else if (el.tabIndex === -1) {
+          el.removeAttribute('tabindex');
+        }
+        el.disabled = false;
+        el.removeAttribute('aria-disabled');
+      } else {
+        el.dataset.persistDisabled = 'true';
+        if (!Object.prototype.hasOwnProperty.call(el.dataset, 'persistPrevTab')) {
+          el.dataset.persistPrevTab = el.getAttribute('tabindex') || '';
+        }
+        el.disabled = true;
+        el.setAttribute('aria-disabled', 'true');
+        el.setAttribute('tabindex', '-1');
+      }
+    }
+
     function persistState() {
       const payload = {
         model: {
@@ -168,8 +194,7 @@
       }
 
       if (savedModel.ptype) {
-        ptypeEl.value = savedModel.ptype;
-        model.ptype = savedModel.ptype;
+        setProductType(savedModel.ptype);
       }
 
       if (savedModel.officeId) {
@@ -185,6 +210,7 @@
         officeInput.value = savedModel.officeInput;
       }
 
+      syncSelectionAvailability();
       attemptAdvanceFromStep1();
 
       const products = getProductsForSelection();
@@ -209,6 +235,96 @@
 
       evaluateFinalStep();
       syncPurchaserAccess();
+    }
+
+    function renderProductTypes() {
+      if (!ptypeOptions) return;
+      ptypeOptions.innerHTML = '';
+      PRODUCT_TYPES.forEach((type) => {
+        const label = document.createElement('label');
+        label.className = 'ptype-card';
+
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.name = 'ptype';
+        input.value = type.id;
+        label.appendChild(input);
+
+        const body = document.createElement('div');
+        body.className = 'ptype-card-body';
+
+        const img = document.createElement('img');
+        img.src = `images/${type.image}`;
+        img.alt = '';
+        img.setAttribute('aria-hidden', 'true');
+        const name = document.createElement('div');
+        name.className = 'ptype-card-name';
+        name.textContent = type.label;
+
+        body.appendChild(img);
+        body.appendChild(name);
+        label.appendChild(body);
+
+        ptypeOptions.appendChild(label);
+      });
+
+      ptypeRadios = Array.from(ptypeOptions.querySelectorAll('input[name="ptype"]'));
+      ptypeRadios.forEach((radio) => {
+        radio.addEventListener('change', () => handleProductTypeChange(radio.value));
+      });
+    }
+
+    function setProductType(value) {
+      const hasMatch = ptypeRadios.some(r => r.value === value);
+      model.ptype = hasMatch ? (value || '') : '';
+      ptypeRadios.forEach(r => { r.checked = r.value === value; });
+    }
+
+    function validateProductType({ showErrors = true } = {}) {
+      const hasType = Boolean(model.ptype);
+      const msg = hasType ? '' : 'Select what you are collecting to view available permits.';
+      if (showErrors) setFieldError(ptypeGroup, msg);
+      return hasType;
+    }
+
+    function resetOfficeSelection() {
+      officeInput.value = '';
+      officeIdEl.value = '';
+      model.officeId = '';
+      model.officeName = '';
+      officeOptions = [];
+      renderOfficeList([], '');
+      setOfficeExpanded(false);
+      setFieldError(officeInput, '');
+    }
+
+    function resetStateSelection() {
+      stateEl.value = '';
+      model.state = '';
+      resetOfficeSelection();
+    }
+
+    function resetProductSelection() {
+      model.productIndex = null;
+      model.product = null;
+      qtyEl.value = '';
+      totalEl.value = '';
+      totalCalc.textContent = '';
+      qtyGuard.textContent = '';
+      model.qty = 0;
+      qtySection.style.display = 'none';
+      productListEl.innerHTML = '';
+    }
+
+    function syncSelectionAvailability() {
+      const hasType = Boolean(model.ptype);
+      const hasState = hasType && Boolean(model.state);
+
+      if (!hasType) resetStateSelection();
+      if (!hasState) resetOfficeSelection();
+
+      setControlEnabled(stateEl, hasType);
+      setControlEnabled(officeInput, hasState);
     }
 
     // Populate state dropdown
@@ -247,7 +363,8 @@
     }
 
     async function loadProductData() {
-      stateEl.disabled = true;
+      setControlEnabled(stateEl, false);
+      setControlEnabled(officeInput, false);
       try {
         const res = await fetch(DATA_SOURCE);
         if (!res.ok) throw new Error('Unable to load product catalog.');
@@ -263,7 +380,7 @@
         errorBox.setAttribute('aria-hidden', 'false');
         errorBox.style.display = 'block';
       } finally {
-        stateEl.disabled = false;
+        syncSelectionAvailability();
       }
     }
 
@@ -361,12 +478,7 @@
       setOfficeExpanded(false);
 
       // Reset downstream selections
-      model.productIndex = null;
-      model.product = null;
-      qtyEl.value = '';
-      totalEl.value = '';
-      model.qty = 0;
-      qtySection.style.display = 'none';
+      resetProductSelection();
       resetFollowingSteps(0);
       stepState.open = [true, false, false];
       attemptAdvanceFromStep1();
@@ -778,6 +890,7 @@
         if (lockNote) lockNote.style.display = available ? 'none' : 'block';
         const focusables = sec.querySelectorAll('.step-body input, .step-body select, .step-body textarea, .step-body button');
         focusables.forEach(el => {
+          const persistDisabled = el.dataset.persistDisabled === 'true';
           if (!available) {
             el.dataset.lockPrevTab = el.getAttribute('tabindex') || '';
             el.dataset.lockPrevDisabled = el.hasAttribute('disabled') ? 'true' : 'false';
@@ -797,7 +910,21 @@
             } else {
               el.removeAttribute('disabled');
             }
-            el.removeAttribute('aria-disabled');
+            if (persistDisabled) {
+              el.disabled = true;
+              el.setAttribute('aria-disabled', 'true');
+              if (!Object.prototype.hasOwnProperty.call(el.dataset, 'persistPrevTab')) {
+                el.dataset.persistPrevTab = el.getAttribute('tabindex') || '';
+              }
+              el.setAttribute('tabindex', '-1');
+            } else {
+              el.removeAttribute('aria-disabled');
+              if (Object.prototype.hasOwnProperty.call(el.dataset, 'persistPrevTab')) {
+                const prev = el.dataset.persistPrevTab;
+                if (prev) el.setAttribute('tabindex', prev); else el.removeAttribute('tabindex');
+                delete el.dataset.persistPrevTab;
+              }
+            }
             delete el.dataset.lockPrevDisabled;
           }
         });
@@ -939,7 +1066,7 @@
       if (!el || el.disabled) return '';
       const id = el.id;
       const val = (el.value || '').trim();
-      if (id === 'ptype' && !val) return 'Select what you are collecting to view available permits.';
+      if (id === 'ptypeGroup' && !model.ptype) return 'Select what you are collecting to view available permits.';
       if (id === 'state' && !val) return 'Choose a state to see offices in that area.';
       if (id === 'officeInput') {
         if (!model.state) return 'Select a state to choose a BLM office.';
@@ -1097,6 +1224,7 @@
     }
 
     function attemptAdvanceFromStep1() {
+      validateProductType({ showErrors: false });
       const ok = validateStep1();
       stepState.available[1] = ok;
       if (!ok) {
@@ -1117,6 +1245,24 @@
       updateStepUI(1);
       updateReviewActions();
       persistState();
+    }
+
+    function handleProductTypeChange(value) {
+      setProductType(value);
+      resetStateSelection();
+      resetProductSelection();
+      hideReview();
+      hideLocationNotice();
+      resetFollowingSteps(0);
+      stepState.open = [true, false, false];
+      validateProductType({ showErrors: false });
+      setFieldError(stateEl, '');
+      setFieldError(officeInput, '');
+      syncSelectionAvailability();
+      renderSummary(progressSummary);
+      updateReviewActions();
+      persistState();
+      attemptAdvanceFromStep1();
     }
 
     function updateLockNotes() {
@@ -1183,29 +1329,29 @@
 
     // Events
     stateEl.addEventListener('change', () => {
+      if (!model.ptype) {
+        stateEl.value = '';
+        syncSelectionAvailability();
+        return;
+      }
+
       model.state = stateEl.value;
 
-      officeInput.value = '';
-      officeIdEl.value = '';
-      model.officeId = '';
-      model.officeName = '';
-
-      model.productIndex = null;
-      model.product = null;
-      qtyEl.value = '';
-      totalEl.value = '';
-      model.qty = 0;
-      qtySection.style.display = 'none';
+      resetOfficeSelection();
+      resetProductSelection();
 
       stepState.completed[0] = false;
       resetFollowingSteps(0);
       stepState.open = [true, false, false];
 
-      // Prime office dropdown
-      officeOptions = filterOfficeOptions('');
-      renderOfficeList(officeOptions, '');
-      setOfficeExpanded(true);
-      activeIndex = -1;
+      if (model.state) {
+        officeOptions = filterOfficeOptions('');
+        renderOfficeList(officeOptions, '');
+        setOfficeExpanded(true);
+        activeIndex = officeOptions.length ? 0 : -1;
+      } else {
+        activeIndex = -1;
+      }
 
       validateField(stateEl);
       setFieldError(officeInput, '');
@@ -1213,6 +1359,7 @@
       hideReview();
       hideLocationNotice();
       renderSummary(progressSummary);
+      syncSelectionAvailability();
       updateStepUI(0);
       updateReviewActions();
       persistState();
@@ -1288,38 +1435,6 @@
     document.addEventListener('click', (e) => {
       if (!officeCombo.contains(e.target)) setOfficeExpanded(false);
     });
-
-    ptypeEl.addEventListener('change', () => {
-      model.ptype = ptypeEl.value;
-      model.productIndex = null;
-      model.product = null;
-      qtyEl.value = '';
-      totalEl.value = '';
-      totalCalc.textContent = '';
-      qtyGuard.textContent = '';
-      model.qty = 0;
-      hideReview();
-      qtySection.style.display = 'none';
-      const offices = getOfficesForState(model.state);
-      const officeStillValid = offices.some(o => o.id === model.officeId);
-      if (!officeStillValid) {
-        officeIdEl.value = '';
-        model.officeId = '';
-        model.officeName = '';
-        officeInput.value = '';
-      }
-      officeOptions = filterOfficeOptions(officeInput.value);
-      renderOfficeList(officeOptions, officeInput.value);
-      resetFollowingSteps(0);
-      stepState.open = [true, false, false];
-      attemptAdvanceFromStep1();
-      hideLocationNotice();
-      updateReviewActions();
-      persistState();
-      validateField(ptypeEl);
-    });
-
-    ptypeEl.addEventListener('blur', () => validateField(ptypeEl));
 
     stepToggles.forEach((btn, idx) => {
       btn.addEventListener('click', () => {
@@ -1468,24 +1583,10 @@
     });
 
     resetAllBtn.addEventListener('click', () => {
-      stateEl.value = '';
-      model.state = '';
-      officeInput.value = '';
-      officeIdEl.value = '';
-      model.officeId = '';
-      model.officeName = '';
-      ptypeEl.value = '';
-      model.ptype = '';
-      model.productIndex = null;
-      model.product = null;
-      qtyEl.value = '';
-      totalEl.value = '';
-      totalCalc.textContent = '';
-      qtyGuard.textContent = '';
-      model.qty = 0;
-      qtySection.style.display = 'none';
+      resetStateSelection();
+      setProductType('');
+      resetProductSelection();
       setOfficeExpanded(false);
-      productListEl.innerHTML = '';
       stepState.available = [true, false, false];
       stepState.completed = [false, false, false];
       stepState.open = [true, false, false];
@@ -1495,18 +1596,22 @@
       hideLocationNotice();
       clearAllFieldErrors();
       renderSummary(progressSummary);
+      syncSelectionAvailability();
       updateStepUI(0);
       updateReviewActions();
       clearPersistedState();
     });
 
     async function boot() {
+      renderProductTypes();
+      syncSelectionAvailability();
       await loadProductData();
       populateUSStates(purchaser.AddrState);
       renderSummary(progressSummary);
       restoreState();
       syncPurchaserAccess();
       updateReviewActions();
+      syncSelectionAvailability();
       updateLockNotes();
       updateStepUI(0);
     }
