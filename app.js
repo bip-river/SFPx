@@ -1,3 +1,6 @@
+(function () {
+  'use strict';
+
     let DATA = {};
     const STORAGE_KEY = 'sfp-demo-state';
     const DATA_SOURCE = 'products.json';
@@ -1509,3 +1512,4 @@
     }
 
     boot();
+})();
