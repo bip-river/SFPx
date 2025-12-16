@@ -129,27 +129,26 @@
           productIndex: model.productIndex,
           qty: model.qty,
         },
-        purchaser: Object.fromEntries(Object.entries(purchaser).map(([k, el]) => [k, el.value])),
         acknowledgements: {
           privacy: ackPrivacy.checked,
           terms: ackTerms.checked
         }
       };
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
       } catch (err) {
         console.warn('Unable to persist form state', err);
       }
     }
 
     function clearPersistedState() {
-      try { localStorage.removeItem(STORAGE_KEY); } catch (err) { console.warn(err); }
+      try { sessionStorage.removeItem(STORAGE_KEY); } catch (err) { console.warn(err); }
     }
 
     function restoreState() {
       let saved;
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
+        const raw = sessionStorage.getItem(STORAGE_KEY);
         if (!raw) return;
         saved = JSON.parse(raw);
       } catch (err) {
@@ -159,7 +158,6 @@
 
       const savedModel = saved?.model || {};
       const savedAcknowledgements = saved?.acknowledgements || {};
-      const savedPurchaser = saved?.purchaser || {};
 
       if (savedModel.state && DATA[savedModel.state]) {
         stateEl.value = savedModel.state;
@@ -205,9 +203,6 @@
 
       ackPrivacy.checked = Boolean(savedAcknowledgements.privacy);
       ackTerms.checked = Boolean(savedAcknowledgements.terms);
-      Object.entries(savedPurchaser).forEach(([key, val]) => {
-        if (purchaser[key]) purchaser[key].value = val;
-      });
 
       evaluateFinalStep();
       syncPurchaserAccess();
@@ -312,7 +307,15 @@
         div.setAttribute('role','option');
         div.id = `officeOption_${idx}`;
         div.dataset.index = String(idx);
-        div.innerHTML = `<div>${item.name}</div><span class="small">${item.id}</span>`;
+
+        const nameDiv = document.createElement('div');
+        nameDiv.textContent = item.name;
+        const idSpan = document.createElement('span');
+        idSpan.className = 'small';
+        idSpan.textContent = item.id;
+
+        div.appendChild(nameDiv);
+        div.appendChild(idSpan);
         div.addEventListener('mousedown', (e) => {
           e.preventDefault();
           selectOffice(idx);
@@ -437,6 +440,26 @@
       });
     }
 
+    function buildDocLinks(docs = []) {
+      const docsDiv = document.createElement('div');
+      docsDiv.className = 'docs';
+      if (!docs.length) return docsDiv;
+
+      const prefix = document.createElement('span');
+      prefix.textContent = 'Required documents: ';
+      docsDiv.appendChild(prefix);
+      docs.forEach((doc, docIdx) => {
+        const link = document.createElement('a');
+        link.href = doc.url;
+        link.textContent = doc.label;
+        docsDiv.appendChild(link);
+        if (docIdx < docs.length - 1) {
+          docsDiv.appendChild(document.createTextNode(' · '));
+        }
+      });
+      return docsDiv;
+    }
+
     function hideLocationNotice() {
       if (!locationNotice) return;
       locationNotice.style.display = 'none';
@@ -457,16 +480,58 @@
         return;
       }
 
-      const docList = hasDocs
-        ? `<div class="detail"><strong>Attachments for this area:</strong><ul>${attachments.map(d => `<li><a href="${d.url}">${d.label}</a></li>`).join('')}</ul></div>`
-        : '';
+      locationNotice.innerHTML = '';
 
-      locationNotice.innerHTML = `
-        <div class="title"><span class="badge" aria-hidden="true">i</span><span>Local details for your selection</span></div>
-        ${hasStateDesc ? `<div class="detail"><strong>${stateData.name}:</strong> ${stateData.description}</div>` : ''}
-        ${hasOfficeDesc ? `<div class="detail"><strong>${office.name}:</strong> ${office.description}</div>` : ''}
-        ${docList}
-      `;
+      const title = document.createElement('div');
+      title.className = 'title';
+      const badge = document.createElement('span');
+      badge.className = 'badge';
+      badge.setAttribute('aria-hidden', 'true');
+      badge.textContent = 'i';
+      const titleText = document.createElement('span');
+      titleText.textContent = 'Local details for your selection';
+      title.appendChild(badge);
+      title.appendChild(titleText);
+      locationNotice.appendChild(title);
+
+      if (hasStateDesc) {
+        const detail = document.createElement('div');
+        detail.className = 'detail';
+        const strong = document.createElement('strong');
+        strong.textContent = `${stateData.name}:`;
+        detail.appendChild(strong);
+        detail.append(' ', stateData.description);
+        locationNotice.appendChild(detail);
+      }
+
+      if (hasOfficeDesc) {
+        const detail = document.createElement('div');
+        detail.className = 'detail';
+        const strong = document.createElement('strong');
+        strong.textContent = `${office.name}:`;
+        detail.appendChild(strong);
+        detail.append(' ', office.description);
+        locationNotice.appendChild(detail);
+      }
+
+      if (hasDocs) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'detail';
+        const strong = document.createElement('strong');
+        strong.textContent = 'Attachments for this area:';
+        wrapper.appendChild(strong);
+        const list = document.createElement('ul');
+        attachments.forEach((doc) => {
+          const li = document.createElement('li');
+          const a = document.createElement('a');
+          a.href = doc.url;
+          a.textContent = doc.label;
+          li.appendChild(a);
+          list.appendChild(li);
+        });
+        wrapper.appendChild(list);
+        locationNotice.appendChild(wrapper);
+      }
       locationNotice.style.display = 'block';
     }
 
@@ -475,14 +540,23 @@
       const ptypeLabel = (PRODUCT_TYPES.find(t => t.id === model.ptype)?.label) || '';
       const prod = model.product;
       const qty = model.qty;
-      el.innerHTML = `
-        <div class="k">Selection</div>
-        <div class="v">${stateName || '—'} • ${model.officeName || '—'} • ${ptypeLabel || '—'}</div>
-        <div class="k" style="margin-top:8px;">Product</div>
-        <div class="v">${prod ? prod.name : '—'}</div>
-        <div class="k" style="margin-top:8px;">Quantity</div>
-        <div class="v">${qty ? qty + ' ' + (prod?.unit || '') + (qty === 1 ? '' : 's') : '—'}</div>
-      `;
+      el.innerHTML = '';
+      const entries = [
+        ['Selection', `${stateName || '—'} • ${model.officeName || '—'} • ${ptypeLabel || '—'}`],
+        ['Product', prod ? prod.name : '—'],
+        ['Quantity', qty ? `${qty} ${prod?.unit || ''}${qty === 1 ? '' : 's'}` : '—']
+      ];
+      entries.forEach(([label, value], idx) => {
+        const k = document.createElement('div');
+        k.className = 'k';
+        if (idx > 0) k.style.marginTop = '8px';
+        k.textContent = label;
+        const v = document.createElement('div');
+        v.className = 'v';
+        v.textContent = value;
+        el.appendChild(k);
+        el.appendChild(v);
+      });
     }
 
     function hideReview() {
@@ -501,28 +575,48 @@
         purchaser.AddressLine1.value.trim(),
         purchaser.AddressLine2.value.trim(),
         [purchaser.City.value.trim(), purchaser.AddrState.value, purchaser.Zip.value.trim()].filter(Boolean).join(' ')
-      ].filter(Boolean).join('<br />');
+      ].filter(Boolean).join(', ');
       const email = purchaser.Email.value.trim();
       const total = (model.product?.price || 0) * (model.qty || 0);
       const totalLabel = (model.product?.price === 0) ? 'Free' : money(total);
       const qtyLabel = model.qty ? `${model.qty} ${model.product?.unit || 'unit'}${model.qty === 1 ? '' : 's'}` : '—';
 
       handoff.style.display = 'none';
-      reviewSummary.innerHTML = `
-        <div class="k">Customer</div>
-        <div class="v">
-          ${fullName || '—'}<br />
-          ${addressParts || '—'}<br />
-          Email: ${email}
-        </div>
-        <div class="k" style="margin-top:10px;">Product</div>
-        <div class="v">
-          ${stateName} — ${model.officeName || '—'}<br />
-          ${model.product?.name || '—'}<br />
-          ${qtyLabel}<br />
-          Estimated total: ${totalLabel}
-        </div>
-      `;
+      reviewSummary.innerHTML = '';
+      const custKey = document.createElement('div');
+      custKey.className = 'k';
+      custKey.textContent = 'Customer';
+      const custVal = document.createElement('div');
+      custVal.className = 'v';
+      [fullName || '—', addressParts || '—', `Email: ${email}`].forEach((line, idx) => {
+        const span = document.createElement('div');
+        span.style.marginTop = idx === 0 ? '0' : '2px';
+        span.textContent = line;
+        custVal.appendChild(span);
+      });
+
+      const prodKey = document.createElement('div');
+      prodKey.className = 'k';
+      prodKey.style.marginTop = '10px';
+      prodKey.textContent = 'Product';
+      const prodVal = document.createElement('div');
+      prodVal.className = 'v';
+      [
+        `${stateName} — ${model.officeName || '—'}`,
+        model.product?.name || '—',
+        qtyLabel,
+        `Estimated total: ${totalLabel}`
+      ].forEach((line, idx) => {
+        const span = document.createElement('div');
+        span.style.marginTop = idx === 0 ? '0' : '2px';
+        span.textContent = line;
+        prodVal.appendChild(span);
+      });
+
+      reviewSummary.appendChild(custKey);
+      reviewSummary.appendChild(custVal);
+      reviewSummary.appendChild(prodKey);
+      reviewSummary.appendChild(prodVal);
 
       reviewSummary.style.display = 'block';
       reviewNotice.style.display = 'flex';
@@ -548,80 +642,124 @@
         const msg = hasAnyOfficeProducts
           ? `${office?.name || 'This office'} does not offer ${ptypeLabel.toLowerCase()} permits online right now. Try another collection type or office.`
           : `${office?.name || 'This office'} does not have online permits available right now. Please choose another office or check back later.`;
-
-        productListEl.innerHTML = `<div class="alert" role="status" aria-live="polite">
-          <div class="icon" aria-hidden="true">i</div>
-          <div class="txt">
-            <strong>Nothing to select</strong>
-            ${msg}
-          </div>
-        </div>`;
+        productListEl.appendChild(buildProductAlert(msg));
         return;
       }
 
       products.forEach((p, idx) => {
-        const id = `prod_${idx}`;
-        const priceLine = p.price === 0 ? 'Free' : `${money(p.price)} per ${p.unit}`;
-        const saleEnd = p.availableUntil ? `Available until ${formatDate(p.availableUntil)}` : 'Availability varies';
-        const { validForDays, expirationDate, actualDays, shortened } = calculatePermitValidity(p);
-        const validity = shortened
-          ? `Valid for ${actualDays} day${actualDays === 1 ? '' : 's'} (limited by harvest end on ${formatDate(expirationDate)})`
-          : `Valid for ${validForDays} days • Permit expires ${formatDate(expirationDate)}`;
-        const docs = buildRequiredDocs(p).map(d => `<a href="${d.url}">${d.label}</a>`).join(' · ');
-        const docLine = docs ? `Required documents: ${docs}` : '';
-        const maxLine = p.maxQty ? `Maximum allowed per permit: ${p.maxQty} ${p.unit}${p.maxQty === 1 ? '' : 's'}` : '';
-
-        const card = document.createElement('label');
-        card.className = 'prod';
-        card.setAttribute('for', id);
-        card.innerHTML = `
-          <input type="radio" name="product" id="${id}" value="${idx}" />
-          <div class="prod-body">
-            <div class="name">${p.name}</div>
-            <div class="meta">${model.officeName} · ${priceLine}</div>
-            <div class="meta">${saleEnd}</div>
-            <div class="desc">${p.description || 'Permit details provided at checkout.'}</div>
-            <div class="prod-panels">
-              <div class="panel">
-                <div class="panel-title">Rules & constraints</div>
-                <ul class="rule-list">
-                  <li>${validity}</li>
-                  ${maxLine ? `<li>${maxLine}</li>` : ''}
-                  <li>Bring your permit and ID while collecting.</li>
-                </ul>
-                <div class="docs">${docLine}</div>
-              </div>
-            </div>
-          </div>
-        `;
-
-        card.querySelector('input').addEventListener('change', () => {
-          model.productIndex = idx;
-          model.product = p;
-          qtyHint.textContent = `Enter 1–${p.maxQty} ${p.unit}(s). Price: ${p.price===0?'Free':money(p.price)} per ${p.unit}.`;
-          qtyGuard.textContent = maxLine || '';
-          qtyEl.min = 1;
-          qtyEl.max = p.maxQty || '';
-          qtyEl.value = '';
-          totalEl.value = '';
-          totalCalc.textContent = '';
-          qtySection.style.display = 'block';
-          model.qty = 0;
-          stepState.completed[1] = false;
-          stepState.available[2] = false;
-          stepState.completed[2] = false;
-          resetAcknowledgements();
-          hideReview();
-          setFieldError(qtyEl, '');
-          renderSummary(progressSummary);
-          setOpenStep(1);
-          qtyEl.focus();
-          updateReviewActions();
-          persistState();
-        });
-
-        productListEl.appendChild(card);
+        productListEl.appendChild(createProductCard(p, idx));
       });
+    }
+
+    function buildProductAlert(message) {
+      const alert = document.createElement('div');
+      alert.className = 'alert';
+      alert.setAttribute('role', 'status');
+      alert.setAttribute('aria-live', 'polite');
+      const icon = document.createElement('div');
+      icon.className = 'icon';
+      icon.setAttribute('aria-hidden', 'true');
+      icon.textContent = 'i';
+      const txt = document.createElement('div');
+      txt.className = 'txt';
+      const strong = document.createElement('strong');
+      strong.textContent = 'Nothing to select';
+      const msgNode = document.createElement('div');
+      msgNode.textContent = message;
+      txt.appendChild(strong);
+      txt.appendChild(msgNode);
+      alert.appendChild(icon);
+      alert.appendChild(txt);
+      return alert;
+    }
+
+    function createProductCard(p, idx) {
+      const id = `prod_${idx}`;
+      const priceLine = p.price === 0 ? 'Free' : `${money(p.price)} per ${p.unit}`;
+      const saleEnd = p.availableUntil ? `Available until ${formatDate(p.availableUntil)}` : 'Availability varies';
+      const { validForDays, expirationDate, actualDays, shortened } = calculatePermitValidity(p);
+      const validity = shortened
+        ? `Valid for ${actualDays} day${actualDays === 1 ? '' : 's'} (limited by harvest end on ${formatDate(expirationDate)})`
+        : `Valid for ${validForDays} days • Permit expires ${formatDate(expirationDate)}`;
+      const docs = buildRequiredDocs(p);
+      const maxLine = p.maxQty ? `Maximum allowed per permit: ${p.maxQty} ${p.unit}${p.maxQty === 1 ? '' : 's'}` : '';
+
+      const card = document.createElement('label');
+      card.className = 'prod';
+      card.setAttribute('for', id);
+      const input = document.createElement('input');
+      input.type = 'radio';
+      input.name = 'product';
+      input.id = id;
+      input.value = String(idx);
+      card.appendChild(input);
+
+      const body = document.createElement('div');
+      body.className = 'prod-body';
+      const name = document.createElement('div');
+      name.className = 'name';
+      name.textContent = p.name;
+      const meta1 = document.createElement('div');
+      meta1.className = 'meta';
+      meta1.textContent = `${model.officeName} · ${priceLine}`;
+      const meta2 = document.createElement('div');
+      meta2.className = 'meta';
+      meta2.textContent = saleEnd;
+      const desc = document.createElement('div');
+      desc.className = 'desc';
+      desc.textContent = p.description || 'Permit details provided at checkout.';
+
+      const panels = document.createElement('div');
+      panels.className = 'prod-panels';
+      const panel = document.createElement('div');
+      panel.className = 'panel';
+      const panelTitle = document.createElement('div');
+      panelTitle.className = 'panel-title';
+      panelTitle.textContent = 'Rules & constraints';
+      const rules = document.createElement('ul');
+      rules.className = 'rule-list';
+      [validity, maxLine || null, 'Bring your permit and ID while collecting.'].filter(Boolean).forEach((line) => {
+        const li = document.createElement('li');
+        li.textContent = line;
+        rules.appendChild(li);
+      });
+
+      const docsDiv = buildDocLinks(docs);
+
+      panel.appendChild(panelTitle);
+      panel.appendChild(rules);
+      panel.appendChild(docsDiv);
+      panels.appendChild(panel);
+
+      [name, meta1, meta2, desc, panels].forEach((node) => body.appendChild(node));
+      card.appendChild(body);
+
+      card.querySelector('input').addEventListener('change', () => {
+        model.productIndex = idx;
+        model.product = p;
+        qtyHint.textContent = `Enter 1–${p.maxQty} ${p.unit}(s). Price: ${p.price===0?'Free':money(p.price)} per ${p.unit}.`;
+        qtyGuard.textContent = maxLine || '';
+        qtyEl.min = 1;
+        qtyEl.max = p.maxQty || '';
+        qtyEl.value = '';
+        totalEl.value = '';
+        totalCalc.textContent = '';
+        qtySection.style.display = 'block';
+        model.qty = 0;
+        stepState.completed[1] = false;
+        stepState.available[2] = false;
+        stepState.completed[2] = false;
+        resetAcknowledgements();
+        hideReview();
+        setFieldError(qtyEl, '');
+        renderSummary(progressSummary);
+        setOpenStep(1);
+        qtyEl.focus();
+        updateReviewActions();
+        persistState();
+      });
+
+      return card;
     }
 
     function announce(message) {
@@ -1209,6 +1347,8 @@
       stepState.completed[2] = false;
       renderSummary(progressSummary);
       hideReview();
+      updateLockNotes();
+      updateStepUI(model.step);
       persistState();
       updateReviewActions();
     });
@@ -1246,13 +1386,13 @@
       const transactionReference = (() => {
         let ref = '';
         try {
-          ref = localStorage.getItem(transactionRefKey) || '';
+          ref = sessionStorage.getItem(transactionRefKey) || '';
         } catch (err) {
           ref = '';
         }
         if (!ref) {
           ref = `TX-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
-          try { localStorage.setItem(transactionRefKey, ref); } catch (err) { /* no-op */ }
+          try { sessionStorage.setItem(transactionRefKey, ref); } catch (err) { /* no-op */ }
         }
         return ref;
       })();
@@ -1292,13 +1432,25 @@
 
       handoff.style.display = 'block';
       handoff.className = 'summary';
-      handoff.innerHTML = `
-        <div class="k">Demo handoff payload</div>
-        <div class="v" style="margin-top:6px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; font-size:13px; white-space:pre-wrap;">
-${JSON.stringify(payload, null, 2)}
-        </div>
-        <div class="k" style="margin-top:10px;">In production, the site would create a Sale ID and redirect the user to Pay.gov with that transaction context.</div>
-      `;
+      handoff.innerHTML = '';
+      const payloadKey = document.createElement('div');
+      payloadKey.className = 'k';
+      payloadKey.textContent = 'Demo handoff payload';
+      const payloadVal = document.createElement('div');
+      payloadVal.className = 'v';
+      payloadVal.style.marginTop = '6px';
+      payloadVal.style.fontFamily = "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace";
+      payloadVal.style.fontSize = '13px';
+      payloadVal.style.whiteSpace = 'pre-wrap';
+      payloadVal.textContent = JSON.stringify(payload, null, 2);
+      const note = document.createElement('div');
+      note.className = 'k';
+      note.style.marginTop = '10px';
+      note.textContent = 'In production, the site would create a Sale ID and redirect the user to Pay.gov with that transaction context.';
+
+      handoff.appendChild(payloadKey);
+      handoff.appendChild(payloadVal);
+      handoff.appendChild(note);
       handoff.scrollIntoView({ behavior:'smooth', block:'start' });
     });
 
