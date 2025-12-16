@@ -61,12 +61,22 @@ Open the URL printed by the command.
 Clicking “Continue to Pay.gov” prints a JSON object that includes:
 - Selected state, office, product, quantity, and total
 - Purchaser contact fields
-- A generated transaction reference stored in `localStorage`
+- A generated transaction reference stored in `sessionStorage`
 
 A **4096-byte payload size limit** is enforced to simulate real Pay.gov constraints.
 
 ## State persistence
-In-progress form state is saved in `localStorage` so a refresh does not reset the session.
+In-progress selections (collection type, state, office, product, quantity, acknowledgements) are saved in `sessionStorage` so a refresh during the same browser session does not reset progress. Purchaser contact information is **not** persisted.
+
+## Changes made
+- Reworked dynamic rendering to avoid HTML injection risks by using DOM text nodes for user/data-driven content.
+- Limited saved state to non-PII selections in `sessionStorage` instead of `localStorage`.
+- Session-scoped transaction reference to avoid retaining identifiers across browser restarts.
+
+## Remaining prototype limitations
+- Demo-only content, products, and attachments must be replaced before production.
+- No real Pay.gov integration or backend validation exists in this static prototype.
+- Accessibility and validation flows should be re-reviewed in a production context with assistive technologies.
 
 ## Disclaimer
 This is an illustrative prototype for design and interaction review only. Demo data and text must be replaced for production use.
