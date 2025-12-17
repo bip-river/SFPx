@@ -75,8 +75,8 @@ body{
     .layout{display:grid; gap:18px; align-items:start}
     @media(min-width: 980px){ .layout{grid-template-columns: minmax(0, 1.25fr) 340px; gap:26px; align-items:start} }
 .card{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px; position:relative; overflow:visible;}
-.card::before{content:""; position:absolute; inset:0; background:linear-gradient(145deg, rgba(247,251,245,.85), rgba(255,255,255,.92)); z-index:0;}
-.card > *{position:relative; z-index:1;}
+.card::before{content:""; position:absolute; inset:0; background:linear-gradient(145deg, rgba(247,251,245,.85), rgba(255,255,255,.92)); z-index:-1;}
+.card > *{position:relative;}
     /* Stepper */
     .stepper{display:flex; flex-wrap:wrap; gap:10px; padding:12px; border-radius:14px; border:1px solid rgba(11,15,25,.10); background:linear-gradient(135deg, rgba(29,107,66,.12), rgba(255,255,255,.9)); backdrop-filter:saturate(140%) blur(4px); box-shadow:0 10px 22px rgba(12,26,28,.08);}
     .step{display:flex; align-items:center; gap:10px; padding:12px 14px; border-radius:12px; border:1px solid rgba(11,15,25,.12); background:linear-gradient(180deg, #fff, #f6fbf5); min-width: 210px; cursor:pointer; text-align:left; transition: border-color .12s ease, box-shadow .12s ease, transform .12s ease; box-shadow:0 10px 18px rgba(12,26,28,.05);}
