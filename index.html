@@ -113,14 +113,14 @@
                   </fieldset>
                 </div>
 
-                <div class="row">
+                <div class="row" id="stateRow">
                   <label for="state">State <span aria-hidden="true" style="color:var(--danger)">*</span></label>
                   <select id="state" required disabled>
                     <option value="">Select a state</option>
                   </select>
                 </div>
 
-                <div class="row">
+                <div class="row" id="officeRow">
                   <label for="officeInput">BWL office / district <span aria-hidden="true" style="color:var(--danger)">*</span></label>
                   <div class="hint">Start typing to filter. Use ↑/↓ to navigate; Enter to select.</div>
                   <div class="combo" id="officeCombo">
@@ -226,6 +226,8 @@ Replace this demo text with the authoritative terms and conditions used by your 
                 </div>
               </div>
 
+              <div class="hint" id="purchaserBlockedHint" style="display:none;">Check both acknowledgement boxes above to enter purchaser information.</div>
+
               <fieldset id="purchaserFieldset" class="purchaser-block locked" aria-describedby="purchaserBlockedHint" disabled>
               <div class="grid2" style="margin-top:14px;">
                 <div class="row">
@@ -274,25 +276,27 @@ Replace this demo text with the authoritative terms and conditions used by your 
                 </div>
               </div>
               </fieldset>
-
-              <div class="summary" id="reviewSummary" style="display:none; margin-top:14px;"></div>
-              <div class="alert" id="reviewNotice" style="display:none; margin-top:12px;">
-                <div class="icon" aria-hidden="true">i</div>
-                <div class="txt">
-                  <strong>What happens next</strong>
-                  <ul>
-                    <li>You will be redirected to Pay.gov to complete payment.</li>
-                    <li>After payment, you will return here to download and save your permit.</li>
-                    <li>Keep your confirmation email for your records.</li>
-                  </ul>
-                </div>
-              </div>
-              <div class="actions" id="reviewActions" style="display:none; margin-top:6px;">
-                <button class="primary" type="button" id="confirmPaygov" disabled>Continue to Pay.gov</button>
-              </div>
-
-              <div class="summary" id="handoff" style="display:none; margin-top:14px;"></div>
             </div>
+          </section>
+
+          <section class="post-step" aria-label="Review and next steps" id="postStep3" style="display:none;">
+            <div class="summary" id="reviewSummary" style="margin-top:14px;"></div>
+            <div class="alert" id="reviewNotice" style="display:none; margin-top:12px;">
+              <div class="icon" aria-hidden="true">i</div>
+              <div class="txt">
+                <strong>What happens next</strong>
+                <ul>
+                  <li>You will be redirected to Pay.gov to complete payment.</li>
+                  <li>After payment, you will return here to download and save your permit.</li>
+                  <li>Keep your confirmation email for your records.</li>
+                </ul>
+              </div>
+            </div>
+            <div class="actions" id="reviewActions" style="margin-top:6px;">
+              <button class="primary" type="button" id="confirmPaygov" disabled>Continue to Pay.gov</button>
+            </div>
+
+            <div class="summary" id="handoff" style="display:none; margin-top:14px;"></div>
           </section>
         </div>
 
