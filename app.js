@@ -36,8 +36,10 @@
 
     // Elements
     const stateEl = document.getElementById('state');
+    const stateRow = document.getElementById('stateRow');
     const officeInput = document.getElementById('officeInput');
     const officeIdEl = document.getElementById('officeId');
+    const officeRow = document.getElementById('officeRow');
     const officeCombo = document.getElementById('officeCombo');
     const officeList = document.getElementById('officeList');
     const ptypeGroup = document.getElementById('ptypeGroup');
@@ -78,6 +80,7 @@
     const reviewActions = document.getElementById('reviewActions');
     const confirmPaygovBtn = document.getElementById('confirmPaygov');
     const handoff = document.getElementById('handoff');
+    const postStep3 = document.getElementById('postStep3');
     const purchaserFieldset = document.getElementById('purchaserFieldset');
     const purchaserBlockedHint = document.getElementById('purchaserBlockedHint');
     const stepLiveRegion = document.getElementById('stepLiveRegion');
@@ -121,6 +124,10 @@
       open: [true, false, false]
     };
     let prevAvailability = [...stepState.available];
+
+    function hasSelectionForReview() {
+      return Boolean(model.product && model.qty);
+    }
 
     function setControlEnabled(el, enabled) {
       if (!el) return;
@@ -322,6 +329,8 @@
       if (!hasType) resetStateSelection();
       if (!hasState) resetOfficeSelection();
 
+      if (stateRow) stateRow.classList.toggle('hidden', !hasType);
+      if (officeRow) officeRow.classList.toggle('hidden', !hasState);
       setControlEnabled(stateEl, hasType);
       setControlEnabled(officeInput, hasState);
     }
@@ -674,6 +683,7 @@
     }
 
     function hideReview() {
+      if (postStep3) postStep3.style.display = 'none';
       reviewSummary.style.display = 'none';
       reviewNotice.style.display = 'none';
       reviewActions.style.display = 'none';
@@ -683,6 +693,10 @@
     }
 
     function renderReviewSummary() {
+      if (!hasSelectionForReview()) {
+        reviewSummary.style.display = 'none';
+        return;
+      }
       const stateName = DATA[model.state]?.name || model.state || '—';
       const fullName = [purchaser.FirstName.value.trim(), purchaser.MiddleName.value.trim(), purchaser.LastName.value.trim()].filter(Boolean).join(' ');
       const addressParts = [
@@ -736,8 +750,25 @@
       reviewSummary.appendChild(prodVal);
 
       reviewSummary.style.display = 'block';
-      reviewNotice.style.display = 'flex';
+    }
+
+    function updateReviewPanels() {
+      const hasSelection = hasSelectionForReview();
+      if (postStep3) postStep3.style.display = hasSelection ? 'block' : 'none';
+      if (!hasSelection) {
+        reviewSummary.style.display = 'none';
+        reviewNotice.style.display = 'none';
+        reviewActions.style.display = 'none';
+        handoff.style.display = 'none';
+        confirmPaygovBtn.disabled = true;
+        return;
+      }
+
+      renderReviewSummary();
       reviewActions.style.display = 'flex';
+      const ready = stepState.completed[2];
+      confirmPaygovBtn.disabled = !ready;
+      reviewNotice.style.display = ready ? 'flex' : 'none';
     }
 
     function renderProducts() {
@@ -958,10 +989,7 @@
     }
 
     function updateReviewActions() {
-      if (!reviewActions) return;
-      const show = stepState.available[2];
-      reviewActions.style.display = show ? 'flex' : 'none';
-      confirmPaygovBtn.disabled = !stepState.completed[2];
+      updateReviewPanels();
     }
 
     function syncPurchaserAccess() {
@@ -969,6 +997,7 @@
       if (purchaserFieldset) {
         purchaserFieldset.disabled = !unlocked;
         purchaserFieldset.classList.toggle('locked', !unlocked);
+        purchaserFieldset.style.display = unlocked ? 'block' : 'none';
       }
       if (purchaserBlockedHint) {
         purchaserBlockedHint.style.display = unlocked ? 'none' : 'block';
@@ -1134,8 +1163,6 @@
       stepState.completed[2] = false;
       stepState.open = [stepState.open[0], true, false];
       hideReview();
-      reviewSummary.style.display = 'none';
-      reviewNotice.style.display = 'none';
       updateStepUI(model.step);
       updateReviewActions();
     }
@@ -1271,8 +1298,7 @@
 
       if (!ackOk || !purchaserValid) {
         stepState.completed[2] = false;
-        reviewSummary.style.display = 'none';
-        reviewNotice.style.display = 'none';
+        handoff.style.display = 'none';
         confirmPaygovBtn.disabled = true;
         if (showErrorsOnFail) {
           const errs = [];
@@ -1283,20 +1309,16 @@
           showErrors(errs.concat(purchaserErrors));
         }
         updateStepUI(model.step);
-        updateReviewActions();
+        updateReviewPanels();
         persistState();
         return false;
       }
 
       hideErrors();
       stepState.completed[2] = true;
-      renderReviewSummary();
-      reviewSummary.style.display = 'block';
-      reviewNotice.style.display = 'flex';
-      reviewActions.style.display = 'flex';
-      confirmPaygovBtn.disabled = false;
+      stepState.open[2] = false;
       updateStepUI(2);
-      updateReviewActions();
+      updateReviewPanels();
       persistState();
       return true;
     }

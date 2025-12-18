@@ -30,6 +30,7 @@ body{
     }
     a{color:var(--link); text-decoration:none}
     a:hover{text-decoration:underline}
+    .hidden{display:none !important}
     .wrap{max-width:var(--max); margin:0 auto; padding:0 18px}
     .skip-link{position:absolute; left:-999px; top:auto; width:1px; height:1px; overflow:hidden;}
     .skip-link:focus{left:16px; top:16px; width:auto; height:auto; padding:10px 12px; background:#000; color:#fff; border-radius:10px; z-index:9999;}
@@ -134,6 +135,13 @@ body{
     .agreement-item details{margin-top:6px;}
     .checkline{display:flex; gap:10px; font-weight:750; align-items:flex-start;}
     .checkline input{width:auto; margin-top:2px;}
+    @media(min-width: 980px){
+      .agreements{grid-template-columns: 1fr 1.2fr;}
+      .agreements-list{display:grid; gap:12px;}
+      .agreement-item{border:1px solid rgba(29,107,66,.16); border-radius:12px; padding:12px; background:#fff; box-shadow:0 8px 16px rgba(12,26,28,.05);}
+      .agreement-item details{margin-top:10px;}
+      .checkline{align-items:center;}
+    }
     /* Combobox */
     .combo{position:relative}
     .combo input{padding-right:38px}
@@ -180,6 +188,7 @@ body{
     .summary .v{font-weight:850; margin-top:2px}
     .summary .summary-docs{font-weight:600; font-size:13px; color:var(--ink); margin-top:0;}
     .summary .summary-docs a{font-weight:800;}
+    .post-step{margin-top:18px;}
     /* Errors */
     .error{border-left:4px solid var(--danger); background:#fff1f0; border-radius:14px; padding:10px 12px; color:#5a0b0b; margin-top:12px; display:none; box-shadow:0 10px 18px rgba(12,26,28,.06);}
     .error[aria-hidden="false"]{display:block}
