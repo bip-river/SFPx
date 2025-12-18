@@ -97,8 +97,6 @@
 
           <div id="stepLiveRegion" class="sr-only" aria-live="polite"></div>
 
-          <div class="summary" id="progressSummary"></div>
-
           <!-- Step 1 -->
           <section id="step1" class="flow-step" aria-label="Step 1: Choose location">
             <div class="step-head">
@@ -185,9 +183,20 @@
             <div class="lock-note" id="step3LockNote">Choose a product and quantity to review agreements and enter purchaser information.</div>
             <div class="step-body" style="display:none;">
 
-              <details id="privacyDetail">
-                <summary>Privacy Act Notification</summary>
-                <div class="body">NOTICE: The Privacy Act of 1974 and applicable regulations require that you be furnished with the following information in connection with information collected for this permit purchase.
+              <div class="agreements" role="group" aria-label="Policy acknowledgements">
+                <div class="agreements-copy">
+                  <div class="eyebrow">Step 3</div>
+                  <div class="title">Review and accept</div>
+                  <p class="hint">Read the following summaries. You can open the full text before acknowledging.</p>
+                </div>
+                <div class="agreements-list">
+                  <div class="agreement-item">
+                    <label class="checkline"><input type="checkbox" id="ackPrivacy" />
+                      I understand how my information will be used (Privacy Act).
+                    </label>
+                    <details id="privacyDetail">
+                      <summary>Privacy Act Notification</summary>
+                      <div class="body">NOTICE: The Privacy Act of 1974 and applicable regulations require that you be furnished with the following information in connection with information collected for this permit purchase.
 
 AUTHORITY: 30 U.S.C. 601 et seq.; 43 U.S.C. 1181a; and 43 CFR 5400 (as applicable).
 
@@ -197,11 +206,15 @@ ROUTINE USES: The BWL may disclose information consistent with published routine
 
 EFFECT OF NOT PROVIDING INFORMATION: Providing the requested information is voluntary; however, failure to provide required information may prevent us from issuing your permit.
 </div>
-              </details>
-
-              <details id="termsDetail">
-                <summary>Terms and Conditions</summary>
-                <div class="body">Terms and Conditions (Demo Summary)
+                    </details>
+                  </div>
+                  <div class="agreement-item">
+                    <label class="checkline"><input type="checkbox" id="ackTerms" />
+                      I understand the rules for this permit (Terms and Conditions).
+                    </label>
+                    <details id="termsDetail">
+                      <summary>Terms and Conditions</summary>
+                      <div class="body">Terms and Conditions (Demo Summary)
 
 • All purchases are final; no refunds.
 • Permit is for personal use unless stated otherwise and may be non-transferable.
@@ -211,23 +224,8 @@ EFFECT OF NOT PROVIDING INFORMATION: Providing the requested information is volu
 
 Replace this demo text with the authoritative terms and conditions used by your production system.
 </div>
-              </details>
-
-              <div class="agreements" role="group" aria-label="Policy acknowledgements">
-                <div class="agreements-copy">
-                  <div class="eyebrow">Step 3</div>
-                  <div class="title">Review and accept</div>
-                  <p class="hint">Read the following summaries. You can open the full text before acknowledging.</p>
-                </div>
-                <div class="agreements-list">
-                  <label class="checkline"><input type="checkbox" id="ackPrivacy" />
-                    I understand how my information will be used (Privacy Act).
-                    <button class="inline-link" type="button" data-open-detail="#privacyDetail">View full text</button>
-                  </label>
-                  <label class="checkline"><input type="checkbox" id="ackTerms" />
-                    I understand the rules for this permit (Terms and Conditions).
-                    <button class="inline-link" type="button" data-open-detail="#termsDetail">View full text</button>
-                  </label>
+                    </details>
+                  </div>
                 </div>
               </div>
 

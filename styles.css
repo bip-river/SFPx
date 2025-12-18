@@ -131,10 +131,9 @@ body{
     .agreements .title{font-weight:900; font-size:17px; margin-top:4px;}
     .agreements .eyebrow{display:inline-block; padding:4px 8px; border-radius:999px; background:rgba(29,107,66,.12); color:var(--brand); font-size:12px; font-weight:800;}
     .agreements-list{display:grid; gap:10px;}
+    .agreement-item details{margin-top:6px;}
     .checkline{display:flex; gap:10px; font-weight:750; align-items:flex-start;}
     .checkline input{width:auto; margin-top:2px;}
-    .inline-link{border:0; background:none; color:var(--link); font-weight:750; cursor:pointer; padding:0; margin-left:6px; text-decoration:underline;}
-    .inline-link:hover{text-decoration:none;}
     /* Combobox */
     .combo{position:relative}
     .combo input{padding-right:38px}

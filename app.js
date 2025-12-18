@@ -72,7 +72,6 @@
       document.getElementById('status3')
     ];
 
-    const progressSummary = document.getElementById('progressSummary');
     const locationNotice = document.getElementById('locationNotice');
     const reviewSummary = document.getElementById('reviewSummary');
     const reviewNotice = document.getElementById('reviewNotice');
@@ -672,41 +671,6 @@
       locationNotice.style.display = 'block';
     }
 
-    function renderSummary(el) {
-      const stateName = DATA[model.state]?.name || '';
-      const ptypeLabel = (PRODUCT_TYPES.find(t => t.id === model.ptype)?.label) || '';
-      const prod = model.product;
-      const qty = model.qty;
-      const { durationLabel, expirationLabel } = getValidityLabels(prod);
-      const docs = prod ? buildRequiredDocs(prod) : [];
-      const docLinks = (docs.length > 0) ? buildDocLinks(docs, { includePrefix: false }) : null;
-      if (docLinks) docLinks.classList.add('summary-docs');
-      el.innerHTML = '';
-      const entries = [
-        ['Selection', `${stateName || '—'} • ${model.officeName || '—'} • ${ptypeLabel || '—'}`],
-        ['Product', prod ? prod.name : '—'],
-        ['Quantity', qty ? `${qty} ${prod?.unit || ''}${qty === 1 ? '' : 's'}` : '—'],
-        ['Valid for', prod ? durationLabel : '—'],
-        ['Permit expires', prod ? expirationLabel : '—'],
-        ['Required documents', docLinks || '—']
-      ];
-      entries.forEach(([label, value], idx) => {
-        const k = document.createElement('div');
-        k.className = 'k';
-        if (idx > 0) k.style.marginTop = '8px';
-        k.textContent = label;
-        const v = document.createElement('div');
-        v.className = 'v';
-        if (value instanceof Node) {
-          v.appendChild(value);
-        } else {
-          v.textContent = value;
-        }
-        el.appendChild(k);
-        el.appendChild(v);
-      });
-    }
-
     function hideReview() {
       reviewSummary.style.display = 'none';
       reviewNotice.style.display = 'none';
@@ -882,7 +846,6 @@
         resetAcknowledgements();
         hideReview();
         setFieldError(qtyEl, '');
-        renderSummary(progressSummary);
         setOpenStep(1);
         qtyEl.focus();
         updateReviewActions();
@@ -1168,7 +1131,6 @@
       stepState.available[2] = false;
       stepState.completed[2] = false;
       stepState.open = [stepState.open[0], true, false];
-      renderSummary(progressSummary);
       hideReview();
       reviewSummary.style.display = 'none';
       reviewNotice.style.display = 'none';
@@ -1194,7 +1156,6 @@
       const ok = validateQty();
       stepState.completed[1] = ok;
       stepState.available[2] = ok;
-      renderSummary(progressSummary);
       if (openNext && ok) {
         setOpenStep(2);
       } else {
@@ -1245,7 +1206,6 @@
       if (!ok) {
         resetFollowingSteps(0);
         stepState.open = [true, false, false];
-        renderSummary(progressSummary);
         hideLocationNotice();
         productListEl.innerHTML = '';
         qtySection.style.display = 'none';
@@ -1254,7 +1214,6 @@
         return;
       }
 
-      renderSummary(progressSummary);
       renderProducts();
       setOpenStep(1);
       updateStepUI(1);
@@ -1274,7 +1233,6 @@
       setFieldError(stateEl, '');
       setFieldError(officeInput, '');
       syncSelectionAvailability();
-      renderSummary(progressSummary);
       updateReviewActions();
       persistState();
       attemptAdvanceFromStep1();
@@ -1330,7 +1288,6 @@
 
       hideErrors();
       stepState.completed[2] = true;
-      renderSummary(progressSummary);
       renderReviewSummary();
       reviewSummary.style.display = 'block';
       reviewNotice.style.display = 'flex';
@@ -1373,7 +1330,6 @@
       validateStep1();
       hideReview();
       hideLocationNotice();
-      renderSummary(progressSummary);
       syncSelectionAvailability();
       updateStepUI(0);
       updateReviewActions();
@@ -1478,7 +1434,6 @@
       stepState.completed[1] = ok;
       stepState.available[2] = ok;
       stepState.completed[2] = false;
-      renderSummary(progressSummary);
       hideReview();
       updateLockNotes();
       updateStepUI(model.step);
@@ -1587,16 +1542,6 @@
       handoff.scrollIntoView({ behavior:'smooth', block:'start' });
     });
 
-    document.querySelectorAll('[data-open-detail]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const target = document.querySelector(btn.dataset.openDetail);
-        if (target && target.tagName === 'DETAILS') {
-          target.open = true;
-          target.querySelector('summary')?.focus();
-        }
-      });
-    });
-
     resetAllBtn.addEventListener('click', () => {
       resetStateSelection();
       setProductType('');
@@ -1610,7 +1555,6 @@
       hideErrors();
       hideLocationNotice();
       clearAllFieldErrors();
-      renderSummary(progressSummary);
       syncSelectionAvailability();
       updateStepUI(0);
       updateReviewActions();
@@ -1622,7 +1566,6 @@
       syncSelectionAvailability();
       await loadProductData();
       populateUSStates(purchaser.AddrState);
-      renderSummary(progressSummary);
       restoreState();
       syncPurchaserAccess();
       updateReviewActions();
