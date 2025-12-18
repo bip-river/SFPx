@@ -526,6 +526,26 @@
       return { validForDays, expirationDate, startDate, actualDays, shortened };
     }
 
+    function getValidityLabels(product) {
+      if (!product) {
+        return {
+          durationLabel: 'Valid for —',
+          expirationLabel: 'Permit expires —',
+          availableLabel: 'Available until —'
+        };
+      }
+
+      const { validForDays, expirationDate, actualDays, shortened } = calculatePermitValidity(product);
+      const durationDays = shortened ? actualDays : validForDays;
+      const durationLabel = `Valid for ${durationDays} day${durationDays === 1 ? '' : 's'}`;
+      const expirationLabel = `Permit expires ${formatDate(expirationDate)}`;
+      const availableLabel = product.availableUntil
+        ? `Available until ${formatDate(product.availableUntil)}`
+        : 'Availability varies';
+
+      return { durationLabel, expirationLabel, availableLabel };
+    }
+
     const DOCS_BY_TYPE = {
       fuelwood: [{ label: 'How to Measure Fuelwood', url: '#' }],
       christmas: [{ label: 'Planning Your Trip', url: '#' }],
@@ -555,14 +575,16 @@
       });
     }
 
-    function buildDocLinks(docs = []) {
+    function buildDocLinks(docs = [], { includePrefix = true } = {}) {
       const docsDiv = document.createElement('div');
       docsDiv.className = 'docs';
       if (!docs.length) return docsDiv;
 
-      const prefix = document.createElement('span');
-      prefix.textContent = 'Required documents: ';
-      docsDiv.appendChild(prefix);
+      if (includePrefix) {
+        const prefix = document.createElement('span');
+        prefix.textContent = 'Required documents: ';
+        docsDiv.appendChild(prefix);
+      }
       docs.forEach((doc, docIdx) => {
         const link = document.createElement('a');
         link.href = doc.url;
@@ -655,11 +677,18 @@
       const ptypeLabel = (PRODUCT_TYPES.find(t => t.id === model.ptype)?.label) || '';
       const prod = model.product;
       const qty = model.qty;
+      const { durationLabel, expirationLabel } = getValidityLabels(prod);
+      const docs = prod ? buildRequiredDocs(prod) : [];
+      const docLinks = (docs.length > 0) ? buildDocLinks(docs, { includePrefix: false }) : null;
+      if (docLinks) docLinks.classList.add('summary-docs');
       el.innerHTML = '';
       const entries = [
         ['Selection', `${stateName || '—'} • ${model.officeName || '—'} • ${ptypeLabel || '—'}`],
         ['Product', prod ? prod.name : '—'],
-        ['Quantity', qty ? `${qty} ${prod?.unit || ''}${qty === 1 ? '' : 's'}` : '—']
+        ['Quantity', qty ? `${qty} ${prod?.unit || ''}${qty === 1 ? '' : 's'}` : '—'],
+        ['Valid for', prod ? durationLabel : '—'],
+        ['Permit expires', prod ? expirationLabel : '—'],
+        ['Required documents', docLinks || '—']
       ];
       entries.forEach(([label, value], idx) => {
         const k = document.createElement('div');
@@ -668,7 +697,11 @@
         k.textContent = label;
         const v = document.createElement('div');
         v.className = 'v';
-        v.textContent = value;
+        if (value instanceof Node) {
+          v.appendChild(value);
+        } else {
+          v.textContent = value;
+        }
         el.appendChild(k);
         el.appendChild(v);
       });
@@ -695,6 +728,7 @@
       const total = (model.product?.price || 0) * (model.qty || 0);
       const totalLabel = (model.product?.price === 0) ? 'Free' : money(total);
       const qtyLabel = model.qty ? `${model.qty} ${model.product?.unit || 'unit'}${model.qty === 1 ? '' : 's'}` : '—';
+      const { durationLabel, expirationLabel } = getValidityLabels(model.product);
 
       handoff.style.display = 'none';
       reviewSummary.innerHTML = '';
@@ -720,6 +754,8 @@
         `${stateName} — ${model.officeName || '—'}`,
         model.product?.name || '—',
         qtyLabel,
+        durationLabel,
+        expirationLabel,
         `Estimated total: ${totalLabel}`
       ].forEach((line, idx) => {
         const span = document.createElement('div');
@@ -791,13 +827,8 @@
     function createProductCard(p, idx) {
       const id = `prod_${idx}`;
       const priceLine = p.price === 0 ? 'Free' : `${money(p.price)} per ${p.unit}`;
-      const saleEnd = p.availableUntil ? `Available until ${formatDate(p.availableUntil)}` : 'Availability varies';
-      const { validForDays, expirationDate, actualDays, shortened } = calculatePermitValidity(p);
-      const validity = shortened
-        ? `Valid for ${actualDays} day${actualDays === 1 ? '' : 's'} • Permit expires ${formatDate(expirationDate)}`
-        : `Valid for ${validForDays} days • Permit expires ${formatDate(expirationDate)}`;
+      const { durationLabel, expirationLabel, availableLabel } = getValidityLabels(p);
       const docs = buildRequiredDocs(p);
-      const maxLine = p.maxQty ? `Maximum allowed per permit: ${p.maxQty} ${p.unit}${p.maxQty === 1 ? '' : 's'}` : '';
 
       const card = document.createElement('label');
       card.className = 'prod';
@@ -814,45 +845,29 @@
       const name = document.createElement('div');
       name.className = 'name';
       name.textContent = p.name;
-      const meta1 = document.createElement('div');
-      meta1.className = 'meta';
-      meta1.textContent = `${model.officeName} · ${priceLine}`;
-      const meta2 = document.createElement('div');
-      meta2.className = 'meta';
-      meta2.textContent = saleEnd;
-      const desc = document.createElement('div');
-      desc.className = 'desc';
-      desc.textContent = p.description || 'Permit details provided at checkout.';
-
-      const panels = document.createElement('div');
-      panels.className = 'prod-panels';
-      const panel = document.createElement('div');
-      panel.className = 'panel';
-      const panelTitle = document.createElement('div');
-      panelTitle.className = 'panel-title';
-      panelTitle.textContent = 'Rules & constraints';
-      const rules = document.createElement('ul');
-      rules.className = 'rule-list';
-      [validity, maxLine || null, 'Bring your permit and ID while collecting.'].filter(Boolean).forEach((line) => {
-        const li = document.createElement('li');
-        li.textContent = line;
-        rules.appendChild(li);
-      });
+      const price = document.createElement('div');
+      price.className = 'stat';
+      price.textContent = priceLine;
+      const validityDuration = document.createElement('div');
+      validityDuration.className = 'stat';
+      validityDuration.textContent = durationLabel;
+      const validityExpiration = document.createElement('div');
+      validityExpiration.className = 'stat';
+      validityExpiration.textContent = expirationLabel;
+      const available = document.createElement('div');
+      available.className = 'meta';
+      available.textContent = availableLabel;
 
       const docsDiv = buildDocLinks(docs);
 
-      panel.appendChild(panelTitle);
-      panel.appendChild(rules);
-      panel.appendChild(docsDiv);
-      panels.appendChild(panel);
-
-      [name, meta1, meta2, desc, panels].forEach((node) => body.appendChild(node));
+      [name, price, validityDuration, validityExpiration, available, docsDiv].forEach((node) => body.appendChild(node));
       card.appendChild(body);
 
       card.querySelector('input').addEventListener('change', () => {
         model.productIndex = idx;
         model.product = p;
         qtyHint.textContent = `Enter 1–${p.maxQty} ${p.unit}(s). Price: ${p.price===0?'Free':money(p.price)} per ${p.unit}.`;
+        const maxLine = p.maxQty ? `Maximum allowed per permit: ${p.maxQty} ${p.unit}${p.maxQty === 1 ? '' : 's'}` : '';
         qtyGuard.textContent = maxLine || '';
         qtyEl.min = 1;
         qtyEl.max = p.maxQty || '';
