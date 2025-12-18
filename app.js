@@ -435,7 +435,9 @@
 
         div.appendChild(nameDiv);
         div.appendChild(idSpan);
-        div.addEventListener('mousedown', (e) => {
+        // Use click (not mousedown) so the selection works even if the input
+        // itself is disabled or blocked from taking focus.
+        div.addEventListener('click', (e) => {
           e.preventDefault();
           selectOffice(idx);
         });
