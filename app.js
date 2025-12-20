@@ -594,9 +594,24 @@
 
       const details = document.createElement('details');
       details.className = 'docs';
-      details.addEventListener('click', (event) => event.stopPropagation());
       const summary = document.createElement('summary');
-      summary.textContent = `Required documents (${docs.length})`;
+      const summaryTitle = document.createElement('span');
+      summaryTitle.className = 'docs-title';
+      summaryTitle.textContent = 'Maps & permit rules';
+      const summaryHint = document.createElement('span');
+      summaryHint.className = 'docs-hint';
+      summaryHint.textContent = 'View harvest area map, access routes, and permit requirements';
+      const summaryMeta = document.createElement('span');
+      summaryMeta.className = 'docs-meta';
+      summaryMeta.textContent = `${docs.length} item${docs.length === 1 ? '' : 's'}`;
+      const summaryChevron = document.createElement('span');
+      summaryChevron.className = 'docs-chevron';
+      summaryChevron.setAttribute('aria-hidden', 'true');
+      summaryChevron.textContent = '⌄';
+      summary.appendChild(summaryTitle);
+      summary.appendChild(summaryHint);
+      summary.appendChild(summaryMeta);
+      summary.appendChild(summaryChevron);
       details.appendChild(summary);
 
       const docsWrap = document.createElement('div');
@@ -879,7 +894,7 @@
 
       const docsDiv = buildDocLinks(docs);
 
-      [top, stats, available, docsDiv].forEach((node) => body.appendChild(node));
+      [top, docsDiv, stats, available].forEach((node) => body.appendChild(node));
       card.appendChild(body);
 
       card.querySelector('input').addEventListener('change', () => {

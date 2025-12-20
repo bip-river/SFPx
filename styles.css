@@ -183,7 +183,7 @@ body{
       width:18px; height:18px;
       accent-color: var(--brand);
     }
-    .prod-body{display:grid; gap:8px}
+    .prod-body{display:grid; gap:10px}
     .prod-top{display:flex; align-items:flex-start; justify-content:space-between; gap:12px}
     .prod .name{font-weight:800; font-size:16px; line-height:1.25}
     .prod .price{font-weight:800; font-size:15px; color:var(--ink); white-space:nowrap}
@@ -191,17 +191,46 @@ body{
     .stats li{font-size:12.5px; color:var(--ink); padding:4px 8px; border-radius:999px; border:1px solid rgba(29,107,66,.2); background:rgba(29,107,66,.08); font-weight:600;}
     .prod .meta{color:var(--muted); font-size:12.5px; margin-top:-2px}
     .prod .docs{
-      margin-top:4px;
-      border:0;
-      border-top:1px solid rgba(29,107,66,.18);
-      border-radius:0;
-      background:transparent;
-      padding:8px 0 0;
+      margin-top:2px;
+      border:1px solid rgba(29,107,66,.2);
+      border-radius:12px;
+      background:rgba(29,107,66,.05);
+      padding:8px 10px;
       box-shadow:none;
     }
-    .prod .docs summary{font-weight:600; font-size:12.5px; color:var(--ink); list-style:none}
+    .prod .docs summary{
+      font-weight:700;
+      font-size:13px;
+      color:var(--ink);
+      list-style:none;
+      cursor:pointer;
+      display:grid;
+      gap:4px;
+      position:relative;
+      padding-right:28px;
+    }
     .prod .docs summary::-webkit-details-marker{display:none}
-    .doc-links{display:flex; flex-wrap:wrap; gap:6px; margin-top:8px}
+    .prod .docs summary:focus-visible{outline:3px solid rgba(11,92,171,.3); outline-offset:3px}
+    .prod .docs summary:hover{background:rgba(29,107,66,.08); border-radius:10px}
+    .docs-title{font-size:13.5px}
+    .docs-hint{font-size:12px; color:var(--muted); font-weight:500}
+    .docs-meta{font-size:11.5px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.02em}
+    .docs-chevron{
+      position:absolute;
+      right:0;
+      top:4px;
+      width:20px;
+      height:20px;
+      display:grid;
+      place-items:center;
+      border-radius:999px;
+      border:1px solid rgba(29,107,66,.22);
+      background:#fff;
+      font-size:12px;
+      transition:transform .12s ease, background .12s ease;
+    }
+    .prod .docs[open] .docs-chevron{transform:rotate(180deg); background:rgba(29,107,66,.1)}
+    .doc-links{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px}
     .doc-links a{
       color:var(--link);
       border:1px solid rgba(11,92,171,.2);
