@@ -39,6 +39,7 @@ body{
     .usa-banner{background:#f1f1f1; border-bottom:1px solid rgba(0,0,0,.12); font-size:13px;}
     .usa-banner .inner{display:flex; align-items:center; gap:10px; padding:9px 0;}
     .flag{width:18px; height:12px; border:1px solid rgba(0,0,0,.2); border-radius:2px; overflow:hidden}
+    .flag img{display:block; width:100%; height:100%; object-fit:cover}
     .usa-banner .meta{color:#222}
     .usa-banner button{margin-left:auto; font-size:13px; border:1px solid rgba(0,0,0,.18); background:#fff; padding:6px 10px; border-radius:10px; cursor:pointer;}
     .usa-banner button:focus{outline:3px solid var(--accent); outline-offset:2px}
@@ -51,7 +52,9 @@ body{
     /* Agency bar */
 .agency-bar{background:#0b0f19; color:#fff; padding:10px 0; box-shadow:0 12px 26px rgba(0,0,0,.18);}
     .agency-bar .row{display:flex; align-items:center; gap:12px;}
-    .seal{width:34px; height:34px; border-radius:10px; background:linear-gradient(135deg, rgba(255,255,255,.18), rgba(255,255,255,.05)); border:1px solid rgba(255,255,255,.18); display:grid; place-items:center; font-weight:900; letter-spacing:.02em;}
+    .agency-logos{display:flex; align-items:center; gap:8px;}
+    .agency-logo{display:block; height:34px; width:auto; object-fit:contain;}
+    .agency-logo.bwl{height:30px;}
     .agency-title{line-height:1.2}
     .agency-title .top{font-size:12px; opacity:.9}
     .agency-title .bot{font-size:14px; font-weight:800}
