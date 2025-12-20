@@ -586,25 +586,45 @@
     }
 
     function buildDocLinks(docs = [], { includePrefix = true } = {}) {
-      const docsDiv = document.createElement('div');
-      docsDiv.className = 'docs';
-      if (!docs.length) return docsDiv;
-
-      if (includePrefix) {
-        const prefix = document.createElement('span');
-        prefix.textContent = 'Required documents: ';
-        docsDiv.appendChild(prefix);
+      if (!includePrefix) {
+        const docsDiv = document.createElement('div');
+        docsDiv.className = 'docs';
+        return docsDiv;
       }
-      docs.forEach((doc, docIdx) => {
-        const link = document.createElement('a');
-        link.href = doc.url;
-        link.textContent = doc.label;
-        docsDiv.appendChild(link);
-        if (docIdx < docs.length - 1) {
-          docsDiv.appendChild(document.createTextNode(' · '));
-        }
-      });
-      return docsDiv;
+
+      const details = document.createElement('details');
+      details.className = 'docs';
+      const summary = document.createElement('summary');
+      const summaryTitle = document.createElement('span');
+      summaryTitle.className = 'docs-title';
+      summaryTitle.textContent = 'Maps & permit rules';
+      const summaryMeta = document.createElement('span');
+      summaryMeta.className = 'docs-meta';
+      summaryMeta.textContent = `${docs.length} item${docs.length === 1 ? '' : 's'}`;
+      summary.appendChild(summaryTitle);
+      summary.appendChild(summaryMeta);
+      details.appendChild(summary);
+
+      const docsWrap = document.createElement('div');
+      docsWrap.className = 'doc-links';
+
+      if (!docs.length) {
+        const empty = document.createElement('div');
+        empty.className = 'doc-empty';
+        empty.textContent = 'No additional documents for this permit.';
+        docsWrap.appendChild(empty);
+      } else {
+        docs.forEach((doc) => {
+          const link = document.createElement('a');
+          link.href = doc.url;
+          link.textContent = doc.label;
+          link.addEventListener('click', (event) => event.stopPropagation());
+          docsWrap.appendChild(link);
+        });
+      }
+
+      details.appendChild(docsWrap);
+      return details;
     }
 
     function hideLocationNotice() {
@@ -839,25 +859,33 @@
 
       const body = document.createElement('div');
       body.className = 'prod-body';
+      const top = document.createElement('div');
+      top.className = 'prod-top';
       const name = document.createElement('div');
       name.className = 'name';
       name.textContent = p.name;
       const price = document.createElement('div');
-      price.className = 'stat';
+      price.className = 'price';
       price.textContent = priceLine;
-      const validityDuration = document.createElement('div');
-      validityDuration.className = 'stat';
-      validityDuration.textContent = durationLabel;
-      const validityExpiration = document.createElement('div');
-      validityExpiration.className = 'stat';
-      validityExpiration.textContent = expirationLabel;
+      top.appendChild(name);
+      top.appendChild(price);
+
+      const stats = document.createElement('ul');
+      stats.className = 'stats';
+      stats.setAttribute('aria-label', 'Permit details');
+      [durationLabel, expirationLabel].forEach((label) => {
+        const item = document.createElement('li');
+        item.textContent = label;
+        stats.appendChild(item);
+      });
+
       const available = document.createElement('div');
       available.className = 'meta';
       available.textContent = availableLabel;
 
       const docsDiv = buildDocLinks(docs);
 
-      [name, price, validityDuration, validityExpiration, available, docsDiv].forEach((node) => body.appendChild(node));
+      [top, docsDiv, stats, available].forEach((node) => body.appendChild(node));
       card.appendChild(body);
 
       card.querySelector('input').addEventListener('change', () => {
