@@ -1032,6 +1032,7 @@
       if (!body) return;
       const focusables = body.querySelectorAll('input, select, textarea, button, a[href], [tabindex]');
       focusables.forEach(el => {
+        const isDisabled = el.disabled || el.getAttribute('aria-disabled') === 'true';
         if (enabled) {
           if (Object.prototype.hasOwnProperty.call(el.dataset, 'collapsedTab')) {
             const prev = el.dataset.collapsedTab;
@@ -1040,7 +1041,7 @@
           }
           el.removeAttribute('data-collapsed');
         } else {
-          if (!Object.prototype.hasOwnProperty.call(el.dataset, 'collapsedTab')) {
+          if (!Object.prototype.hasOwnProperty.call(el.dataset, 'collapsedTab') && !isDisabled) {
             el.dataset.collapsedTab = el.getAttribute('tabindex') || '';
           }
           el.setAttribute('tabindex', '-1');

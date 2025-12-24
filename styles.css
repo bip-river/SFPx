@@ -101,8 +101,8 @@ body{
     .flow-step .step-toggle:hover{text-decoration:underline;}
     .flow-step .step-status{font-size:13px; color:var(--muted);}
     .flow-step .step-body{margin-top:10px; overflow:hidden; max-height:0; opacity:0; transform:translateY(-6px); transition:max-height .36s ease, opacity .24s ease, transform .24s ease;}
-    .flow-step.collapsed .step-body{margin-top:0; pointer-events:none;}
-    .flow-step:not(.collapsed) .step-body{max-height:var(--step-body-max, 1200px); opacity:1; transform:translateY(0);}
+    .flow-step.collapsed .step-body{margin-top:0; pointer-events:none; overflow:hidden;}
+    .flow-step:not(.collapsed) .step-body{max-height:var(--step-body-max, 1200px); opacity:1; transform:translateY(0); overflow:visible;}
     .lock-note{margin-top:8px; font-size:13px; color:#2f4f4d; background:rgba(247,251,245,.85); border:1px dashed rgba(29,107,66,.35); padding:12px 13px; border-radius:12px;}
     /* Forms */
     label{font-weight:750; font-size:14px; color:#0d3b25}
