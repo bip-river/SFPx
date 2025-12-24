@@ -124,11 +124,6 @@
       open: [true, false, false]
     };
     let prevAvailability = [...stepState.available];
-    const STEP_TRANSITION_DELAY_MS = 450;
-    const STEP_SCROLL_DELAY_MS = 250;
-    let stepTransitionTimer = null;
-    let stepScrollTimer = null;
-    let stepTransitionToken = 0;
 
     function hasSelectionForReview() {
       return Boolean(model.product && model.qty);
@@ -238,7 +233,7 @@
         if (savedModel.qty) {
           qtyEl.value = savedModel.qty;
         }
-        commitQuantity({ showErrors: false, openNext: true });
+        commitQuantity({ showErrors: false });
       }
 
       ackPrivacy.checked = Boolean(savedAcknowledgements.privacy);
@@ -912,7 +907,7 @@
         resetAcknowledgements();
         hideReview();
         setFieldError(qtyEl, '');
-        setOpenStep(1, { source: 'manual', scroll: false });
+        setOpenStep(1, { scroll: false });
         qtyEl.focus();
         updateReviewActions();
         persistState();
@@ -999,7 +994,7 @@
         sec.classList.toggle('collapsed', !open);
         const body = sec.querySelector('.step-body');
         const toggle = sec.querySelector('.step-toggle');
-        if (body) body.setAttribute('aria-hidden', String(!open));
+        if (body) body.style.display = open ? 'block' : 'none';
         if (toggle) toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
         const statusEl = stepStatuses[i];
         if (statusEl) {
@@ -1200,7 +1195,7 @@
       updateReviewActions();
     }
 
-    function commitQuantity({ showErrors = true, focusOnError = false, openNext = false } = {}) {
+    function commitQuantity({ showErrors = true, focusOnError = false } = {}) {
       const msg = getFieldErrorMessage(qtyEl);
       if (showErrors) {
         setFieldError(qtyEl, msg);
@@ -1218,11 +1213,7 @@
       const ok = validateQty();
       stepState.completed[1] = ok;
       stepState.available[2] = ok;
-      if (openNext && ok) {
-        setOpenStep(2, { source: 'auto' });
-      } else {
-        updateStepUI(model.step);
-      }
+      updateStepUI(model.step);
       updateReviewActions();
       persistState();
       return ok;
@@ -1240,34 +1231,13 @@
       return msgs;
     }
 
-    function setOpenStep(idx, { source = 'manual', scroll = true } = {}) {
+    function setOpenStep(idx, { scroll = true } = {}) {
       if (!stepState.available[idx]) return;
-      const delay = source === 'auto' ? STEP_TRANSITION_DELAY_MS : 0;
-      stepTransitionToken += 1;
-      const token = stepTransitionToken;
-      if (stepTransitionTimer) clearTimeout(stepTransitionTimer);
-      if (stepScrollTimer) clearTimeout(stepScrollTimer);
-
-      const applyOpen = () => {
-        if (token !== stepTransitionToken) return;
-        stepState.open = stepState.open.map((_, i) => i === idx);
-        updateStepUI(idx);
-        hideErrors();
-        const head = stepSections[idx]?.querySelector('.step-head');
-        if (scroll && head) {
-          const scrollDelay = source === 'auto' ? STEP_SCROLL_DELAY_MS : 0;
-          stepScrollTimer = setTimeout(() => {
-            if (token !== stepTransitionToken) return;
-            head.scrollIntoView({ behavior:'smooth', block:'start' });
-          }, scrollDelay);
-        }
-      };
-
-      if (delay) {
-        stepTransitionTimer = setTimeout(applyOpen, delay);
-      } else {
-        applyOpen();
-      }
+      stepState.open = stepState.open.map((_, i) => i === idx);
+      updateStepUI(idx);
+      hideErrors();
+      const head = stepSections[idx]?.querySelector('.step-head');
+      if (scroll && head) head.scrollIntoView({ behavior:'smooth', block:'start' });
     }
 
     function resetFollowingSteps(startIdx) {
@@ -1298,8 +1268,7 @@
       }
 
       renderProducts();
-      setOpenStep(1, { source: 'auto' });
-      updateStepUI(1);
+      updateStepUI(model.step);
       updateReviewActions();
       persistState();
     }
@@ -1487,14 +1456,14 @@
     stepToggles.forEach((btn, idx) => {
       btn.addEventListener('click', () => {
         if (!stepState.available[idx]) return;
-        setOpenStep(idx, { source: 'manual' });
+        setOpenStep(idx);
       });
     });
 
     steps.forEach((btn, idx) => {
       btn.addEventListener('click', () => {
         if (!stepState.available[idx]) return;
-        setOpenStep(idx, { source: 'manual' });
+        setOpenStep(idx);
       });
     });
 
@@ -1520,9 +1489,9 @@
     qtyEl.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
-        commitQuantity({ focusOnError: true, openNext: true });
+        commitQuantity({ focusOnError: true });
       } else if (e.key === 'Tab') {
-        const ok = commitQuantity({ focusOnError: true, openNext: true });
+        const ok = commitQuantity({ focusOnError: true });
         if (!ok) {
           e.preventDefault();
           qtyEl.focus();
@@ -1531,7 +1500,7 @@
     });
 
     qtyEl.addEventListener('blur', () => {
-      const ok = commitQuantity({ focusOnError: true, openNext: true });
+      const ok = commitQuantity({ focusOnError: true });
       if (!ok) setTimeout(() => qtyEl.focus(), 0);
     });
 
