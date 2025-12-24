@@ -87,10 +87,12 @@
     const lockNotes = [null, document.getElementById('step2LockNote'), document.getElementById('step3LockNote')];
 
     const transactionRefKey = 'sfp-demo-transaction-ref';
+    const STEP_TRANSITION_MS = 360;
 
     const resetAllBtn = document.getElementById('resetAll');
 
     let purchaserWasLocked = true;
+    let stepFocusTimer = null;
 
     // Purchaser fields
     const purchaser = {
@@ -994,7 +996,10 @@
         sec.classList.toggle('collapsed', !open);
         const body = sec.querySelector('.step-body');
         const toggle = sec.querySelector('.step-toggle');
-        if (body) body.style.display = open ? 'block' : 'none';
+        if (body) {
+          body.setAttribute('aria-hidden', open ? 'false' : 'true');
+          syncStepBodyHeight(body);
+        }
         if (toggle) toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
         const statusEl = stepStatuses[i];
         if (statusEl) {
@@ -1008,12 +1013,82 @@
       });
       updateLockNotes();
       applyLockState();
+      applyCollapsedState();
       stepState.available.forEach((available, i) => {
         if (available && !prevAvailability[i]) {
           announce(`Step ${i + 1} unlocked. You can now complete this section.`);
         }
       });
       prevAvailability = [...stepState.available];
+    }
+
+    function syncStepBodyHeight(body) {
+      if (!body) return;
+      const newHeight = body.scrollHeight || 0;
+      body.style.setProperty('--step-body-max', `${newHeight}px`);
+    }
+
+    function setStepBodyFocusability(body, enabled) {
+      if (!body) return;
+      const focusables = body.querySelectorAll('input, select, textarea, button, a[href], [tabindex]');
+      focusables.forEach(el => {
+        if (enabled) {
+          if (Object.prototype.hasOwnProperty.call(el.dataset, 'collapsedTab')) {
+            const prev = el.dataset.collapsedTab;
+            if (prev) el.setAttribute('tabindex', prev); else el.removeAttribute('tabindex');
+            delete el.dataset.collapsedTab;
+          }
+          el.removeAttribute('data-collapsed');
+        } else {
+          if (!Object.prototype.hasOwnProperty.call(el.dataset, 'collapsedTab')) {
+            el.dataset.collapsedTab = el.getAttribute('tabindex') || '';
+          }
+          el.setAttribute('tabindex', '-1');
+          el.dataset.collapsed = 'true';
+        }
+      });
+    }
+
+    function applyCollapsedState() {
+      stepSections.forEach((section, i) => {
+        const body = section?.querySelector('.step-body');
+        const open = stepState.open[i] && stepState.available[i];
+        setStepBodyFocusability(body, open);
+      });
+    }
+
+    function getStepFocusTarget(idx) {
+      const section = stepSections[idx];
+      if (!section) return null;
+      return section.querySelector('.step-body input, .step-body select, .step-body textarea, .step-body button, .step-toggle');
+    }
+
+    function scheduleStepFocus(idx, { scroll = true } = {}) {
+      if (stepFocusTimer) {
+        clearTimeout(stepFocusTimer);
+        stepFocusTimer = null;
+      }
+      stepFocusTimer = setTimeout(() => {
+        const section = stepSections[idx];
+        if (!section) return;
+        if (scroll) {
+          section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        const target = getStepFocusTarget(idx);
+        if (target && typeof target.focus === 'function') {
+          target.focus({ preventScroll: true });
+        }
+      }, STEP_TRANSITION_MS);
+    }
+
+    function transitionToStep(idx, { focus = true, scroll = true } = {}) {
+      if (!stepState.available[idx]) return;
+      stepState.open = stepState.open.map((_, i) => i === idx);
+      updateStepUI(idx);
+      hideErrors();
+      if (focus) {
+        scheduleStepFocus(idx, { scroll });
+      }
     }
 
     function updateReviewActions() {
@@ -1236,12 +1311,7 @@
     }
 
     function setOpenStep(idx) {
-      if (!stepState.available[idx]) return;
-      stepState.open = stepState.open.map((_, i) => i === idx);
-      updateStepUI(idx);
-      hideErrors();
-      const head = stepSections[idx]?.querySelector('.step-head');
-      if (head) head.scrollIntoView({ behavior:'smooth', block:'start' });
+      transitionToStep(idx, { focus: true, scroll: true });
     }
 
     function resetFollowingSteps(startIdx) {
@@ -1344,7 +1414,6 @@
 
       hideErrors();
       stepState.completed[2] = true;
-      stepState.open[2] = false;
       updateStepUI(2);
       updateReviewPanels();
       persistState();
@@ -1462,15 +1531,14 @@
     stepToggles.forEach((btn, idx) => {
       btn.addEventListener('click', () => {
         if (!stepState.available[idx]) return;
-        setOpenStep(idx);
+        transitionToStep(idx, { focus: true, scroll: false });
       });
     });
 
     steps.forEach((btn, idx) => {
       btn.addEventListener('click', () => {
         if (!stepState.available[idx]) return;
-        setOpenStep(idx);
-        stepSections[idx]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        transitionToStep(idx, { focus: true, scroll: true });
       });
     });
 
