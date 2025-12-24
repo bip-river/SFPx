@@ -124,6 +124,13 @@
       open: [true, false, false]
     };
     let prevAvailability = [...stepState.available];
+    const STEP_TRANSITION_DELAY_MS = 450;
+    const STEP_SCROLL_DELAY_MS = 250;
+    const STEP_FOCUS_DELAY_MS = 350;
+    let stepTransitionTimer = null;
+    let stepScrollTimer = null;
+    let stepFocusTimer = null;
+    let stepTransitionToken = 0;
 
     function hasSelectionForReview() {
       return Boolean(model.product && model.qty);
@@ -907,7 +914,7 @@
         resetAcknowledgements();
         hideReview();
         setFieldError(qtyEl, '');
-        setOpenStep(1);
+        setOpenStep(1, { source: 'manual', scroll: false });
         qtyEl.focus();
         updateReviewActions();
         persistState();
@@ -994,7 +1001,7 @@
         sec.classList.toggle('collapsed', !open);
         const body = sec.querySelector('.step-body');
         const toggle = sec.querySelector('.step-toggle');
-        if (body) body.style.display = open ? 'block' : 'none';
+        if (body) body.setAttribute('aria-hidden', String(!open));
         if (toggle) toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
         const statusEl = stepStatuses[i];
         if (statusEl) {
@@ -1214,7 +1221,7 @@
       stepState.completed[1] = ok;
       stepState.available[2] = ok;
       if (openNext && ok) {
-        setOpenStep(2);
+        setOpenStep(2, { source: 'auto' });
       } else {
         updateStepUI(model.step);
       }
@@ -1235,13 +1242,43 @@
       return msgs;
     }
 
-    function setOpenStep(idx) {
+    function setOpenStep(idx, { source = 'manual', scroll = true, focus = source === 'auto' } = {}) {
       if (!stepState.available[idx]) return;
-      stepState.open = stepState.open.map((_, i) => i === idx);
-      updateStepUI(idx);
-      hideErrors();
-      const head = stepSections[idx]?.querySelector('.step-head');
-      if (head) head.scrollIntoView({ behavior:'smooth', block:'start' });
+      const delay = source === 'auto' ? STEP_TRANSITION_DELAY_MS : 0;
+      stepTransitionToken += 1;
+      const token = stepTransitionToken;
+      if (stepTransitionTimer) clearTimeout(stepTransitionTimer);
+      if (stepScrollTimer) clearTimeout(stepScrollTimer);
+      if (stepFocusTimer) clearTimeout(stepFocusTimer);
+
+      const applyOpen = () => {
+        if (token !== stepTransitionToken) return;
+        stepState.open = stepState.open.map((_, i) => i === idx);
+        updateStepUI(idx);
+        hideErrors();
+        const head = stepSections[idx]?.querySelector('.step-head');
+        if (scroll && head) {
+          const scrollDelay = source === 'auto' ? STEP_SCROLL_DELAY_MS : 0;
+          stepScrollTimer = setTimeout(() => {
+            if (token !== stepTransitionToken) return;
+            head.scrollIntoView({ behavior:'smooth', block:'start' });
+          }, scrollDelay);
+        }
+        if (focus) {
+          const focusDelay = source === 'auto' ? STEP_FOCUS_DELAY_MS : 0;
+          stepFocusTimer = setTimeout(() => {
+            if (token !== stepTransitionToken) return;
+            const target = stepSections[idx]?.querySelector('.step-body input, .step-body select, .step-body textarea, .step-body button');
+            if (target && !target.disabled) target.focus({ preventScroll: true });
+          }, focusDelay);
+        }
+      };
+
+      if (delay) {
+        stepTransitionTimer = setTimeout(applyOpen, delay);
+      } else {
+        applyOpen();
+      }
     }
 
     function resetFollowingSteps(startIdx) {
@@ -1272,7 +1309,7 @@
       }
 
       renderProducts();
-      setOpenStep(1);
+      setOpenStep(1, { source: 'auto' });
       updateStepUI(1);
       updateReviewActions();
       persistState();
@@ -1344,7 +1381,6 @@
 
       hideErrors();
       stepState.completed[2] = true;
-      stepState.open[2] = false;
       updateStepUI(2);
       updateReviewPanels();
       persistState();
@@ -1462,15 +1498,14 @@
     stepToggles.forEach((btn, idx) => {
       btn.addEventListener('click', () => {
         if (!stepState.available[idx]) return;
-        setOpenStep(idx);
+        setOpenStep(idx, { source: 'manual' });
       });
     });
 
     steps.forEach((btn, idx) => {
       btn.addEventListener('click', () => {
         if (!stepState.available[idx]) return;
-        setOpenStep(idx);
-        stepSections[idx]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setOpenStep(idx, { source: 'manual' });
       });
     });
 
