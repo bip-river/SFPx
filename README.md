@@ -1,21 +1,23 @@
 # Online Forest Product Permits — Prototype
 
-This repo is a static, front-end-only prototype for an online forest products permit purchase flow. It lets a user choose a collection type, state, office, product, and quantity, then enter purchaser details and review a summary. Clicking “Continue to Pay.gov” shows a demo payload on the page instead of starting a real payment.
+This repo is a static, front-end-only prototype for buying a forest product permit. It demonstrates a three-step flow where a user selects what they are collecting, chooses a state and office, picks a permit and quantity, and then provides acknowledgements and purchaser details before reviewing a summary.
 
-## What this includes
-- Three-step purchase flow with validation and a typeahead office selector.
-- Demo catalog data in `products.json` (states, offices, products, limits).
-- Client-side persistence for non-PII selections using `sessionStorage`.
+## What it does
+- Loads demo catalog data from `products.json` (states, offices, products, limits, attachments, and eligibility rules).
+- Provides a typeahead office selector, product cards, quantity validation, and a review panel.
+- Shows a demo Pay.gov handoff payload for paid permits.
+- For no-fee permits, generates a demo permit PDF for download and shows a demo issuance payload.
+- Saves non-PII selections and acknowledgements in `sessionStorage` so the flow can be resumed.
 
-## What this does not include
-- No backend, permit issuance, or file downloads.
-- No real Pay.gov integration or payment processing.
-- Demo content only (copy, logos, and product data are placeholders).
+## What it does not do
+- No backend, payments, or real permit issuance.
+- No real Pay.gov integration.
+- Demo content only (copy, logos, and data are placeholders).
 
 ## Project layout
 - `index.html` — markup and content
 - `styles.css` — UI styles
-- `app.js` — all client-side behavior
+- `app.js` — client-side behavior
 - `products.json` — demo catalog data
 
 ## Run locally
