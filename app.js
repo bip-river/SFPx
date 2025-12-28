@@ -948,16 +948,6 @@
       return card;
     }
 
-    // Provide a cross-browser fallback for "selected" styles.
-    // Some browsers may not support :has(), so we apply a class on the label.
-    function updateProductCardSelection() {
-      const cards = Array.from(productListEl.querySelectorAll('.prod'));
-      cards.forEach((card) => {
-        const input = card.querySelector('input[type="radio"]');
-        card.classList.toggle('is-selected', Boolean(input && input.checked));
-      });
-    }
-
     function announce(message) {
       if (!stepLiveRegion || !message) return;
       stepLiveRegion.textContent = '';
