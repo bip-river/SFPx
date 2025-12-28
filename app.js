@@ -2,6 +2,7 @@
   'use strict';
 
     let DATA = {};
+    let dataReady = false;
     const STORAGE_KEY = 'sfp-demo-state';
     const DATA_SOURCE = 'products.json';
 
@@ -225,7 +226,10 @@
         model.productIndex = savedModel.productIndex;
         model.product = p;
         const radio = document.getElementById(`prod_${savedModel.productIndex}`);
-        if (radio) radio.checked = true;
+        if (radio) {
+          radio.checked = true;
+          updateProductCardSelection();
+        }
         qtyHint.textContent = `Enter 1–${p.maxQty} ${p.unit}(s). Price: ${p.price===0?'Free':money(p.price)} per ${p.unit}.`;
         qtyEl.min = 1;
         qtyEl.max = p.maxQty || '';
@@ -325,15 +329,19 @@
     function syncSelectionAvailability() {
       const hasType = Boolean(model.ptype);
       const hasState = hasType && Boolean(model.state);
-
+      const canUseData = dataReady && Object.keys(DATA || {}).length > 0;
+    
       if (!hasType) resetStateSelection();
       if (!hasState) resetOfficeSelection();
-
+    
       if (stateRow) stateRow.classList.toggle('hidden', !hasType);
       if (officeRow) officeRow.classList.toggle('hidden', !hasState);
-      setControlEnabled(stateEl, hasType);
-      setControlEnabled(officeInput, hasState);
+    
+      // Only enable controls once the catalog is available.
+      setControlEnabled(stateEl, canUseData && hasType);
+      setControlEnabled(officeInput, canUseData && hasState);
     }
+
 
     // Populate state dropdown
     function populateStates() {
@@ -373,24 +381,27 @@
     async function loadProductData() {
       setControlEnabled(stateEl, false);
       setControlEnabled(officeInput, false);
+    
       try {
         const res = await fetch(DATA_SOURCE);
         if (!res.ok) throw new Error('Unable to load product catalog.');
         const json = await res.json();
+    
         DATA = json || {};
+        dataReady = true;
         populateStates();
+        hideErrors();
       } catch (err) {
         console.error(err);
-        errorList.innerHTML = '';
-        const li = document.createElement('li');
-        li.textContent = 'We could not load available products right now. Please refresh and try again.';
-        errorList.appendChild(li);
-        errorBox.setAttribute('aria-hidden', 'false');
-        errorBox.style.display = 'block';
+        dataReady = false;
+    
+        // Uses the shared error summary so it is focusable and consistent.
+        showErrors(['We could not load available products right now. Please refresh and try again.']);
       } finally {
         syncSelectionAvailability();
       }
     }
+
 
     // Office combobox
     let officeOptions = [];
@@ -889,6 +900,7 @@
       card.appendChild(body);
 
       card.querySelector('input').addEventListener('change', () => {
+        updateProductCardSelection();
         model.productIndex = idx;
         model.product = p;
         qtyHint.textContent = `Enter 1–${p.maxQty} ${p.unit}(s). Price: ${p.price===0?'Free':money(p.price)} per ${p.unit}.`;
@@ -914,6 +926,16 @@
       });
 
       return card;
+    }
+
+    // Provide a cross-browser fallback for "selected" styles.
+    // Some browsers may not support :has(), so we apply a class on the label.
+    function updateProductCardSelection() {
+      const cards = Array.from(productListEl.querySelectorAll('.prod'));
+      cards.forEach((card) => {
+        const input = card.querySelector('input[type="radio"]');
+        card.classList.toggle('is-selected', Boolean(input && input.checked));
+      });
     }
 
     function announce(message) {
@@ -1430,13 +1452,18 @@
 
     officeInput.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
+        e.preventDefault();
         setOfficeExpanded(false);
+        activeIndex = -1;
         officeInput.removeAttribute('aria-activedescendant');
         return;
       }
-      if (officeList.getAttribute('aria-hidden') === 'true') setOfficeExpanded(true);
+    
+      if (officeInput.getAttribute('aria-expanded') !== 'true') {
+        setOfficeExpanded(true);
+      }
       if (!officeOptions.length) return;
-
+    
       if (e.key === 'ArrowDown') {
         e.preventDefault();
         activeIndex = Math.min(activeIndex + 1, officeOptions.length - 1);
@@ -1446,14 +1473,13 @@
         activeIndex = Math.max(activeIndex - 1, 0);
         highlightOffice(activeIndex);
       } else if (e.key === 'Enter') {
-        if (officeCombo.getAttribute('aria-expanded') === 'true' && activeIndex >= 0) {
+        if (officeInput.getAttribute('aria-expanded') === 'true' && activeIndex >= 0) {
           e.preventDefault();
           selectOffice(activeIndex);
         }
-      } else if (e.key === 'Escape') {
-        setOfficeExpanded(false);
       }
     });
+
 
     document.addEventListener('click', (e) => {
       if (!officeCombo.contains(e.target)) setOfficeExpanded(false);
