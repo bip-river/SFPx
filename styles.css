@@ -170,6 +170,17 @@ body{
       font-weight:500;
     }
     .prod:hover{border-color: rgba(29,107,66,.35); box-shadow:0 12px 20px rgba(12,26,28,.12)}
+    /* Fallback for browsers that do not support :has(). JS adds .is-selected on the label. */
+    .prod.is-selected{
+      border-color: rgba(29,107,66,.65);
+      background:linear-gradient(180deg, #fff, rgba(29,107,66,.08));
+      box-shadow:0 0 0 2px rgba(29,107,66,.18), 0 12px 20px rgba(12,26,28,.12);
+    }
+    /* Fallback focus style without :has(input:focus-visible). */
+    .prod:focus-within{
+      border-color: rgba(29,107,66,.65);
+      box-shadow:0 0 0 3px rgba(11,92,171,.28), 0 12px 20px rgba(12,26,28,.12);
+    }
     .prod:has(input:checked){
       border-color: rgba(29,107,66,.65);
       background:linear-gradient(180deg, #fff, rgba(29,107,66,.08));
