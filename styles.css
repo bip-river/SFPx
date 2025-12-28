@@ -89,12 +89,13 @@ body{
     .step .n{width:28px; height:28px; border-radius:10px; display:grid; place-items:center; font-weight:900; background:rgba(29,107,66,.12); color:var(--brand); flex:0 0 auto; box-shadow:0 6px 12px rgba(12,26,28,.12);}
     .step.active{border-color: rgba(29,107,66,.46); box-shadow:0 10px 22px rgba(29,107,66,.18);}
     .step.active .n{background: var(--brand); color:#fff}
+    .step.just-unlocked{border-color: rgba(215,168,68,.85); box-shadow: 0 0 0 3px rgba(215,168,68,.18), 0 12px 22px rgba(12,26,28,.14);}
     .step.done .n{background: rgba(15,108,58,.16); color: var(--ok)}
     .step .t{font-size:13px; color:var(--muted)}
     .step .k{font-weight:850; font-size:14px}
     .step-pill{margin-left:auto; padding:4px 9px; border-radius:999px; border:1px solid rgba(11,15,25,.12); font-size:12px; color:var(--muted); background:rgba(12,26,28,.06); box-shadow:0 6px 12px rgba(12,26,28,.08);}
     .flow-step{border:1px solid rgba(11,15,25,.12); border-radius:14px; padding:12px; margin-top:12px; background:linear-gradient(180deg, #fff, #f9fbf7); box-shadow:0 10px 24px rgba(12,26,28,.06);}
-    .flow-step .step-head{display:flex; align-items:center; gap:10px; padding:10px; border-radius:12px; background:linear-gradient(90deg, rgba(29,107,66,.12), rgba(29,107,66,.06)); border:1px solid rgba(29,107,66,.16);}
+    .flow-step .step-head{display:flex; align-items:center; gap:10px; padding:10px; border-radius:12px; background:linear-gradient(90deg, rgba(29,107,66,.12), rgba(29,107,66,.06)); border:1px solid rgba(29,107,66,.16); scroll-margin-top: 14px;}
     @media(min-width: 980px){.flow-step .step-head{display:grid; grid-template-columns: 1fr auto; gap:8px 14px;}}
     .flow-step .step-toggle{background:transparent; border:0; padding:0; font-weight:900; font-size:16px; cursor:pointer; text-align:left; flex:1;}
     .flow-step .step-toggle:hover{text-decoration:underline;}
