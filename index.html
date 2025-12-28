@@ -215,6 +215,15 @@ Replace this demo text with the authoritative terms and conditions used by your 
 </div>
                     </details>
                   </div>
+                  <div class="agreement-item" id="eligibilityAgreement" style="display:none;">
+                    <label class="checkline"><input type="checkbox" id="ackEligibility" />
+                      <span id="eligibilityLabel">I certify that I meet the eligibility requirements for this permit.</span>
+                    </label>
+                    <details id="eligibilityDetail">
+                      <summary>Eligibility details</summary>
+                      <div class="body" id="eligibilityBody"></div>
+                    </details>
+                  </div>
                 </div>
               </div>
 
@@ -277,7 +286,7 @@ Replace this demo text with the authoritative terms and conditions used by your 
               <div class="icon" aria-hidden="true">i</div>
               <div class="txt">
                 <strong>What happens next</strong>
-                <ul>
+                <ul id="nextStepsList">
                   <li>You will be redirected to Pay.gov to complete payment.</li>
                   <li>After payment, you will return here to download and save your permit.</li>
                   <li>Keep your confirmation email for your records.</li>
@@ -288,6 +297,19 @@ Replace this demo text with the authoritative terms and conditions used by your 
               <button class="primary" type="button" id="confirmPaygov" disabled>Continue to Pay.gov</button>
             </div>
 
+            <div class="alert" id="confirmation" style="display:none; margin-top:12px;">
+              <div class="icon" aria-hidden="true">i</div>
+              <div class="txt">
+                <strong>Permit issued</strong>
+                <div class="small" style="margin-top:4px;">Reference: <span id="permitRef">—</span></div>
+                <div style="margin-top:10px;">
+                  <button class="primary" type="button" id="permitDownloadBtn">Download permit (PDF)</button>
+                </div>
+                <div class="hint" style="margin-top:8px;">
+                  Save the permit for your records. A copy is also sent to the email address you provided (demo behavior).
+                </div>
+              </div>
+            </div>
             <div class="summary" id="handoff" style="display:none; margin-top:14px;"></div>
           </section>
         </div>

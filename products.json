@@ -68,6 +68,63 @@
                   "url": "#"
                 }
               ]
+            },
+            {
+              "name": "Fuelwood Permit — Subsistence (ANILCA, No fee)",
+              "unit": "cord",
+              "price": 0,
+              "availableUntil": "2026-12-31",
+              "maxQty": 5,
+              "description": "No-fee permit for eligible subsistence users. Personal/family subsistence use only.",
+              "eligibility": {
+                "requiresCertification": true,
+                "basis": "ANILCA Title VIII subsistence eligibility (16 U.S.C. § 3113)",
+                "label": "I certify that I qualify for subsistence uses under ANILCA (16 U.S.C. § 3113) for this no-fee permit.",
+                "intro": "This no-fee permit option is available only to eligible subsistence users in Alaska.",
+                "bullets": [
+                  "I am eligible for subsistence uses as defined in 16 U.S.C. § 3113.",
+                  "I will use the forest products collected under this permit for personal or family subsistence use (not commercial resale).",
+                  "I understand that false statements may be subject to penalties."
+                ],
+                "citations": [
+                  {
+                    "label": "16 U.S.C. § 3113 (U.S. House Office of Law Revision Counsel)",
+                    "url": "https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title16-section3113"
+                  },
+                  {
+                    "label": "16 U.S.C. § 3113 (Cornell LII)",
+                    "url": "https://www.law.cornell.edu/uscode/text/16/3113"
+                  }
+                ]
+              },
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Free Use (No fee)",
+              "unit": "cord",
+              "price": 0,
+              "availableUntil": "2026-12-31",
+              "maxQty": 2,
+              "description": "No-fee personal use permit issued under free-use authority. Not for commercial resale.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
             }
           ],
           "christmas": [
@@ -100,6 +157,24 @@
               "availableUntil": "2025-12-25",
               "maxQty": 3,
               "description": "Limited areas; verify winter travel conditions before departure.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Free Use (No fee)",
+              "unit": "tree",
+              "price": 0,
+              "availableUntil": "2025-12-25",
+              "maxQty": 1,
+              "description": "No-fee personal use tree permit for designated areas.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -194,6 +269,63 @@
                   "url": "#"
                 }
               ]
+            },
+            {
+              "name": "Fuelwood Permit — Subsistence (ANILCA, No fee)",
+              "unit": "cord",
+              "price": 0,
+              "availableUntil": "2026-12-31",
+              "maxQty": 4,
+              "description": "No-fee permit for eligible subsistence users. Personal/family subsistence use only.",
+              "eligibility": {
+                "requiresCertification": true,
+                "basis": "ANILCA Title VIII subsistence eligibility (16 U.S.C. § 3113)",
+                "label": "I certify that I qualify for subsistence uses under ANILCA (16 U.S.C. § 3113) for this no-fee permit.",
+                "intro": "This no-fee permit option is available only to eligible subsistence users in Alaska.",
+                "bullets": [
+                  "I am eligible for subsistence uses as defined in 16 U.S.C. § 3113.",
+                  "I will use the forest products collected under this permit for personal or family subsistence use (not commercial resale).",
+                  "I understand that false statements may be subject to penalties."
+                ],
+                "citations": [
+                  {
+                    "label": "16 U.S.C. § 3113 (U.S. House Office of Law Revision Counsel)",
+                    "url": "https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title16-section3113"
+                  },
+                  {
+                    "label": "16 U.S.C. § 3113 (Cornell LII)",
+                    "url": "https://www.law.cornell.edu/uscode/text/16/3113"
+                  }
+                ]
+              },
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Fuelwood Permit — Free Use (No fee)",
+              "unit": "cord",
+              "price": 0,
+              "availableUntil": "2026-12-31",
+              "maxQty": 2,
+              "description": "No-fee personal use permit issued under free-use authority. Not for commercial resale.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
             }
           ],
           "christmas": [
@@ -222,6 +354,24 @@
               "availableUntil": "2025-12-25",
               "maxQty": 5,
               "description": "Designated areas only.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Free Use (No fee)",
+              "unit": "tree",
+              "price": 0,
+              "availableUntil": "2025-12-25",
+              "maxQty": 1,
+              "description": "No-fee personal use tree permit for designated areas.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -315,6 +465,24 @@
                   "url": "#"
                 }
               ]
+            },
+            {
+              "name": "Fuelwood Permit — Free Use (No fee)",
+              "unit": "cord",
+              "price": 0,
+              "availableUntil": "2026-12-31",
+              "maxQty": 1,
+              "description": "No-fee personal use permit issued under free-use authority. Not for commercial resale.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
             }
           ],
           "christmas": [
@@ -347,6 +515,24 @@
               "availableUntil": "2025-12-24",
               "maxQty": 3,
               "description": "Limited permit; verify availability.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Free Use (No fee)",
+              "unit": "tree",
+              "price": 0,
+              "availableUntil": "2025-12-24",
+              "maxQty": 1,
+              "description": "No-fee personal use tree permit for designated areas.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -431,6 +617,24 @@
                   "url": "#"
                 }
               ]
+            },
+            {
+              "name": "Fuelwood Permit — Free Use (No fee)",
+              "unit": "cord",
+              "price": 0,
+              "availableUntil": "2026-12-31",
+              "maxQty": 2,
+              "description": "No-fee personal use permit issued under free-use authority. Not for commercial resale.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
             }
           ],
           "christmas": [
@@ -455,6 +659,24 @@
               "availableUntil": "2025-12-24",
               "maxQty": 5,
               "description": "Designated cutting areas only.",
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ]
+            },
+            {
+              "name": "Christmas Tree Permit — Free Use (No fee)",
+              "unit": "tree",
+              "price": 0,
+              "availableUntil": "2025-12-24",
+              "maxQty": 1,
+              "description": "No-fee personal use tree permit for designated areas.",
               "requiredDocs": [
                 {
                   "label": "Map",
