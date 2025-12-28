@@ -1338,26 +1338,34 @@
     }
 
     function updateLockNotes() {
-      if (lockNotes[1]) {
-        const needsType = !model.ptype;
-        const needsState = !model.state;
-        const needsOffice = !model.officeId;
-        if (needsType || needsState || needsOffice) {
-          const parts = [];
-          if (needsType) parts.push('select what you are collecting');
-          if (needsState) parts.push('choose a state');
-          if (needsOffice) parts.push('pick a BWL office');
-          lockNotes[1].textContent = `Complete step 1 to unlock.`;
-        }
-      }
-      if (lockNotes[2]) {
-        if (!model.product) {
-          lockNotes[2].textContent = 'Complete step 2 to unlock.';
-        } else if (!model.qty) {
-          lockNotes[2].textContent = 'Enter a quantity within the allowed range to continue.';
-        }
-      }
+  const humanJoin = (items) => {
+    if (items.length === 0) return '';
+    if (items.length === 1) return items[0];
+    if (items.length === 2) return `${items[0]} and ${items[1]}`;
+    return `${items.slice(0, -1).join(', ')}, and ${items[items.length - 1]}`;
+  };
+
+  if (lockNotes[1]) {
+    const needs = [];
+    if (!model.ptype) needs.push('select what you are collecting');
+    if (!model.state) needs.push('choose a state');
+    if (!model.officeId) needs.push('pick a BWL office');
+
+    lockNotes[1].textContent = needs.length
+      ? `To unlock Step 2, ${humanJoin(needs)}.`
+      : '';
+  }
+
+  if (lockNotes[2]) {
+    if (!model.product) {
+      lockNotes[2].textContent = 'To unlock Step 3, choose a product and enter a quantity.';
+    } else if (!model.qty) {
+      lockNotes[2].textContent = 'To unlock Step 3, enter a quantity within the allowed range.';
+    } else {
+      lockNotes[2].textContent = '';
     }
+  }
+}
 
     function evaluateFinalStep({ showErrorsOnFail = false } = {}) {
       const ackOk = ackPrivacy.checked && ackTerms.checked;
@@ -1671,7 +1679,6 @@
       syncPurchaserAccess();
       updateReviewActions();
       syncSelectionAvailability();
-      updateLockNotes();
       updateStepUI(0);
     }
 
