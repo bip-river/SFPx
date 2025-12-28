@@ -274,3 +274,7 @@ body{
     .footer-links a{color:var(--muted)}
     .footer-links a:hover{color:var(--brand)}
     .smallprint{margin-top:10px; color:rgba(68,84,106,.9)}
+    @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+    html { scroll-behavior: auto; }
+    }
