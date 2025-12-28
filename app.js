@@ -59,6 +59,16 @@
     const ackPrivacy = document.getElementById('ackPrivacy');
     const ackTerms = document.getElementById('ackTerms');
 
+    const eligibilityAgreement = document.getElementById('eligibilityAgreement');
+    const ackEligibility = document.getElementById('ackEligibility');
+    const eligibilityLabel = document.getElementById('eligibilityLabel');
+    const eligibilityBody = document.getElementById('eligibilityBody');
+
+    const nextStepsList = document.getElementById('nextStepsList');
+    const confirmation = document.getElementById('confirmation');
+    const permitRefEl = document.getElementById('permitRef');
+    const permitDownloadBtn = document.getElementById('permitDownloadBtn');
+
     const errorBox = document.getElementById('errorBox');
     const errorList = document.getElementById('errorList');
 
@@ -92,6 +102,8 @@
     const resetAllBtn = document.getElementById('resetAll');
 
     let purchaserWasLocked = true;
+
+    let permitDownloadUrl = '';
 
     // Purchaser fields
     const purchaser = {
@@ -167,7 +179,8 @@
         },
         acknowledgements: {
           privacy: ackPrivacy.checked,
-          terms: ackTerms.checked
+          terms: ackTerms.checked,
+          eligibility: ackEligibility ? ackEligibility.checked : false
         }
       };
       try {
@@ -230,7 +243,7 @@
           radio.checked = true;
           updateProductCardSelection();
         }
-        qtyHint.textContent = `Enter 1–${p.maxQty} ${p.unit}(s). Price: ${p.price===0?'Free':money(p.price)} per ${p.unit}.`;
+        qtyHint.textContent = `Enter 1–${p.maxQty} ${p.unit}(s). Price: ${feeLabelForUnit(p.price, p.unit)}.`;
         qtyEl.min = 1;
         qtyEl.max = p.maxQty || '';
         qtySection.style.display = 'block';
@@ -242,6 +255,9 @@
 
       ackPrivacy.checked = Boolean(savedAcknowledgements.privacy);
       ackTerms.checked = Boolean(savedAcknowledgements.terms);
+      if (ackEligibility) ackEligibility.checked = Boolean(savedAcknowledgements.eligibility);
+
+      renderEligibilityAgreement();
 
       evaluateFinalStep();
       syncPurchaserAccess();
@@ -523,7 +539,14 @@
     }
 
     function money(n) {
-      return new Intl.NumberFormat(undefined, { style:'currency', currency:'USD' }).format(n);
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+    }
+    function feeLabelForUnit(unitPrice, unit) {
+      return unitPrice === 0 ? 'No fee' : `${money(unitPrice)} per ${unit}`;
+    }
+
+    function totalLabelFor(unitPrice, total) {
+      return unitPrice === 0 ? 'No fee' : money(total);
     }
     function formatDate(isoOrDate) {
       if (!isoOrDate) return '';
@@ -724,6 +747,7 @@
 
     function hideReview() {
       if (postStep3) postStep3.style.display = 'none';
+      clearConfirmation();
       reviewSummary.style.display = 'none';
       reviewNotice.style.display = 'none';
       reviewActions.style.display = 'none';
@@ -746,7 +770,7 @@
       ].filter(Boolean).join(', ');
       const email = purchaser.Email.value.trim();
       const total = (model.product?.price || 0) * (model.qty || 0);
-      const totalLabel = (model.product?.price === 0) ? 'Free' : money(total);
+      const totalLabel = totalLabelFor(model.product?.price || 0, total);
       const qtyLabel = model.qty ? `${model.qty} ${model.product?.unit || 'unit'}${model.qty === 1 ? '' : 's'}` : '—';
       const { durationLabel, expirationLabel } = getValidityLabels(model.product);
 
@@ -801,10 +825,12 @@
         reviewActions.style.display = 'none';
         handoff.style.display = 'none';
         confirmPaygovBtn.disabled = true;
+        clearConfirmation();
         return;
       }
 
       renderReviewSummary();
+      configureCheckoutCopy();
       reviewActions.style.display = 'flex';
       const ready = stepState.completed[2];
       confirmPaygovBtn.disabled = !ready;
@@ -874,7 +900,7 @@
 
     function createProductCard(p, idx) {
       const id = `prod_${idx}`;
-      const priceLine = p.price === 0 ? 'Free' : `${money(p.price)} per ${p.unit}`;
+      const priceLine = feeLabelForUnit(p.price, p.unit);
       const { durationLabel, expirationLabel, availableLabel } = getValidityLabels(p);
       const docs = buildRequiredDocs(p);
 
@@ -923,7 +949,7 @@
         updateProductCardSelection();
         model.productIndex = idx;
         model.product = p;
-        qtyHint.textContent = `Enter 1–${p.maxQty} ${p.unit}(s). Price: ${p.price===0?'Free':money(p.price)} per ${p.unit}.`;
+        qtyHint.textContent = `Enter 1–${p.maxQty} ${p.unit}(s). Price: ${feeLabelForUnit(p.price, p.unit)}.`;
         const maxLine = p.maxQty ? `Maximum allowed per permit: ${p.maxQty} ${p.unit}${p.maxQty === 1 ? '' : 's'}` : '';
         qtyGuard.textContent = maxLine || '';
         qtyEl.min = 1;
@@ -937,6 +963,8 @@
         stepState.available[2] = false;
         stepState.completed[2] = false;
         resetAcknowledgements();
+        renderEligibilityAgreement();
+        clearConfirmation();
         hideReview();
         setFieldError(qtyEl, '');
         
@@ -1085,8 +1113,169 @@
       updateReviewPanels();
     }
 
+    function productRequiresEligibility(product) {
+      return Boolean(product?.eligibility?.requiresCertification);
+    }
+
+    function ackRequirementsMet() {
+      const base = ackPrivacy.checked && ackTerms.checked;
+      if (productRequiresEligibility(model.product)) {
+        return base && Boolean(ackEligibility && ackEligibility.checked);
+      }
+      return base;
+    }
+
+    function clearConfirmation() {
+      if (confirmation) confirmation.style.display = 'none';
+      if (permitRefEl) permitRefEl.textContent = '—';
+      if (permitDownloadUrl) {
+        try { URL.revokeObjectURL(permitDownloadUrl); } catch (err) { /* no-op */ }
+        permitDownloadUrl = '';
+      }
+    }
+
+    function renderEligibilityAgreement() {
+      if (!eligibilityAgreement || !ackEligibility || !eligibilityLabel || !eligibilityBody) return;
+
+      const required = productRequiresEligibility(model.product);
+      if (!required) {
+        eligibilityAgreement.style.display = 'none';
+        eligibilityBody.innerHTML = '';
+        eligibilityLabel.textContent = 'I certify that I meet the eligibility requirements for this permit.';
+        ackEligibility.checked = false;
+        return;
+      }
+
+      const elig = model.product?.eligibility || {};
+      eligibilityAgreement.style.display = 'block';
+      eligibilityLabel.textContent = elig.label || 'I certify that I meet the eligibility requirements for this permit.';
+
+      eligibilityBody.innerHTML = '';
+      if (elig.intro) {
+        const p = document.createElement('div');
+        p.textContent = elig.intro;
+        eligibilityBody.appendChild(p);
+      }
+
+      if (Array.isArray(elig.bullets) && elig.bullets.length) {
+        const ul = document.createElement('ul');
+        elig.bullets.forEach((b) => {
+          const li = document.createElement('li');
+          li.textContent = b;
+          ul.appendChild(li);
+        });
+        eligibilityBody.appendChild(ul);
+      }
+
+      if (Array.isArray(elig.citations) && elig.citations.length) {
+        const citeWrap = document.createElement('div');
+        citeWrap.style.marginTop = '8px';
+        const title = document.createElement('div');
+        title.style.fontWeight = '600';
+        title.textContent = 'Read the legal text';
+        citeWrap.appendChild(title);
+
+        const list = document.createElement('ul');
+        elig.citations.forEach((c) => {
+          const li = document.createElement('li');
+          const a = document.createElement('a');
+          a.href = c.url || '#';
+          a.textContent = c.label || 'Legal reference';
+          a.target = '_blank';
+          a.rel = 'noopener';
+          li.appendChild(a);
+          list.appendChild(li);
+        });
+        citeWrap.appendChild(list);
+        eligibilityBody.appendChild(citeWrap);
+      }
+    }
+
+    function configureCheckoutCopy() {
+      if (!model.product || !model.qty) return;
+      const unitPrice = model.product?.price || 0;
+      const total = unitPrice * (model.qty || 0);
+      const noFee = unitPrice === 0 && total === 0;
+
+      if (confirmPaygovBtn) confirmPaygovBtn.textContent = noFee ? 'Confirm and get permit' : 'Continue to Pay.gov';
+
+      if (nextStepsList) {
+        nextStepsList.innerHTML = '';
+        const items = noFee
+          ? [
+              'No payment is required.',
+              'After you confirm, you will be able to download and save your permit.',
+              'Keep your confirmation email for your records.'
+            ]
+          : [
+              'You will be redirected to Pay.gov to complete payment.',
+              'After payment, you will return here to download and save your permit.',
+              'Keep your confirmation email for your records.'
+            ];
+        items.forEach((t) => {
+          const li = document.createElement('li');
+          li.textContent = t;
+          nextStepsList.appendChild(li);
+        });
+      }
+    }
+
+    function buildDemoPermitPdf(lines) {
+      const safe = (s) => String(s || '').replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+      const content = (() => {
+        const out = [];
+        out.push('BT');
+        out.push('/F1 12 Tf');
+        out.push('14 TL');
+        out.push('72 740 Td');
+        (lines || []).forEach((line, i) => {
+          out.push(`(${safe(line)}) Tj`);
+          if (i < (lines.length - 1)) out.push('T*');
+        });
+        out.push('ET');
+        return out.join('\n') + '\n';
+      })();
+
+      const encoder = new TextEncoder();
+      const contentBytes = encoder.encode(content);
+
+      const objects = [];
+      objects.push('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
+      objects.push('2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n');
+      objects.push('3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>\nendobj\n');
+      objects.push(`4 0 obj\n<< /Length ${contentBytes.length} >>\nstream\n${content}endstream\nendobj\n`);
+      objects.push('5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n');
+
+      const header = '%PDF-1.4\n';
+      const headerBytes = encoder.encode(header).length;
+
+      const offsets = [0];
+      let cursor = headerBytes;
+
+      for (const obj of objects) {
+        offsets.push(cursor);
+        cursor += encoder.encode(obj).length;
+      }
+
+      const xrefOffset = cursor;
+      const xrefLines = [];
+      xrefLines.push('xref\n');
+      xrefLines.push(`0 ${offsets.length}\n`);
+      xrefLines.push('0000000000 65535 f \n');
+      for (let i = 1; i < offsets.length; i++) {
+        const off = String(offsets[i]).padStart(10, '0');
+        xrefLines.push(`${off} 00000 n \n`);
+      }
+      const trailer =
+        `trailer\n<< /Size ${offsets.length} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF\n`;
+
+      const xref = xrefLines.join('');
+      const full = header + objects.join('') + xref + trailer;
+      return new Blob([full], { type: 'application/pdf' });
+    }
+
     function syncPurchaserAccess() {
-      const unlocked = ackPrivacy.checked && ackTerms.checked;
+      const unlocked = ackRequirementsMet();
       if (purchaserFieldset) {
         purchaserFieldset.disabled = !unlocked;
         purchaserFieldset.classList.toggle('locked', !unlocked);
@@ -1110,15 +1299,17 @@
     function resetAcknowledgements() {
       ackPrivacy.checked = false;
       ackTerms.checked = false;
+      if (ackEligibility) ackEligibility.checked = false;
       ackPrivacy.disabled = false;
       ackTerms.disabled = false;
       ackPrivacy.removeAttribute('aria-disabled');
       ackTerms.removeAttribute('aria-disabled');
       syncPurchaserAccess();
+      renderEligibilityAgreement();
     }
 
     function getFieldContainer(el) {
-      return el?.closest('.row') || el?.parentElement;
+      return el?.closest('.row') || el?.closest('.agreement-item') || el?.parentElement;
     }
 
     function setFieldError(el, message) {
@@ -1246,8 +1437,8 @@
       if (p.maxQty && v > p.maxQty) return false;
       model.qty = v;
       const total = v * (p.price || 0);
-      totalEl.value = p.price === 0 ? 'Free' : money(total);
-      totalCalc.textContent = `${p.price === 0 ? 'Free permit' : `${money(p.price)} × ${v} ${p.unit}${v === 1 ? '' : 's'} = ${totalEl.value}`}`;
+      totalEl.value = p.price === 0 ? 'No fee' : money(total);
+      totalCalc.textContent = `${p.price === 0 ? 'No-fee permit' : `${money(p.price)} × ${v} ${p.unit}${v === 1 ? '' : 's'} = ${totalEl.value}`}`;
       return true;
     }
 
@@ -1406,7 +1597,7 @@
 }
 
     function evaluateFinalStep({ showErrorsOnFail = false } = {}) {
-      const ackOk = ackPrivacy.checked && ackTerms.checked;
+      const ackOk = ackRequirementsMet();
       const purchaserErrors = validatePurchaser({ touchFields: showErrorsOnFail });
       const purchaserValid = purchaserErrors.length === 0;
 
@@ -1421,6 +1612,9 @@
           if (!ackOk) {
             if (!ackPrivacy.checked) errs.push('You must acknowledge the Privacy Act notification.');
             if (!ackTerms.checked) errs.push('You must agree to the Terms and Conditions.');
+            if (productRequiresEligibility(model.product) && !(ackEligibility && ackEligibility.checked)) {
+              errs.push('You must certify you meet the eligibility requirements for this permit.');
+            }
           }
           showErrors(errs.concat(purchaserErrors));
         }
@@ -1580,6 +1774,7 @@
       stepState.completed[1] = ok;
       stepState.available[2] = ok;
       stepState.completed[2] = false;
+      clearConfirmation();
       hideReview();
       updateLockNotes();
       updateStepUI(model.step);
@@ -1606,15 +1801,124 @@
     function onAckChange() { syncPurchaserAccess(); evaluateFinalStep(); }
     ackPrivacy.addEventListener('change', onAckChange);
     ackTerms.addEventListener('change', onAckChange);
+    if (ackEligibility) ackEligibility.addEventListener('change', onAckChange);
 
     Object.values(purchaser).forEach((el) => {
       el.addEventListener('input', () => { validateField(el); evaluateFinalStep(); });
       el.addEventListener('blur', () => { validateField(el); evaluateFinalStep(); });
     });
 
+    if (permitDownloadBtn) {
+      permitDownloadBtn.addEventListener('click', () => {
+        if (!permitDownloadUrl) return;
+        const ref = permitRefEl ? permitRefEl.textContent.trim() : 'permit';
+        const a = document.createElement('a');
+        a.href = permitDownloadUrl;
+        a.download = `${ref || 'permit'}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      });
+    }
+
     confirmPaygovBtn.addEventListener('click', () => {
       const ok = evaluateFinalStep({ showErrorsOnFail: true });
       if (!ok) return;
+      clearConfirmation();
+
+      const unitPrice = model.product?.price || 0;
+      const quantity = model.qty || 0;
+      const total = unitPrice * quantity;
+      const purchaserName = [purchaser.FirstName.value.trim(), purchaser.MiddleName.value.trim(), purchaser.LastName.value.trim()].filter(Boolean).join(' ');
+      const purchaserEmail = purchaser.Email.value.trim();
+
+      if (unitPrice === 0 && total === 0) {
+        const permitReference = `PERMIT-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+
+        const payload = {
+          idempotencyKey: permitReference,
+          permitReference,
+          state: model.state,
+          officeId: model.officeId,
+          officeName: model.officeName,
+          productType: model.ptype,
+          productName: model.product?.name,
+          unit: model.product?.unit,
+          unitPrice,
+          quantity,
+          total,
+          purchaser: {
+            FirstName: purchaser.FirstName.value.trim(),
+            MiddleName: purchaser.MiddleName.value.trim(),
+            LastName: purchaser.LastName.value.trim(),
+            AddressLine1: purchaser.AddressLine1.value.trim(),
+            AddressLine2: purchaser.AddressLine2.value.trim(),
+            City: purchaser.City.value.trim(),
+            State: purchaser.AddrState.value,
+            Zip: purchaser.Zip.value.trim(),
+            Email: purchaserEmail
+          },
+          eligibility: productRequiresEligibility(model.product)
+            ? { certified: Boolean(ackEligibility && ackEligibility.checked), basis: model.product?.eligibility?.basis || 'Eligibility certification required' }
+            : { certified: false, basis: 'Not required' },
+          nextStep: 'Issue permit (no fee) server-side, then present a confirmation page with a download link for the permit PDF.',
+          deliveryPlan: 'Permit is available immediately after confirmation and sent to the provided email address (demo behavior).',
+          serverChecks: { verifyEmailMatch: true, enforcePayloadLimitBytes: MAX_PAYLOAD_BYTES }
+        };
+
+        const payloadSize = new TextEncoder().encode(JSON.stringify(payload)).length;
+        if (payloadSize > MAX_PAYLOAD_BYTES) {
+          showErrors([`Form data is too large (${payloadSize} bytes). Shorten text entries and try again.`]);
+          return;
+        }
+
+        const lines = [
+          'Bureau of Wandering Lands — Forest Product Permit (DEMO)',
+          '',
+          `Permit reference: ${permitReference}`,
+          `Issued to: ${purchaserName || '—'}`,
+          `Email: ${purchaserEmail || '—'}`,
+          '',
+          `Office: ${model.officeName || '—'} (${model.officeId || '—'})`,
+          `Product: ${model.product?.name || '—'}`,
+          `Quantity: ${quantity} ${model.product?.unit || 'unit'}${quantity === 1 ? '' : 's'}`,
+          'Fee: No fee',
+          '',
+          'This is a prototype-generated demo permit. Do not use for actual harvesting.'
+        ];
+        const blob = buildDemoPermitPdf(lines);
+        permitDownloadUrl = URL.createObjectURL(blob);
+
+        if (permitRefEl) permitRefEl.textContent = permitReference;
+        if (confirmation) confirmation.style.display = 'flex';
+        if (permitDownloadBtn) permitDownloadBtn.disabled = false;
+
+        handoff.style.display = 'block';
+        handoff.className = 'summary';
+        handoff.innerHTML = '';
+        const payloadKey = document.createElement('div');
+        payloadKey.className = 'k';
+        payloadKey.textContent = 'Demo issuance payload (no fee)';
+        const payloadVal = document.createElement('div');
+        payloadVal.className = 'v';
+        payloadVal.style.marginTop = '6px';
+        payloadVal.style.fontFamily = "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace";
+        payloadVal.style.fontSize = '13px';
+        payloadVal.style.whiteSpace = 'pre-wrap';
+        payloadVal.textContent = JSON.stringify(payload, null, 2);
+        const note = document.createElement('div');
+        note.className = 'k';
+        note.style.marginTop = '10px';
+        note.textContent = 'In production, the site would request permit issuance from the permitting system and return a signed permit PDF for download.';
+
+        handoff.appendChild(payloadKey);
+        handoff.appendChild(payloadVal);
+        handoff.appendChild(note);
+
+        scrollIntoViewSafe(confirmation || handoff, { force: true });
+        return;
+      }
+
       const transactionReference = (() => {
         let ref = '';
         try {
@@ -1628,6 +1932,7 @@
         }
         return ref;
       })();
+
       const payload = {
         idempotencyKey: transactionReference,
         transactionReference,
@@ -1637,9 +1942,9 @@
         productType: model.ptype,
         productName: model.product?.name,
         unit: model.product?.unit,
-        unitPrice: model.product?.price,
-        quantity: model.qty,
-        total: (model.product?.price || 0) * (model.qty || 0),
+        unitPrice,
+        quantity,
+        total,
         purchaser: {
           FirstName: purchaser.FirstName.value.trim(),
           MiddleName: purchaser.MiddleName.value.trim(),
@@ -1649,7 +1954,7 @@
           City: purchaser.City.value.trim(),
           State: purchaser.AddrState.value,
           Zip: purchaser.Zip.value.trim(),
-          Email: purchaser.Email.value.trim()
+          Email: purchaserEmail
         },
         nextStep: "Redirect to Pay.gov (secure payment processing), verify payment status server-side, then return to forestproducts.blm.gov to download the permit with this reference.",
         deliveryPlan: 'After Pay.gov returns, the permit download page uses the transaction reference to fetch verified payment status. Duplicate submissions reuse the same idempotent transaction.',
