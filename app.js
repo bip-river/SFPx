@@ -1432,7 +1432,6 @@
 
       hideErrors();
       stepState.completed[2] = true;
-      stepState.open[2] = false;
       updateStepUI(2);
       updateReviewPanels();
       persistState();
