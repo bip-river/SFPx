@@ -237,7 +237,7 @@
         if (savedModel.qty) {
           qtyEl.value = savedModel.qty;
         }
-        commitQuantity({ showErrors: false, openNext: true });
+        commitQuantity({ showErrors: false, openNext: false });
       }
 
       ackPrivacy.checked = Boolean(savedAcknowledgements.privacy);
@@ -939,10 +939,13 @@
         resetAcknowledgements();
         hideReview();
         setFieldError(qtyEl, '');
-        setOpenStep(1);
-        qtyEl.focus();
+        
+        // Keep focus stable for pointer users; advance focus only for keyboard users.
+        if (lastInteractionWasKeyboard) qtyEl.focus();
+        
         updateReviewActions();
         persistState();
+
       });
 
       return card;
@@ -958,9 +961,23 @@
       try { return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
       catch (err) { return false; }
     })();
-
-    function scrollIntoViewSafe(el) {
+    
+    // Track whether the user's last interaction was keyboard-based.
+    // We use this to avoid forcing focus for pointer users (mouse/touch) which feels like "teleporting".
+    let lastInteractionWasKeyboard = false;
+    document.addEventListener('keydown', () => { lastInteractionWasKeyboard = true; });
+    document.addEventListener('pointerdown', () => { lastInteractionWasKeyboard = false; }, { passive: true });
+    
+    function isElementInView(el, margin = 12) {
+      if (!el) return true;
+      const rect = el.getBoundingClientRect();
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      return rect.top >= margin && rect.bottom <= (vh - margin);
+    }
+    
+    function scrollIntoViewSafe(el, { force = false } = {}) {
       if (!el) return;
+      if (!force && isElementInView(el)) return; // prevents rapid “jump” scrolling
       el.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'start' });
     }
 
@@ -1053,6 +1070,12 @@
       stepState.available.forEach((available, i) => {
         if (available && !prevAvailability[i]) {
           announce(`Step ${i + 1} unlocked. You can now complete this section.`);
+      
+          const btn = steps[i];
+          if (btn) {
+            btn.classList.add('just-unlocked');
+            window.setTimeout(() => btn.classList.remove('just-unlocked'), 1200);
+          }
         }
       });
       prevAvailability = [...stepState.available];
@@ -1074,7 +1097,11 @@
       }
       if (!unlocked) {
         Object.values(purchaser).forEach(el => setFieldError(el, ''));
-      } else if (purchaserWasLocked) {
+      } else if (
+        purchaserWasLocked &&
+        lastInteractionWasKeyboard &&
+        (document.activeElement === ackPrivacy || document.activeElement === ackTerms)
+      ) {
         purchaser.FirstName.focus();
       }
       purchaserWasLocked = !unlocked ? true : false;
@@ -1277,13 +1304,22 @@
       return msgs;
     }
 
-    function setOpenStep(idx) {
+    function setOpenStep(idx, { scroll = true, collapse = true } = {}) {
       if (!stepState.available[idx]) return;
-      stepState.open = stepState.open.map((_, i) => i === idx);
+    
+      if (collapse) {
+        stepState.open = stepState.open.map((_, i) => i === idx);
+      } else {
+        stepState.open[idx] = true;
+      }
+    
       updateStepUI(idx);
       hideErrors();
-      const head = stepSections[idx]?.querySelector('.step-head');
-      if (head) scrollIntoViewSafe(head);
+    
+      if (scroll) {
+        const head = stepSections[idx]?.querySelector('.step-head');
+        if (head) scrollIntoViewSafe(head);
+      }
     }
 
     function resetFollowingSteps(startIdx) {
@@ -1314,8 +1350,10 @@
       }
 
       renderProducts();
-      setOpenStep(1);
-      updateStepUI(1);
+      
+      // Do not auto-open / auto-scroll. Step 2 becomes available and the user can open it deliberately.
+      updateStepUI(model.step);
+      
       updateReviewActions();
       persistState();
     }
@@ -1553,19 +1591,17 @@
     qtyEl.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
+        // Explicit action: allow opening the next step.
         commitQuantity({ focusOnError: true, openNext: true });
       } else if (e.key === 'Tab') {
-        const ok = commitQuantity({ focusOnError: true, openNext: true });
-        if (!ok) {
-          e.preventDefault();
-          qtyEl.focus();
-        }
+        // Normal navigation: validate, but do NOT auto-advance or trap focus.
+        commitQuantity({ showErrors: true, focusOnError: false, openNext: false });
       }
     });
 
     qtyEl.addEventListener('blur', () => {
-      const ok = commitQuantity({ focusOnError: true, openNext: true });
-      if (!ok) setTimeout(() => qtyEl.focus(), 0);
+      // Leaving the field should not auto-advance or yank focus back.
+      commitQuantity({ showErrors: true, focusOnError: false, openNext: false });
     });
 
     function onAckChange() { syncPurchaserAccess(); evaluateFinalStep(); }
