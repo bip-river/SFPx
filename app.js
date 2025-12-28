@@ -345,6 +345,8 @@
 
     // Populate state dropdown
     function populateStates() {
+      // Keep the first placeholder option, remove any prior dynamic options.
+      while (stateEl.options.length > 1) stateEl.remove(1);
       const codes = Object.keys(DATA).sort((a,b) => DATA[a].name.localeCompare(DATA[b].name));
       for (const code of codes) {
         const opt = document.createElement('option');
@@ -410,6 +412,9 @@
     function setOfficeExpanded(expanded) {
       officeInput.setAttribute('aria-expanded', String(expanded));
       officeList.setAttribute('aria-hidden', String(!expanded));
+      if (!expanded) {
+        officeInput.removeAttribute('aria-activedescendant');
+      }
     }
 
     function getOfficesForState(code) {
@@ -587,9 +592,13 @@
       const typed = DOCS_BY_TYPE[model.ptype] || [];
       const locationDocs = getLocationAttachments();
       const all = [...(product.requiredDocs || []), ...locationDocs, ...base, ...typed];
+      // De-dupe by a stable key. Label-only de-duping can drop distinct docs that share a name.
       const seen = new Set();
-      return all.filter(doc => {
-        const key = (doc.label || '').toLowerCase();
+      return all.filter((doc) => {
+        const label = (doc.label || '').trim().toLowerCase();
+        const url = (doc.url || '').trim();
+        const key = `${label}|${url}`;
+        if (!label) return false;
         if (seen.has(key)) return false;
         seen.add(key);
         return true;
@@ -828,6 +837,17 @@
       products.forEach((p, idx) => {
         productListEl.appendChild(createProductCard(p, idx));
       });
+      updateProductCardSelection();
+    }
+
+    // Provide a cross-browser fallback for "selected" styles.
+    // Some browsers may not support :has(), so we apply a class on the label.
+    function updateProductCardSelection() {
+      const cards = Array.from(productListEl.querySelectorAll('.prod'));
+      cards.forEach((card) => {
+        const input = card.querySelector('input[type="radio"]');
+        card.classList.toggle('is-selected', Boolean(input && input.checked));
+      });
     }
 
     function buildProductAlert(message) {
@@ -942,6 +962,16 @@
       if (!stepLiveRegion || !message) return;
       stepLiveRegion.textContent = '';
       requestAnimationFrame(() => { stepLiveRegion.textContent = message; });
+    }
+
+    const prefersReducedMotion = (() => {
+      try { return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
+      catch (err) { return false; }
+    })();
+
+    function scrollIntoViewSafe(el) {
+      if (!el) return;
+      el.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'start' });
     }
 
     function applyLockState() {
@@ -1263,7 +1293,7 @@
       updateStepUI(idx);
       hideErrors();
       const head = stepSections[idx]?.querySelector('.step-head');
-      if (head) head.scrollIntoView({ behavior:'smooth', block:'start' });
+      if (head) scrollIntoViewSafe(head);
     }
 
     function resetFollowingSteps(startIdx) {
@@ -1423,6 +1453,7 @@
 
     officeInput.addEventListener('input', () => {
       if (!model.state) return;
+      const priorOfficeId = model.officeId;
       const text = officeInput.value.trim();
       const exact = getOfficesForState(model.state).find(o => o.name.toLowerCase() === text.toLowerCase());
       if (exact) {
@@ -1442,7 +1473,10 @@
       activeIndex = officeOptions.length ? 0 : -1;
       highlightOffice(activeIndex);
 
-      attemptAdvanceFromStep1();
+      // Rendering products can be expensive; only re-evaluate step gating when selection state changes.
+      if (priorOfficeId !== model.officeId) {
+        attemptAdvanceFromStep1();
+      }
     });
 
     officeInput.addEventListener('blur', () => {
@@ -1496,7 +1530,6 @@
       btn.addEventListener('click', () => {
         if (!stepState.available[idx]) return;
         setOpenStep(idx);
-        stepSections[idx]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     });
 
@@ -1617,7 +1650,7 @@
       handoff.appendChild(payloadKey);
       handoff.appendChild(payloadVal);
       handoff.appendChild(note);
-      handoff.scrollIntoView({ behavior:'smooth', block:'start' });
+      scrollIntoViewSafe(handoff);
     });
 
     resetAllBtn.addEventListener('click', () => {
