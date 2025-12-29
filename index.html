@@ -92,11 +92,16 @@
           <!-- Step 1 -->
           <section id="step1" class="flow-step" aria-label="Step 1: Choose location">
             <div class="step-head">
-              <button class="step-toggle" type="button" aria-expanded="true">Step 1 · Find available products</button>
+              <button class="step-toggle" type="button" aria-expanded="true">
+                <span class="step-toggle-text">Step 1 · Find available products</span>
+                <svg class="chev" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd"/>
+                </svg>
+              </button>
               <div class="step-status" id="status1">In progress</div>
             </div>
             <div class="step-body">
-
+              <div class="step-body-inner">
               <div class="grid2" style="margin-top:14px;">
                 <div class="row" style="grid-column: 1 / -1;">
                   <fieldset id="ptypeGroup" aria-required="true">
@@ -131,18 +136,24 @@
               <div class="actions">
                 <button class="ghost" id="resetAll" type="button">Reset</button>
               </div>
+              </div>
             </div>
           </section>
 
           <!-- Step 2 -->
-          <section id="step2" class="flow-step" aria-label="Step 2: Select product">
+          <section id="step2" class="flow-step collapsed" aria-label="Step 2: Select product">
             <div class="step-head">
-              <button class="step-toggle" type="button" aria-expanded="false">Step 2 · Select a product and quantity</button>
+              <button class="step-toggle" type="button" aria-expanded="false">
+                <span class="step-toggle-text">Step 2 · Select a product and quantity</span>
+                <svg class="chev" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd"/>
+                </svg>
+              </button>
               <div class="step-status" id="status2">Locked</div>
             </div>
             <div class="lock-note" id="step2LockNote" aria-live="polite" aria-atomic="true"></div>
-            <div class="step-body" style="display:none;">
-
+            <div class="step-body">
+              <div class="step-body-inner">
               <div id="locationNotice" class="location-note" style="display:none;" aria-live="polite"></div>
               <div class="products" id="productList"></div>
 
@@ -162,18 +173,24 @@
                   </div>
                 </div>
               </div>
+              </div>
             </div>
           </section>
 
           <!-- Step 3 -->
-          <section id="step3" class="flow-step" aria-label="Step 3: Agreements and purchaser info">
+          <section id="step3" class="flow-step collapsed" aria-label="Step 3: Agreements and purchaser info">
             <div class="step-head">
-              <button class="step-toggle" type="button" aria-expanded="false">Step 3 · Agreements and purchaser information</button>
+              <button class="step-toggle" type="button" aria-expanded="false">
+                <span class="step-toggle-text">Step 3 · Agreements and purchaser information</span>
+                <svg class="chev" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd"/>
+                </svg>
+              </button>
               <div class="step-status" id="status3">Locked</div>
             </div>
             <div class="lock-note" id="step3LockNote" aria-live="polite" aria-atomic="true"></div>
-            <div class="step-body" style="display:none;">
-
+            <div class="step-body">
+              <div class="step-body-inner">
               <div class="agreements" role="group" aria-label="Policy acknowledgements">
                 <div class="agreements-copy">
                   <div class="title">Review and accept</div>
@@ -277,6 +294,7 @@ Replace this demo text with the authoritative terms and conditions used by your 
                 </div>
               </div>
               </fieldset>
+              </div>
             </div>
           </section>
 

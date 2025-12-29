@@ -97,11 +97,15 @@ body{
     .flow-step{border:1px solid rgba(11,15,25,.12); border-radius:14px; padding:12px; margin-top:12px; background:linear-gradient(180deg, #fff, #f9fbf7); box-shadow:0 10px 24px rgba(12,26,28,.06);}
     .flow-step .step-head{display:flex; align-items:center; gap:10px; padding:10px; border-radius:12px; background:linear-gradient(90deg, rgba(29,107,66,.12), rgba(29,107,66,.06)); border:1px solid rgba(29,107,66,.16); scroll-margin-top: 14px;}
     @media(min-width: 980px){.flow-step .step-head{display:grid; grid-template-columns: 1fr auto; gap:8px 14px;}}
-    .flow-step .step-toggle{background:transparent; border:0; padding:0; font-weight:900; font-size:16px; cursor:pointer; text-align:left; flex:1;}
+    .flow-step .step-toggle{background:transparent; border:0; padding:0; font-weight:900; font-size:16px; cursor:pointer; text-align:left; flex:1; display:flex; align-items:center; justify-content:space-between; gap:12px;}
+    .flow-step .step-toggle-text{display:inline-block;}
+    .flow-step .step-toggle .chev{width:18px; height:18px; opacity:.65; transition:transform .2s ease;}
+    .flow-step .step-toggle[aria-expanded="true"] .chev{transform:rotate(180deg);}
     .flow-step .step-toggle:hover{text-decoration:underline;}
     .flow-step .step-status{font-size:13px; color:var(--muted);}
-    .flow-step .step-body{margin-top:10px;}
-    .flow-step.collapsed .step-body{display:none;}
+    .flow-step .step-body{margin-top:10px; display:grid; grid-template-rows:1fr; opacity:1; transition:grid-template-rows .2s ease, opacity .2s ease;}
+    .flow-step .step-body-inner{overflow:hidden;}
+    .flow-step.collapsed .step-body{grid-template-rows:0fr; opacity:0; margin-top:0; pointer-events:none;}
     .lock-note{display:none; margin-top:8px; font-size:13px; color:#2f4f4d; background:rgba(247,251,245,.85); border:1px dashed rgba(29,107,66,.35); padding:12px 13px; border-radius:12px;}
     /* Forms */
     label{font-weight:750; font-size:14px; color:#0d3b25}
