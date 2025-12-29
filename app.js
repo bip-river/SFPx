@@ -246,6 +246,7 @@
         qtyHint.textContent = `Enter 1–${p.maxQty} ${p.unit}(s). Price: ${feeLabelForUnit(p.price, p.unit)}.`;
         qtyEl.min = 1;
         qtyEl.max = p.maxQty || '';
+        setControlEnabled(qtyEl, true);
         qtySection.style.display = 'block';
         if (savedModel.qty) {
           qtyEl.value = savedModel.qty;
@@ -338,6 +339,7 @@
       totalCalc.textContent = '';
       qtyGuard.textContent = '';
       model.qty = 0;
+      setControlEnabled(qtyEl, false);
       qtySection.style.display = 'none';
       productListEl.innerHTML = '';
     }
@@ -844,6 +846,7 @@
       model.productIndex = null;
       model.product = null;
       qtySection.style.display = 'none';
+      setControlEnabled(qtyEl, false);
       stepState.completed[1] = false;
       stepState.available[2] = false;
 
@@ -957,6 +960,7 @@
         qtyEl.value = '';
         totalEl.value = '';
         totalCalc.textContent = '';
+        setControlEnabled(qtyEl, true);
         qtySection.style.display = 'block';
         model.qty = 0;
         stepState.completed[1] = false;

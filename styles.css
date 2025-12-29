@@ -104,7 +104,8 @@ body{
     .flow-step .step-toggle:hover{text-decoration:underline;}
     .flow-step .step-status{font-size:13px; color:var(--muted);}
     .flow-step .step-body{margin-top:10px; display:grid; grid-template-rows:1fr; opacity:1; transition:grid-template-rows .2s ease, opacity .2s ease;}
-    .flow-step .step-body-inner{overflow:hidden;}
+    .flow-step .step-body-inner{overflow:visible;}
+    .flow-step.collapsed .step-body-inner{overflow:hidden;}
     .flow-step.collapsed .step-body{grid-template-rows:0fr; opacity:0; margin-top:0; pointer-events:none;}
     .lock-note{display:none; margin-top:8px; font-size:13px; color:#2f4f4d; background:rgba(247,251,245,.85); border:1px dashed rgba(29,107,66,.35); padding:12px 13px; border-radius:12px;}
     /* Forms */
