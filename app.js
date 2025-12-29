@@ -250,7 +250,7 @@
         if (savedModel.qty) {
           qtyEl.value = savedModel.qty;
         }
-        commitQuantity({ showErrors: false, openNext: false });
+        commitQuantity({ showErrors: false });
       }
 
       ackPrivacy.checked = Boolean(savedAcknowledgements.privacy);
@@ -968,9 +968,6 @@
         hideReview();
         setFieldError(qtyEl, '');
         
-        // Keep focus stable for pointer users; advance focus only for keyboard users.
-        if (lastInteractionWasKeyboard) qtyEl.focus();
-        
         updateReviewActions();
         persistState();
 
@@ -989,12 +986,6 @@
       try { return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
       catch (err) { return false; }
     })();
-    
-    // Track whether the user's last interaction was keyboard-based.
-    // We use this to avoid forcing focus for pointer users (mouse/touch) which feels like "teleporting".
-    let lastInteractionWasKeyboard = false;
-    document.addEventListener('keydown', () => { lastInteractionWasKeyboard = true; });
-    document.addEventListener('pointerdown', () => { lastInteractionWasKeyboard = false; }, { passive: true });
     
     function isElementInView(el, margin = 12) {
       if (!el) return true;
@@ -1059,6 +1050,7 @@
 
     function updateStepUI(activeIdx = model.step) {
       model.step = activeIdx;
+      stepState.open = stepState.open.map((open, i) => (stepState.available[i] ? open : false));
       steps.forEach((el, i) => {
         const isActive = stepState.open[i];
         const isAvailable = stepState.available[i];
@@ -1081,8 +1073,12 @@
         sec.classList.toggle('collapsed', !open);
         const body = sec.querySelector('.step-body');
         const toggle = sec.querySelector('.step-toggle');
-        if (body) body.style.display = open ? 'block' : 'none';
-        if (toggle) toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (body) body.setAttribute('aria-hidden', open ? 'false' : 'true');
+        if (toggle) {
+          toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+          toggle.disabled = !stepState.available[i];
+          toggle.setAttribute('aria-disabled', String(!stepState.available[i]));
+        }
         const statusEl = stepStatuses[i];
         if (statusEl) {
           const status = !stepState.available[i]
@@ -1286,12 +1282,6 @@
       }
       if (!unlocked) {
         Object.values(purchaser).forEach(el => setFieldError(el, ''));
-      } else if (
-        purchaserWasLocked &&
-        lastInteractionWasKeyboard &&
-        (document.activeElement === ackPrivacy || document.activeElement === ackTerms)
-      ) {
-        purchaser.FirstName.focus();
       }
       purchaserWasLocked = !unlocked ? true : false;
     }
@@ -1449,13 +1439,13 @@
       stepState.completed[1] = false;
       stepState.available[2] = false;
       stepState.completed[2] = false;
-      stepState.open = [stepState.open[0], true, false];
+      stepState.open[2] = false;
       hideReview();
       updateStepUI(model.step);
       updateReviewActions();
     }
 
-    function commitQuantity({ showErrors = true, focusOnError = false, openNext = false } = {}) {
+    function commitQuantity({ showErrors = true } = {}) {
       const msg = getFieldErrorMessage(qtyEl);
       if (showErrors) {
         setFieldError(qtyEl, msg);
@@ -1465,7 +1455,6 @@
 
       if (msg) {
         resetQuantityState();
-        if (focusOnError) qtyEl.focus();
         persistState();
         return false;
       }
@@ -1473,8 +1462,9 @@
       const ok = validateQty();
       stepState.completed[1] = ok;
       stepState.available[2] = ok;
-      if (openNext && ok) {
-        setOpenStep(2);
+      if (ok) {
+        const opened = openStepIfAvailable(2, { scrollIfNeeded: true });
+        if (!opened) updateStepUI(model.step);
       } else {
         updateStepUI(model.step);
       }
@@ -1495,22 +1485,29 @@
       return msgs;
     }
 
-    function setOpenStep(idx, { scroll = true, collapse = true } = {}) {
+    function setStepOpenState(idx, open, { collapseOthers = false, scroll = false, scrollIfNeeded = false } = {}) {
       if (!stepState.available[idx]) return;
-    
-      if (collapse) {
-        stepState.open = stepState.open.map((_, i) => i === idx);
+
+      if (collapseOthers) {
+        stepState.open = stepState.open.map((_, i) => (i === idx ? open : false));
       } else {
-        stepState.open[idx] = true;
+        stepState.open[idx] = open;
       }
-    
+
       updateStepUI(idx);
       hideErrors();
-    
-      if (scroll) {
+
+      if (open && (scroll || scrollIfNeeded)) {
         const head = stepSections[idx]?.querySelector('.step-head');
-        if (head) scrollIntoViewSafe(head);
+        if (head) scrollIntoViewSafe(head, { force: scroll });
       }
+    }
+
+    function openStepIfAvailable(idx, { scrollIfNeeded = false } = {}) {
+      if (!stepState.available[idx]) return;
+      if (stepState.open[idx]) return false;
+      setStepOpenState(idx, true, { collapseOthers: false, scrollIfNeeded });
+      return true;
     }
 
     function resetFollowingSteps(startIdx) {
@@ -1541,10 +1538,14 @@
       }
 
       renderProducts();
-      
-      // Do not auto-open / auto-scroll. Step 2 becomes available and the user can open it deliberately.
-      updateStepUI(model.step);
-      
+
+      if (stepState.available[1]) {
+        const opened = openStepIfAvailable(1, { scrollIfNeeded: true });
+        if (!opened) updateStepUI(model.step);
+      } else {
+        updateStepUI(model.step);
+      }
+
       updateReviewActions();
       persistState();
     }
@@ -1751,14 +1752,15 @@
     stepToggles.forEach((btn, idx) => {
       btn.addEventListener('click', () => {
         if (!stepState.available[idx]) return;
-        setOpenStep(idx);
+        const shouldOpen = !stepState.open[idx];
+        setStepOpenState(idx, shouldOpen, { collapseOthers: false, scrollIfNeeded: shouldOpen });
       });
     });
 
     steps.forEach((btn, idx) => {
       btn.addEventListener('click', () => {
         if (!stepState.available[idx]) return;
-        setOpenStep(idx);
+        setStepOpenState(idx, true, { collapseOthers: false, scrollIfNeeded: true });
       });
     });
 
@@ -1777,7 +1779,12 @@
       clearConfirmation();
       hideReview();
       updateLockNotes();
-      updateStepUI(model.step);
+      if (ok) {
+        const opened = openStepIfAvailable(2, { scrollIfNeeded: true });
+        if (!opened) updateStepUI(model.step);
+      } else {
+        updateStepUI(model.step);
+      }
       persistState();
       updateReviewActions();
     });
@@ -1786,16 +1793,16 @@
       if (e.key === 'Enter') {
         e.preventDefault();
         // Explicit action: allow opening the next step.
-        commitQuantity({ focusOnError: true, openNext: true });
+        commitQuantity();
       } else if (e.key === 'Tab') {
         // Normal navigation: validate, but do NOT auto-advance or trap focus.
-        commitQuantity({ showErrors: true, focusOnError: false, openNext: false });
+        commitQuantity({ showErrors: true });
       }
     });
 
     qtyEl.addEventListener('blur', () => {
       // Leaving the field should not auto-advance or yank focus back.
-      commitQuantity({ showErrors: true, focusOnError: false, openNext: false });
+      commitQuantity({ showErrors: true });
     });
 
     function onAckChange() { syncPurchaserAccess(); evaluateFinalStep(); }
