@@ -93,7 +93,7 @@
               <span class="progress-dot" aria-hidden="true"></span>
             </li>
             <li class="progress-step" data-progress-step="2">
-              <span class="progress-label">Agreements & purchaser info</span>
+              <span class="progress-label">Agreements & permit holder info</span>
               <span class="progress-dot" aria-hidden="true"></span>
             </li>
           </ol>
@@ -206,10 +206,10 @@
           </section>
 
           <!-- Step 3 -->
-          <section id="step3" class="flow-step collapsed" aria-label="Step 3: Agreements and purchaser info">
+          <section id="step3" class="flow-step collapsed" aria-label="Step 3: Agreements and permit holder info">
             <div class="step-head">
               <button class="step-toggle" type="button" aria-expanded="false">
-                <span class="step-toggle-text">Step 3 · Agreements and purchaser information</span>
+                <span class="step-toggle-text">Step 3 · Agreements and permit holder information</span>
                 <svg class="chev" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd"/>
                 </svg>
@@ -273,9 +273,9 @@ Replace this demo text with the authoritative terms and conditions used by your 
                 </div>
               </fieldset>
 
-              <div class="hint" id="purchaserBlockedHint" style="display:none;">Check all acknowledgement boxes above to enter purchaser information.</div>
+              <div class="hint" id="permitHolderBlockedHint" style="display:none;">Check all acknowledgement boxes above to enter permit holder information.</div>
 
-              <fieldset id="purchaserFieldset" class="purchaser-block locked" aria-describedby="purchaserBlockedHint" disabled>
+              <fieldset id="permitHolderFieldset" class="permit-holder-block locked" aria-describedby="permitHolderBlockedHint" disabled>
               <div class="grid2" style="margin-top:14px;">
                 <div class="row">
                   <label for="FirstName">First name <span aria-hidden="true" style="color:var(--danger)">*</span></label>
@@ -314,12 +314,12 @@ Replace this demo text with the authoritative terms and conditions used by your 
                 <div class="row"></div>
 
                 <div class="row" style="grid-column: 1 / -1;">
-                  <label for="Email">Email address <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                  <input id="Email" type="email" autocomplete="email" maxlength="120" />
+                  <label for="DeliveryEmail">Email address (for delivery) <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+                  <input id="DeliveryEmail" type="email" autocomplete="email" maxlength="120" />
                 </div>
                 <div class="row" style="grid-column: 1 / -1;">
-                  <label for="Email2">Email address repeat <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                  <input id="Email2" type="email" autocomplete="email" maxlength="120" />
+                  <label for="ConfirmEmail">Confirm email address <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+                  <input id="ConfirmEmail" type="email" autocomplete="email" maxlength="120" />
                 </div>
               </div>
               </fieldset>

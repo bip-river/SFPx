@@ -136,8 +136,7 @@ body{
 .card{background:var(--card); border:1px solid var(--border); border-radius:var(--radius-card); box-shadow:var(--shadow-md); padding:16px; position:relative; overflow:visible;}
     /* Progress header */
     .progress-header{
-      position:sticky;
-      top:0;
+      position:relative;
       z-index:20;
       margin:8px 0 12px;
       background:rgba(255,255,255,.96);
@@ -248,7 +247,7 @@ body{
     .primary:disabled{background:rgba(29,107,66,.45); cursor:not-allowed; box-shadow:none}
     .ghost{background:rgba(247,251,245,.9); border:1px solid rgba(29,107,66,.28); color:#0d3b25; box-shadow:var(--shadow-sm)}
     .ghost:hover{background:#fff; transform:translateY(-1px);}
-    .purchaser-block.locked{opacity:.6;}
+    .permit-holder-block.locked{opacity:.6;}
     .agreements{border:1px solid rgba(29,107,66,.14); border-radius:var(--radius-card); padding:14px; background:rgba(29,107,66,.05); display:grid; grid-template-columns:minmax(0, 1fr); align-items:start; gap:12px; margin-top:12px; box-shadow:var(--shadow-sm);}
     @media(min-width: 860px){.agreements{gap:16px;}}
     .agreements-copy,

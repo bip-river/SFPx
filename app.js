@@ -21,8 +21,8 @@
       AddressLine2: 120,
       City: 80,
       Zip: 10,
-      Email: 120,
-      Email2: 120,
+      DeliveryEmail: 120,
+      ConfirmEmail: 120,
     };
     const MAX_PAYLOAD_BYTES = 4096;
 
@@ -98,8 +98,8 @@
     const confirmPaygovBtn = document.getElementById('confirmPaygov');
     const handoff = document.getElementById('handoff');
     const postStep3 = document.getElementById('postStep3');
-    const purchaserFieldset = document.getElementById('purchaserFieldset');
-    const purchaserBlockedHint = document.getElementById('purchaserBlockedHint');
+    const permitHolderFieldset = document.getElementById('permitHolderFieldset');
+    const permitHolderBlockedHint = document.getElementById('permitHolderBlockedHint');
     const stepLiveRegion = document.getElementById('stepLiveRegion');
     const lockNotes = [null, document.getElementById('step2LockNote'), document.getElementById('step3LockNote')];
 
@@ -107,14 +107,14 @@
 
     const resetAllBtn = document.getElementById('resetAll');
 
-    let purchaserWasLocked = true;
+    let permitHolderWasLocked = true;
 
     let permitDownloadUrl = '';
 
     let lastAnnouncedStep = null;
 
-    // Purchaser fields
-    const purchaser = {
+    // Permit holder fields
+    const permitHolder = {
       FirstName: document.getElementById('FirstName'),
       MiddleName: document.getElementById('MiddleName'),
       LastName: document.getElementById('LastName'),
@@ -123,8 +123,8 @@
       City: document.getElementById('City'),
       AddrState: document.getElementById('AddrState'),
       Zip: document.getElementById('Zip'),
-      Email: document.getElementById('Email'),
-      Email2: document.getElementById('Email2'),
+      DeliveryEmail: document.getElementById('DeliveryEmail'),
+      ConfirmEmail: document.getElementById('ConfirmEmail'),
     };
 
     // Model
@@ -269,7 +269,7 @@
       renderEligibilityAgreement();
 
       evaluateFinalStep();
-      syncPurchaserAccess();
+      syncPermitHolderAccess();
     }
 
     function renderProductTypes() {
@@ -783,13 +783,13 @@
         return;
       }
       const stateName = DATA[model.state]?.name || model.state || '—';
-      const fullName = [purchaser.FirstName.value.trim(), purchaser.MiddleName.value.trim(), purchaser.LastName.value.trim()].filter(Boolean).join(' ');
+      const fullName = [permitHolder.FirstName.value.trim(), permitHolder.MiddleName.value.trim(), permitHolder.LastName.value.trim()].filter(Boolean).join(' ');
       const addressParts = [
-        purchaser.AddressLine1.value.trim(),
-        purchaser.AddressLine2.value.trim(),
-        [purchaser.City.value.trim(), purchaser.AddrState.value, purchaser.Zip.value.trim()].filter(Boolean).join(' ')
+        permitHolder.AddressLine1.value.trim(),
+        permitHolder.AddressLine2.value.trim(),
+        [permitHolder.City.value.trim(), permitHolder.AddrState.value, permitHolder.Zip.value.trim()].filter(Boolean).join(' ')
       ].filter(Boolean).join(', ');
-      const email = purchaser.Email.value.trim();
+      const deliveryEmail = permitHolder.DeliveryEmail.value.trim();
       const total = (model.product?.price || 0) * (model.qty || 0);
       const totalLabel = totalLabelFor(model.product?.price || 0, total);
       const qtyLabel = model.qty ? `${model.qty} ${model.product?.unit || 'unit'}${model.qty === 1 ? '' : 's'}` : '—';
@@ -799,10 +799,10 @@
       reviewSummary.innerHTML = '';
       const custKey = document.createElement('div');
       custKey.className = 'k';
-      custKey.textContent = 'Customer';
+      custKey.textContent = 'Permit holder';
       const custVal = document.createElement('div');
       custVal.className = 'v';
-      [fullName || '—', addressParts || '—', `Email: ${email}`].forEach((line, idx) => {
+      [fullName || '—', addressParts || '—', `Delivery email: ${deliveryEmail}`].forEach((line, idx) => {
         const span = document.createElement('div');
         span.style.marginTop = idx === 0 ? '0' : '2px';
         span.textContent = line;
@@ -1139,7 +1139,7 @@
       const titles = [
         'Step 1 · Choose what and where',
         'Step 2 · Select a permit',
-        'Step 3 · Agreements and purchaser info'
+        'Step 3 · Agreements and permit holder info'
       ];
 
       if (progressTitle) progressTitle.textContent = titles[activeIdx] || titles[0];
@@ -1331,20 +1331,20 @@
       return new Blob([full], { type: 'application/pdf' });
     }
 
-    function syncPurchaserAccess() {
+    function syncPermitHolderAccess() {
       const unlocked = ackRequirementsMet();
-      if (purchaserFieldset) {
-        purchaserFieldset.disabled = !unlocked;
-        purchaserFieldset.classList.toggle('locked', !unlocked);
-        purchaserFieldset.style.display = unlocked ? 'block' : 'none';
+      if (permitHolderFieldset) {
+        permitHolderFieldset.disabled = !unlocked;
+        permitHolderFieldset.classList.toggle('locked', !unlocked);
+        permitHolderFieldset.style.display = unlocked ? 'block' : 'none';
       }
-      if (purchaserBlockedHint) {
-        purchaserBlockedHint.style.display = unlocked ? 'none' : 'block';
+      if (permitHolderBlockedHint) {
+        permitHolderBlockedHint.style.display = unlocked ? 'none' : 'block';
       }
       if (!unlocked) {
-        Object.values(purchaser).forEach(el => setFieldError(el, ''));
+        Object.values(permitHolder).forEach(el => setFieldError(el, ''));
       }
-      purchaserWasLocked = !unlocked ? true : false;
+      permitHolderWasLocked = !unlocked ? true : false;
     }
 
     function resetAcknowledgements() {
@@ -1355,7 +1355,7 @@
       ackTerms.disabled = false;
       ackPrivacy.removeAttribute('aria-disabled');
       ackTerms.removeAttribute('aria-disabled');
-      syncPurchaserAccess();
+      syncPermitHolderAccess();
       renderEligibilityAgreement();
     }
 
@@ -1480,17 +1480,17 @@
         if (!/^\d{5}(-\d{4})?$/.test(val)) return 'Enter a ZIP in 5-digit or ZIP+4 format (##### or #####-####).';
         if (val.length > LENGTH_LIMITS.Zip) return `ZIP must be ${LENGTH_LIMITS.Zip} characters or fewer.`;
       }
-      if (id === 'Email') {
-        if (!val) return 'Enter an email address.';
+      if (id === 'DeliveryEmail') {
+        if (!val) return 'Enter an email address for delivery.';
         if (!EMAIL_PATTERN.test(val)) return 'Enter an email in the format name@example.com.';
-        if (val.length > LENGTH_LIMITS.Email) return `Email must be ${LENGTH_LIMITS.Email} characters or fewer.`;
+        if (val.length > LENGTH_LIMITS.DeliveryEmail) return `Email must be ${LENGTH_LIMITS.DeliveryEmail} characters or fewer.`;
       }
-      if (id === 'Email2') {
-        if (!val) return 'Re-enter your email address.';
+      if (id === 'ConfirmEmail') {
+        if (!val) return 'Confirm your email address.';
         if (!EMAIL_PATTERN.test(val)) return 'Enter an email in the format name@example.com.';
-        const primary = (purchaser.Email.value || '').trim();
-        if (primary && primary.toLowerCase() !== val.toLowerCase()) return 'Repeat email must match the first email.';
-        if (val.length > LENGTH_LIMITS.Email2) return `Email must be ${LENGTH_LIMITS.Email2} characters or fewer.`;
+        const primary = (permitHolder.DeliveryEmail.value || '').trim();
+        if (primary && primary.toLowerCase() !== val.toLowerCase()) return 'Confirm email must match the delivery email.';
+        if (val.length > LENGTH_LIMITS.ConfirmEmail) return `Email must be ${LENGTH_LIMITS.ConfirmEmail} characters or fewer.`;
       }
       return '';
     }
@@ -1561,22 +1561,17 @@
       const ok = validateQty();
       stepState.completed[1] = ok;
       stepState.available[2] = ok;
-      if (ok) {
-        const opened = openStepIfAvailable(2, { scrollIfNeeded: true });
-        if (!opened) updateStepUI(model.step);
-      } else {
-        updateStepUI(model.step);
-      }
+      updateStepUI(model.step);
       updateReviewActions();
       persistState();
       return ok;
     }
 
-    function validatePurchaser({ touchFields = false } = {}) {
+    function validatePermitHolder({ touchFields = false } = {}) {
       const msgs = [];
-      const required = ['FirstName','LastName','AddressLine1','City','AddrState','Zip','Email','Email2'];
+      const required = ['FirstName','LastName','AddressLine1','City','AddrState','Zip','DeliveryEmail','ConfirmEmail'];
       for (const k of required) {
-        const el = purchaser[k];
+        const el = permitHolder[k];
         const msg = getFieldErrorMessage(el);
         if (msg) msgs.push(msg);
         if (touchFields) setFieldError(el, msg);
@@ -1638,12 +1633,7 @@
 
       renderProducts();
 
-      if (stepState.available[1]) {
-        const opened = openStepIfAvailable(1, { scrollIfNeeded: true });
-        if (!opened) updateStepUI(model.step);
-      } else {
-        updateStepUI(model.step);
-      }
+      updateStepUI(model.step);
 
       updateReviewActions();
       persistState();
@@ -1698,12 +1688,12 @@
 
     function evaluateFinalStep({ showErrorsOnFail = false } = {}) {
       const ackOk = ackRequirementsMet();
-      const purchaserErrors = validatePurchaser({ touchFields: showErrorsOnFail });
-      const purchaserValid = purchaserErrors.length === 0;
+      const permitHolderErrors = validatePermitHolder({ touchFields: showErrorsOnFail });
+      const permitHolderValid = permitHolderErrors.length === 0;
 
-      syncPurchaserAccess();
+      syncPermitHolderAccess();
 
-      if (!ackOk || !purchaserValid) {
+      if (!ackOk || !permitHolderValid) {
         stepState.completed[2] = false;
         handoff.style.display = 'none';
         confirmPaygovBtn.disabled = true;
@@ -1716,7 +1706,7 @@
               errs.push('You must certify you meet the eligibility requirements for this permit.');
             }
           }
-          showErrors(errs.concat(purchaserErrors));
+          showErrors(errs.concat(permitHolderErrors));
         }
         updateStepUI(model.step);
         updateReviewPanels();
@@ -1879,12 +1869,7 @@
       clearConfirmation();
       hideReview();
       updateLockNotes();
-      if (ok) {
-        const opened = openStepIfAvailable(2, { scrollIfNeeded: true });
-        if (!opened) updateStepUI(model.step);
-      } else {
-        updateStepUI(model.step);
-      }
+      updateStepUI(model.step);
       persistState();
       updateReviewActions();
     });
@@ -1905,12 +1890,12 @@
       commitQuantity({ showErrors: true });
     });
 
-    function onAckChange() { syncPurchaserAccess(); evaluateFinalStep(); }
+    function onAckChange() { syncPermitHolderAccess(); evaluateFinalStep(); }
     ackPrivacy.addEventListener('change', onAckChange);
     ackTerms.addEventListener('change', onAckChange);
     if (ackEligibility) ackEligibility.addEventListener('change', onAckChange);
 
-    Object.values(purchaser).forEach((el) => {
+    Object.values(permitHolder).forEach((el) => {
       el.addEventListener('input', () => { validateField(el); evaluateFinalStep(); });
       el.addEventListener('blur', () => { validateField(el); evaluateFinalStep(); });
     });
@@ -1936,8 +1921,8 @@
       const unitPrice = model.product?.price || 0;
       const quantity = model.qty || 0;
       const total = unitPrice * quantity;
-      const purchaserName = [purchaser.FirstName.value.trim(), purchaser.MiddleName.value.trim(), purchaser.LastName.value.trim()].filter(Boolean).join(' ');
-      const purchaserEmail = purchaser.Email.value.trim();
+      const permitHolderName = [permitHolder.FirstName.value.trim(), permitHolder.MiddleName.value.trim(), permitHolder.LastName.value.trim()].filter(Boolean).join(' ');
+      const permitHolderEmail = permitHolder.DeliveryEmail.value.trim();
 
       if (unitPrice === 0 && total === 0) {
         const permitReference = `PERMIT-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
@@ -1954,16 +1939,16 @@
           unitPrice,
           quantity,
           total,
-          purchaser: {
-            FirstName: purchaser.FirstName.value.trim(),
-            MiddleName: purchaser.MiddleName.value.trim(),
-            LastName: purchaser.LastName.value.trim(),
-            AddressLine1: purchaser.AddressLine1.value.trim(),
-            AddressLine2: purchaser.AddressLine2.value.trim(),
-            City: purchaser.City.value.trim(),
-            State: purchaser.AddrState.value,
-            Zip: purchaser.Zip.value.trim(),
-            Email: purchaserEmail
+          permitHolder: {
+            FirstName: permitHolder.FirstName.value.trim(),
+            MiddleName: permitHolder.MiddleName.value.trim(),
+            LastName: permitHolder.LastName.value.trim(),
+            AddressLine1: permitHolder.AddressLine1.value.trim(),
+            AddressLine2: permitHolder.AddressLine2.value.trim(),
+            City: permitHolder.City.value.trim(),
+            State: permitHolder.AddrState.value,
+            Zip: permitHolder.Zip.value.trim(),
+            DeliveryEmail: permitHolderEmail
           },
           eligibility: productRequiresEligibility(model.product)
             ? { certified: Boolean(ackEligibility && ackEligibility.checked), basis: model.product?.eligibility?.basis || 'Eligibility certification required' }
@@ -1983,8 +1968,8 @@
           'Bureau of Wandering Lands — Forest Product Permit (DEMO)',
           '',
           `Permit reference: ${permitReference}`,
-          `Issued to: ${purchaserName || '—'}`,
-          `Email: ${purchaserEmail || '—'}`,
+          `Issued to: ${permitHolderName || '—'}`,
+          `Delivery email: ${permitHolderEmail || '—'}`,
           '',
           `Office: ${model.officeName || '—'} (${model.officeId || '—'})`,
           `Product: ${model.product?.name || '—'}`,
@@ -2052,16 +2037,16 @@
         unitPrice,
         quantity,
         total,
-        purchaser: {
-          FirstName: purchaser.FirstName.value.trim(),
-          MiddleName: purchaser.MiddleName.value.trim(),
-          LastName: purchaser.LastName.value.trim(),
-          AddressLine1: purchaser.AddressLine1.value.trim(),
-          AddressLine2: purchaser.AddressLine2.value.trim(),
-          City: purchaser.City.value.trim(),
-          State: purchaser.AddrState.value,
-          Zip: purchaser.Zip.value.trim(),
-          Email: purchaserEmail
+        permitHolder: {
+          FirstName: permitHolder.FirstName.value.trim(),
+          MiddleName: permitHolder.MiddleName.value.trim(),
+          LastName: permitHolder.LastName.value.trim(),
+          AddressLine1: permitHolder.AddressLine1.value.trim(),
+          AddressLine2: permitHolder.AddressLine2.value.trim(),
+          City: permitHolder.City.value.trim(),
+          State: permitHolder.AddrState.value,
+          Zip: permitHolder.Zip.value.trim(),
+          DeliveryEmail: permitHolderEmail
         },
         nextStep: "Redirect to Pay.gov (secure payment processing), verify payment status server-side, then return to forestproducts.blm.gov to download the permit with this reference.",
         deliveryPlan: 'After Pay.gov returns, the permit download page uses the transaction reference to fetch verified payment status. Duplicate submissions reuse the same idempotent transaction.',
@@ -2121,9 +2106,9 @@
       renderProductTypes();
       syncSelectionAvailability();
       await loadProductData();
-      populateUSStates(purchaser.AddrState);
+      populateUSStates(permitHolder.AddrState);
       restoreState();
-      syncPurchaserAccess();
+      syncPermitHolderAccess();
       updateReviewActions();
       syncSelectionAvailability();
       updateStepUI(0);
