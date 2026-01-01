@@ -76,6 +76,8 @@
     const progressTitle = document.getElementById('progressTitle');
     const progressSub = document.getElementById('progressSub');
     const progressBar = document.getElementById('progressBar');
+    const progressCount = document.getElementById('progressCount');
+    const progressCurrent = document.getElementById('progressCurrent');
     const progressSteps = Array.from(document.querySelectorAll('[data-progress-step]'));
     const progressEditButtons = Array.from(document.querySelectorAll('[data-edit-step]'));
     const stepSections = [
@@ -1135,13 +1137,16 @@
     function updateProgressHeader(activeStepIndex = stepState.open.findIndex(Boolean)) {
       const totalSteps = stepSections.length;
       const activeIdx = activeStepIndex === -1 ? model.step : activeStepIndex;
-      const titles = [
-        'Step 1 · Choose what and where',
-        'Step 2 · Select a permit',
-        'Step 3 · Agreements and permit holder info'
+      const stepNames = [
+        'What + Where',
+        'Permit',
+        'Agree + Info'
       ];
-
-      if (progressTitle) progressTitle.textContent = titles[activeIdx] || titles[0];
+      const totalStepCount = stepNames.length;
+      const activeName = stepNames[activeIdx] || stepNames[0];
+      if (progressTitle) progressTitle.textContent = `Step ${activeIdx + 1} of ${totalStepCount}: ${activeName}`;
+      if (progressCount) progressCount.textContent = `Step ${activeIdx + 1} of ${totalStepCount}`;
+      if (progressCurrent) progressCurrent.textContent = activeName;
 
       const status = !stepState.available[activeIdx]
         ? 'Locked'

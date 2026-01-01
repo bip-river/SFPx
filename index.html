@@ -79,32 +79,35 @@
 
       <section class="progress-header" aria-label="Progress" id="progressHeader">
         <div class="progress-status sr-only" aria-live="polite">
-          <div class="progress-title" id="progressTitle">Step 1 · Choose what and where</div>
+          <div class="progress-title" id="progressTitle">Step 1 of 3: What + Where</div>
           <div class="progress-sub" id="progressSub">In progress</div>
         </div>
+        <div class="progress-meta" aria-hidden="true">
+          <div class="progress-count" id="progressCount">Step 1 of 3</div>
+          <div class="progress-current" id="progressCurrent">What + Where</div>
+        </div>
         <div class="progress-stepper" role="navigation" aria-label="Permit steps">
-          <ol class="progress-steps" id="progressSteps">
-            <li class="progress-step" data-progress-step="0">
-              <span class="progress-label">What + Where</span>
-              <span class="progress-dot" aria-hidden="true"></span>
-            </li>
-            <li class="progress-step" data-progress-step="1">
-              <span class="progress-label">Permit</span>
-              <span class="progress-dot" aria-hidden="true"></span>
-            </li>
-            <li class="progress-step" data-progress-step="2">
-              <span class="progress-label">Agree + Info</span>
-              <span class="progress-dot" aria-hidden="true"></span>
-            </li>
-          </ol>
-          <div class="progress-line" aria-hidden="true">
-            <span class="progress-line-bg"></span>
-            <span class="progress-line-fill" id="progressBar"></span>
+          <div class="progress-track">
+            <div class="progress-line" aria-hidden="true">
+              <span class="progress-line-bg"></span>
+              <span class="progress-line-fill" id="progressBar"></span>
+            </div>
+            <ol class="progress-steps" id="progressSteps">
+              <li class="progress-step" data-progress-step="0" aria-label="Step 1 of 3: What + Where">
+                <span class="progress-dot" aria-hidden="true"></span>
+              </li>
+              <li class="progress-step" data-progress-step="1" aria-label="Step 2 of 3: Permit">
+                <span class="progress-dot" aria-hidden="true"></span>
+              </li>
+              <li class="progress-step" data-progress-step="2" aria-label="Step 3 of 3: Agree + Info">
+                <span class="progress-dot" aria-hidden="true"></span>
+              </li>
+            </ol>
           </div>
         </div>
       </section>
 
-      <section class="layout" style="margin-top: 16px;">
+      <section class="layout" style="margin-top: 8px;">
         <div class="card" role="region" aria-label="Form content">
 
           <div class="error" id="errorBox" aria-hidden="true" tabindex="-1">
