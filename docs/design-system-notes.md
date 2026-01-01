@@ -30,6 +30,7 @@ Use `--motion-fast`, `--motion-base`, and `--motion-slow` with `--motion-ease`. 
 - **Progress header**: `.progress-header` with `.progress-summary` provides sticky guidance, dot indicators, and “Edit” affordances.
 - **Product cards**: `.prod` uses a name/area/price hierarchy, chip-style validity metadata, and a visible selection icon.
 - **Totals**: `.total-panel` wraps the estimated total with a subtle crossfade animation (`.total-amount`).
+- **Hero band + texture**: `.hero-band` frames the title and guidance; the body background includes a low-opacity topographic texture for depth.
 - **Chips/Badges**: `.badge`, `.step-pill`, `.stats li`, `.doc-links a` use the chip radius and muted backgrounds.
 
 ## Accessibility notes

@@ -61,18 +61,21 @@
 
   <main id="main">
     <div class="wrap">
-      <section class="pagehead" aria-label="Page title and instructions">
-        <h1>Online Forest Product Permits</h1>
-        <p class="federal-note">Permits obtained through this site are issued by the Bureau of Wandering Lands.</p>
+      <div class="hero-band">
+        <section class="pagehead" aria-label="Page title and instructions">
+          <h1>Online Forest Product Permits</h1>
+          <p class="hero-subtitle">Choose what you’re collecting, select a permit, and receive your permit by email.</p>
+          <p class="federal-note">Permits obtained through this site are issued by the Bureau of Wandering Lands.</p>
 
-        <div class="alert" role="status" aria-live="polite">
-          <div class="icon" aria-hidden="true">i</div>
-          <div class="txt">
-            <strong>Notice</strong>
-            Pay.gov maintenance scheduled today from 4 PM to 8 PM mountain time can interrupt checkout. If Pay.gov is down, try again later.
+          <div class="alert" role="status" aria-live="polite">
+            <div class="icon" aria-hidden="true">i</div>
+            <div class="txt">
+              <strong>Notice</strong>
+              Pay.gov maintenance scheduled today from 4 PM to 8 PM mountain time can interrupt checkout. If Pay.gov is down, try again later.
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
 
       <section class="progress-header" aria-label="Progress" id="progressHeader">
         <div class="progress-main">
@@ -80,6 +83,7 @@
             <div class="progress-eyebrow">Current step</div>
             <div class="progress-title" id="progressTitle">Step 1 · Choose what and where</div>
             <div class="progress-sub" id="progressSub">In progress</div>
+            <div class="progress-note">Selections save automatically. You can edit later.</div>
           </div>
           <div class="progress-indicator" aria-hidden="true">
             <div class="progress-track">
@@ -151,11 +155,11 @@
 
                 <div class="row" id="officeRow">
                   <label for="officeInput">BWL office / district <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                  <div class="hint">Start typing to filter. Use ↑/↓ to navigate; Enter to select.</div>
+                  <div class="hint" id="officeHint">Start typing to filter. Use ↑/↓ to navigate; Enter to select.</div>
                   <div class="combo" id="officeCombo">
                     <input id="officeInput" type="text" autocomplete="off" placeholder="Type to search offices"
                       role="combobox" aria-expanded="false" aria-controls="officeList" aria-autocomplete="list"
-                      aria-activedescendant="" aria-haspopup="listbox" disabled />
+                      aria-activedescendant="" aria-haspopup="listbox" aria-describedby="officeHint" disabled />
                     <svg class="chev" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                       <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd"/>
                     </svg>
@@ -195,7 +199,7 @@
                     <label for="qty">Quantity <span aria-hidden="true" style="color:var(--danger)">*</span></label>
                     <div class="hint" id="qtyHint"></div>
                     <div class="hint subtle" id="qtyGuard"></div>
-                    <input id="qty" type="number" min="1" step="1" inputmode="numeric" />
+                    <input id="qty" type="number" min="1" step="1" inputmode="numeric" aria-describedby="qtyHint qtyGuard" />
                   </div>
                   <div class="row">
                     <label>Total</label>

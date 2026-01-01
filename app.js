@@ -1400,6 +1400,19 @@
       return el?.closest('.row') || el?.closest('.agreement-item') || el?.parentElement;
     }
 
+    function updateAriaDescribedBy(el, id, add) {
+      if (!el || !id) return;
+      const current = (el.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean);
+      const has = current.includes(id);
+      if (add && !has) current.push(id);
+      if (!add && has) current.splice(current.indexOf(id), 1);
+      if (current.length) {
+        el.setAttribute('aria-describedby', current.join(' '));
+      } else {
+        el.removeAttribute('aria-describedby');
+      }
+    }
+
     function setFieldError(el, message) {
       if (!el) return;
       const container = getFieldContainer(el);
@@ -1410,14 +1423,20 @@
         target.className = 'field-error';
         container.appendChild(target);
       }
+      if (!target.id) {
+        const baseId = el.id || el.name || 'field';
+        target.id = `${baseId}-error`;
+      }
       if (message) {
         target.textContent = message;
         target.classList.add('active');
         el.setAttribute('aria-invalid', 'true');
+        updateAriaDescribedBy(el, target.id, true);
       } else {
         target.textContent = '';
         target.classList.remove('active');
         el.removeAttribute('aria-invalid');
+        updateAriaDescribedBy(el, target.id, false);
       }
     }
 
@@ -1427,6 +1446,15 @@
         el.classList.remove('active');
       });
       document.querySelectorAll('[aria-invalid="true"]').forEach(el => el.removeAttribute('aria-invalid'));
+      document.querySelectorAll('[aria-describedby]').forEach((el) => {
+        const ids = (el.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean);
+        const filtered = ids.filter(id => !id.endsWith('-error'));
+        if (filtered.length) {
+          el.setAttribute('aria-describedby', filtered.join(' '));
+        } else {
+          el.removeAttribute('aria-describedby');
+        }
+      });
     }
 
     function showErrors(messages) {
