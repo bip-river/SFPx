@@ -73,13 +73,6 @@
     const errorBox = document.getElementById('errorBox');
     const errorList = document.getElementById('errorList');
 
-    const progressTitle = document.getElementById('progressTitle');
-    const progressSub = document.getElementById('progressSub');
-    const progressBar = document.getElementById('progressBar');
-    const progressCount = document.getElementById('progressCount');
-    const progressCurrent = document.getElementById('progressCurrent');
-    const progressSteps = Array.from(document.querySelectorAll('[data-progress-step]'));
-    const progressEditButtons = Array.from(document.querySelectorAll('[data-edit-step]'));
     const stepSections = [
       document.getElementById('step1'),
       document.getElementById('step2'),
@@ -1114,16 +1107,9 @@
       });
       updateLockNotes();
       applyLockState();
-      updateProgressHeader(activeStepIndex);
       stepState.available.forEach((available, i) => {
         if (available && !prevAvailability[i]) {
           announce(`Step ${i + 1} unlocked. You can now complete this section.`);
-      
-          const item = progressSteps[i];
-          if (item) {
-            item.classList.add('just-unlocked');
-            window.setTimeout(() => item.classList.remove('just-unlocked'), 1200);
-          }
         }
       });
       prevAvailability = [...stepState.available];
@@ -1132,42 +1118,6 @@
         announce(`Now viewing Step ${activeStepIndex + 1}. ${stepSections[activeStepIndex]?.getAttribute('aria-label') || ''}`.trim());
         lastAnnouncedStep = activeStepIndex;
       }
-    }
-
-    function updateProgressHeader(activeStepIndex = stepState.open.findIndex(Boolean)) {
-      const totalSteps = stepSections.length;
-      const activeIdx = activeStepIndex === -1 ? model.step : activeStepIndex;
-      const stepNames = [
-        'What + Where',
-        'Permit',
-        'Agree + Info'
-      ];
-      const totalStepCount = stepNames.length;
-      const activeName = stepNames[activeIdx] || stepNames[0];
-      if (progressTitle) progressTitle.textContent = `Step ${activeIdx + 1} of ${totalStepCount}: ${activeName}`;
-      if (progressCount) progressCount.textContent = `Step ${activeIdx + 1} of ${totalStepCount}`;
-      if (progressCurrent) progressCurrent.textContent = activeName;
-
-      const status = !stepState.available[activeIdx]
-        ? 'Locked'
-        : stepState.completed[activeIdx]
-          ? 'Completed'
-          : 'In progress';
-      if (progressSub) progressSub.textContent = status;
-
-      const progressPercent = totalSteps > 1 ? (activeIdx / (totalSteps - 1)) * 100 : 0;
-      if (progressBar) progressBar.style.width = `${progressPercent}%`;
-
-      progressSteps.forEach((step, idx) => {
-        step.classList.toggle('is-active', idx === activeIdx);
-        step.classList.toggle('is-complete', stepState.completed[idx]);
-        if (idx === activeIdx) {
-          step.setAttribute('aria-current', 'step');
-        } else {
-          step.removeAttribute('aria-current');
-        }
-      });
-
     }
 
     function updateReviewActions() {
@@ -1851,14 +1801,6 @@
 
     stepToggles.forEach((btn, idx) => {
       btn.addEventListener('click', () => {
-        if (!stepState.available[idx]) return;
-        setStepOpenState(idx, true, { collapseOthers: false, scrollIfNeeded: true });
-      });
-    });
-
-    progressEditButtons.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const idx = Number(btn.dataset.editStep);
         if (!stepState.available[idx]) return;
         setStepOpenState(idx, true, { collapseOthers: false, scrollIfNeeded: true });
       });
