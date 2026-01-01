@@ -106,9 +106,8 @@ body{
     /* Agency bar */
 .agency-bar{background:#0b0f19; color:#fff; padding:10px 0; box-shadow:0 10px 20px rgba(0,0,0,.18);}
     .agency-bar .row{display:flex; align-items:center; gap:12px;}
-    .agency-logos{display:flex; align-items:center; gap:8px;}
-    .agency-logo{display:block; height:34px; width:auto; object-fit:contain;}
-    .agency-logo.bwl{height:30px;}
+    .agency-logos{display:flex; align-items:center;}
+    .agency-logo{display:block; height:44px; width:auto; object-fit:contain;}
     .agency-title{line-height:1.2}
     .agency-title .top{font-size:12px; opacity:.9}
     .agency-title .bot{font-size:14px; font-weight:800}
