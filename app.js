@@ -1545,6 +1545,7 @@
     }
 
     function commitQuantity({ showErrors = true } = {}) {
+      const wasCompleted = stepState.completed[1];
       const msg = getFieldErrorMessage(qtyEl);
       if (showErrors) {
         setFieldError(qtyEl, msg);
@@ -1561,6 +1562,9 @@
       const ok = validateQty();
       stepState.completed[1] = ok;
       stepState.available[2] = ok;
+      if (ok && !wasCompleted) {
+        stepState.open[2] = true;
+      }
       updateStepUI(model.step);
       updateReviewActions();
       persistState();
@@ -1600,7 +1604,7 @@
     function openStepIfAvailable(idx, { scrollIfNeeded = false } = {}) {
       if (!stepState.available[idx]) return;
       if (stepState.open[idx]) return false;
-      setStepOpenState(idx, true, { collapseOthers: true, scrollIfNeeded });
+      setStepOpenState(idx, true, { collapseOthers: false, scrollIfNeeded });
       return true;
     }
 
@@ -1617,6 +1621,7 @@
     }
 
     function attemptAdvanceFromStep1() {
+      const wasCompleted = stepState.completed[0];
       validateProductType({ showErrors: false });
       const ok = validateStep1();
       stepState.available[1] = ok;
@@ -1631,6 +1636,9 @@
         return;
       }
 
+      if (ok && !wasCompleted) {
+        stepState.open[1] = true;
+      }
       renderProducts();
 
       updateStepUI(model.step);
@@ -1841,7 +1849,7 @@
     stepToggles.forEach((btn, idx) => {
       btn.addEventListener('click', () => {
         if (!stepState.available[idx]) return;
-        setStepOpenState(idx, true, { collapseOthers: true, scrollIfNeeded: true });
+        setStepOpenState(idx, true, { collapseOthers: false, scrollIfNeeded: true });
       });
     });
 
@@ -1849,11 +1857,12 @@
       btn.addEventListener('click', () => {
         const idx = Number(btn.dataset.editStep);
         if (!stepState.available[idx]) return;
-        setStepOpenState(idx, true, { collapseOthers: true, scrollIfNeeded: true });
+        setStepOpenState(idx, true, { collapseOthers: false, scrollIfNeeded: true });
       });
     });
 
     qtyEl.addEventListener('input', () => {
+      const wasCompleted = stepState.completed[1];
       setFieldError(qtyEl, '');
       const max = Number(qtyEl.max || '');
       const val = Number(qtyEl.value);
@@ -1865,6 +1874,9 @@
       if (!ok && totalAmount) totalAmount.textContent = '—';
       stepState.completed[1] = ok;
       stepState.available[2] = ok;
+      if (ok && !wasCompleted) {
+        stepState.open[2] = true;
+      }
       stepState.completed[2] = false;
       clearConfirmation();
       hideReview();
