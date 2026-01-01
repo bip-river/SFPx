@@ -52,6 +52,7 @@
     const qtyHint = document.getElementById('qtyHint');
     const qtyGuard = document.getElementById('qtyGuard');
     const totalEl = document.getElementById('total');
+    const totalAmount = document.getElementById('totalAmount');
     const totalCalc = document.getElementById('totalCalc');
 
     const qtySection = document.getElementById('qtySection');
@@ -72,7 +73,15 @@
     const errorBox = document.getElementById('errorBox');
     const errorList = document.getElementById('errorList');
 
-    const steps = ['s1','s2','s3'].map(id => document.getElementById(id));
+    const progressTitle = document.getElementById('progressTitle');
+    const progressSub = document.getElementById('progressSub');
+    const progressBar = document.getElementById('progressBar');
+    const progressDots = Array.from(document.querySelectorAll('[data-progress-dot]'));
+    const progressItems = Array.from(document.querySelectorAll('[data-progress-step]'));
+    const progressEditButtons = Array.from(document.querySelectorAll('[data-edit-step]'));
+    const summaryStep1 = document.getElementById('summaryStep1');
+    const summaryStep2 = document.getElementById('summaryStep2');
+    const summaryStep3 = document.getElementById('summaryStep3');
     const stepSections = [
       document.getElementById('step1'),
       document.getElementById('step2'),
@@ -104,6 +113,8 @@
     let purchaserWasLocked = true;
 
     let permitDownloadUrl = '';
+
+    let lastAnnouncedStep = null;
 
     // Purchaser fields
     const purchaser = {
@@ -336,6 +347,7 @@
       model.product = null;
       qtyEl.value = '';
       totalEl.value = '';
+      if (totalAmount) totalAmount.textContent = '—';
       totalCalc.textContent = '';
       qtyGuard.textContent = '';
       model.qty = 0;
@@ -640,6 +652,7 @@
       const details = document.createElement('details');
       details.className = 'docs';
       const summary = document.createElement('summary');
+      summary.className = 'docs-action';
       const summaryTitle = document.createElement('span');
       summaryTitle.className = 'docs-title';
       summaryTitle.textContent = 'Maps & permit rules';
@@ -875,7 +888,10 @@
       const cards = Array.from(productListEl.querySelectorAll('.prod'));
       cards.forEach((card) => {
         const input = card.querySelector('input[type="radio"]');
-        card.classList.toggle('is-selected', Boolean(input && input.checked));
+        const selected = Boolean(input && input.checked);
+        card.classList.toggle('is-selected', selected);
+        card.setAttribute('aria-selected', String(selected));
+        card.setAttribute('aria-checked', String(selected));
       });
     }
 
@@ -906,9 +922,13 @@
       const priceLine = feeLabelForUnit(p.price, p.unit);
       const { durationLabel, expirationLabel, availableLabel } = getValidityLabels(p);
       const docs = buildRequiredDocs(p);
+      const officeName = getSelectedOffice()?.name || '—';
 
       const card = document.createElement('label');
       card.className = 'prod';
+      card.setAttribute('role', 'radio');
+      card.setAttribute('aria-selected', 'false');
+      card.setAttribute('aria-checked', 'false');
       card.setAttribute('for', id);
       const input = document.createElement('input');
       input.type = 'radio';
@@ -917,17 +937,29 @@
       input.value = String(idx);
       card.appendChild(input);
 
+      const selectionIcon = document.createElement('div');
+      selectionIcon.className = 'prod-select';
+      selectionIcon.setAttribute('aria-hidden', 'true');
+      selectionIcon.textContent = '✓';
+      card.appendChild(selectionIcon);
+
       const body = document.createElement('div');
       body.className = 'prod-body';
       const top = document.createElement('div');
       top.className = 'prod-top';
+      const nameWrap = document.createElement('div');
       const name = document.createElement('div');
       name.className = 'name';
       name.textContent = p.name;
+      const area = document.createElement('div');
+      area.className = 'area';
+      area.textContent = `District: ${officeName}`;
+      nameWrap.appendChild(name);
+      nameWrap.appendChild(area);
       const price = document.createElement('div');
       price.className = 'price';
       price.textContent = priceLine;
-      top.appendChild(name);
+      top.appendChild(nameWrap);
       top.appendChild(price);
 
       const stats = document.createElement('ul');
@@ -945,7 +977,7 @@
 
       const docsDiv = buildDocLinks(docs);
 
-      [top, docsDiv, stats, available].forEach((node) => body.appendChild(node));
+      [top, stats, available, docsDiv].forEach((node) => body.appendChild(node));
       card.appendChild(body);
 
       card.querySelector('input').addEventListener('change', () => {
@@ -959,6 +991,7 @@
         qtyEl.max = p.maxQty || '';
         qtyEl.value = '';
         totalEl.value = '';
+        if (totalAmount) totalAmount.textContent = '—';
         totalCalc.textContent = '';
         setControlEnabled(qtyEl, true);
         qtySection.style.display = 'block';
@@ -1055,22 +1088,7 @@
     function updateStepUI(activeIdx = model.step) {
       model.step = activeIdx;
       stepState.open = stepState.open.map((open, i) => (stepState.available[i] ? open : false));
-      steps.forEach((el, i) => {
-        const isActive = stepState.open[i];
-        const isAvailable = stepState.available[i];
-        el.classList.toggle('active', isActive);
-        el.classList.toggle('done', stepState.completed[i]);
-        el.disabled = !isAvailable;
-        el.setAttribute('aria-disabled', String(!isAvailable));
-        el.setAttribute('aria-pressed', String(isActive));
-        el.setAttribute('aria-current', isActive ? 'step' : 'false');
-        el.setAttribute('aria-expanded', String(isActive && isAvailable));
-        el.setAttribute('aria-controls', stepSections[i]?.id || '');
-        const pill = el.querySelector('.step-pill');
-        if (pill) {
-          pill.textContent = !isAvailable ? 'Locked' : stepState.completed[i] ? 'Complete' : 'Active';
-        }
-      });
+      const activeStepIndex = stepState.open.findIndex(Boolean);
 
       stepSections.forEach((sec, i) => {
         const open = stepState.open[i] && stepState.available[i];
@@ -1095,18 +1113,94 @@
       });
       updateLockNotes();
       applyLockState();
+      updateProgressHeader(activeStepIndex);
       stepState.available.forEach((available, i) => {
         if (available && !prevAvailability[i]) {
           announce(`Step ${i + 1} unlocked. You can now complete this section.`);
       
-          const btn = steps[i];
-          if (btn) {
-            btn.classList.add('just-unlocked');
-            window.setTimeout(() => btn.classList.remove('just-unlocked'), 1200);
+          const item = progressItems[i];
+          if (item) {
+            item.classList.add('just-unlocked');
+            window.setTimeout(() => item.classList.remove('just-unlocked'), 1200);
           }
         }
       });
       prevAvailability = [...stepState.available];
+
+      if (activeStepIndex !== -1 && activeStepIndex !== lastAnnouncedStep) {
+        announce(`Now viewing Step ${activeStepIndex + 1}. ${stepSections[activeStepIndex]?.getAttribute('aria-label') || ''}`.trim());
+        lastAnnouncedStep = activeStepIndex;
+      }
+    }
+
+    function updateProgressHeader(activeStepIndex = stepState.open.findIndex(Boolean)) {
+      const totalSteps = stepSections.length;
+      const activeIdx = activeStepIndex === -1 ? model.step : activeStepIndex;
+      const titles = [
+        'Step 1 · Choose what and where',
+        'Step 2 · Select a permit',
+        'Step 3 · Agreements and purchaser info'
+      ];
+
+      if (progressTitle) progressTitle.textContent = titles[activeIdx] || titles[0];
+
+      const status = !stepState.available[activeIdx]
+        ? 'Locked'
+        : stepState.completed[activeIdx]
+          ? 'Completed'
+          : 'In progress';
+      if (progressSub) progressSub.textContent = status;
+
+      const progressPercent = totalSteps > 1 ? (activeIdx / (totalSteps - 1)) * 100 : 0;
+      if (progressBar) progressBar.style.width = `${progressPercent}%`;
+
+      progressDots.forEach((dot, idx) => {
+        dot.classList.toggle('active', idx === activeIdx);
+        dot.classList.toggle('complete', stepState.completed[idx]);
+      });
+
+      if (summaryStep1) summaryStep1.textContent = getStep1Summary();
+      if (summaryStep2) summaryStep2.textContent = getStep2Summary();
+      if (summaryStep3) summaryStep3.textContent = getStep3Summary();
+
+      progressItems.forEach((item, idx) => {
+        item.classList.toggle('is-active', idx === activeIdx);
+        item.classList.toggle('is-complete', stepState.completed[idx]);
+        item.setAttribute('aria-current', idx === activeIdx ? 'step' : 'false');
+      });
+
+      progressEditButtons.forEach((btn) => {
+        const idx = Number(btn.dataset.editStep);
+        const canEdit = stepState.completed[idx];
+        btn.disabled = !canEdit;
+        btn.setAttribute('aria-disabled', String(!canEdit));
+      });
+    }
+
+    function getStep1Summary() {
+      if (!stepState.completed[0]) return 'Choose what you are collecting and where.';
+      const typeLabel = PRODUCT_TYPES.find(t => t.id === model.ptype)?.label || '—';
+      const stateName = DATA[model.state]?.name || model.state || '—';
+      const officeName = model.officeName || '—';
+      return `${typeLabel} · ${stateName} · ${officeName}`;
+    }
+
+    function getStep2Summary() {
+      if (!model.product) return 'Select a permit and quantity.';
+      if (!model.qty) return `${model.product.name} · Add quantity`;
+      const total = (model.product?.price || 0) * (model.qty || 0);
+      const totalLabel = totalLabelFor(model.product?.price || 0, total);
+      const qtyLabel = `${model.qty} ${model.product?.unit || 'unit'}${model.qty === 1 ? '' : 's'}`;
+      return `${model.product.name} · ${qtyLabel} · ${totalLabel}`;
+    }
+
+    function getStep3Summary() {
+      if (!stepState.available[2]) return 'Confirm acknowledgements and purchaser info.';
+      const fullName = [purchaser.FirstName.value.trim(), purchaser.MiddleName.value.trim(), purchaser.LastName.value.trim()].filter(Boolean).join(' ');
+      if (stepState.completed[2]) {
+        return fullName ? `${fullName} · Ready to submit` : 'Purchaser details complete';
+      }
+      return fullName ? `${fullName} · Finish acknowledgements` : 'Confirm acknowledgements and purchaser info.';
     }
 
     function updateReviewActions() {
@@ -1432,13 +1526,24 @@
       model.qty = v;
       const total = v * (p.price || 0);
       totalEl.value = p.price === 0 ? 'No fee' : money(total);
+      if (totalAmount) totalAmount.textContent = totalLabelFor(p.price || 0, total);
       totalCalc.textContent = `${p.price === 0 ? 'No-fee permit' : `${money(p.price)} × ${v} ${p.unit}${v === 1 ? '' : 's'} = ${totalEl.value}`}`;
+      animateTotalUpdate();
       return true;
+    }
+
+    function animateTotalUpdate() {
+      if (!totalAmount || prefersReducedMotion) return;
+      totalAmount.classList.remove('is-updating');
+      void totalAmount.offsetWidth;
+      totalAmount.classList.add('is-updating');
+      window.setTimeout(() => totalAmount.classList.remove('is-updating'), 180);
     }
 
     function resetQuantityState() {
       model.qty = 0;
       totalEl.value = '';
+      if (totalAmount) totalAmount.textContent = '—';
       totalCalc.textContent = '';
       stepState.completed[1] = false;
       stepState.available[2] = false;
@@ -1510,7 +1615,7 @@
     function openStepIfAvailable(idx, { scrollIfNeeded = false } = {}) {
       if (!stepState.available[idx]) return;
       if (stepState.open[idx]) return false;
-      setStepOpenState(idx, true, { collapseOthers: false, scrollIfNeeded });
+      setStepOpenState(idx, true, { collapseOthers: true, scrollIfNeeded });
       return true;
     }
 
@@ -1756,15 +1861,15 @@
     stepToggles.forEach((btn, idx) => {
       btn.addEventListener('click', () => {
         if (!stepState.available[idx]) return;
-        const shouldOpen = !stepState.open[idx];
-        setStepOpenState(idx, shouldOpen, { collapseOthers: false, scrollIfNeeded: shouldOpen });
+        setStepOpenState(idx, true, { collapseOthers: true, scrollIfNeeded: true });
       });
     });
 
-    steps.forEach((btn, idx) => {
+    progressEditButtons.forEach((btn) => {
       btn.addEventListener('click', () => {
+        const idx = Number(btn.dataset.editStep);
         if (!stepState.available[idx]) return;
-        setStepOpenState(idx, true, { collapseOthers: false, scrollIfNeeded: true });
+        setStepOpenState(idx, true, { collapseOthers: true, scrollIfNeeded: true });
       });
     });
 
@@ -1777,6 +1882,7 @@
       }
       totalCalc.textContent = '';
       const ok = validateQty();
+      if (!ok && totalAmount) totalAmount.textContent = '—';
       stepState.completed[1] = ok;
       stepState.available[2] = ok;
       stepState.completed[2] = false;
