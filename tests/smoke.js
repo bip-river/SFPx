@@ -18,7 +18,7 @@ frame.addEventListener('load', () => {
   const checks = [
     ['Hero band present', !!doc.querySelector('.hero-band')],
     ['Progress header present', !!doc.querySelector('.progress-header')],
-    ['Progress summary items', doc.querySelectorAll('[data-progress-step]').length === 3],
+    ['Progress dot labels', doc.querySelectorAll('.progress-dot-labels span').length === 3],
     ['Products list has radiogroup', doc.getElementById('productList')?.getAttribute('role') === 'radiogroup'],
     ['Quantity input describes hints', (doc.getElementById('qty')?.getAttribute('aria-describedby') || '').includes('qtyHint')],
     ['Help stack present', !!doc.querySelector('.help-stack')]

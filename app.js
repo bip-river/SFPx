@@ -77,11 +77,6 @@
     const progressSub = document.getElementById('progressSub');
     const progressBar = document.getElementById('progressBar');
     const progressDots = Array.from(document.querySelectorAll('[data-progress-dot]'));
-    const progressItems = Array.from(document.querySelectorAll('[data-progress-step]'));
-    const progressEditButtons = Array.from(document.querySelectorAll('[data-edit-step]'));
-    const summaryStep1 = document.getElementById('summaryStep1');
-    const summaryStep2 = document.getElementById('summaryStep2');
-    const summaryStep3 = document.getElementById('summaryStep3');
     const stepSections = [
       document.getElementById('step1'),
       document.getElementById('step2'),
@@ -653,14 +648,23 @@
       details.className = 'docs';
       const summary = document.createElement('summary');
       summary.className = 'docs-action';
+      summary.setAttribute('aria-label', 'Maps and permit rules');
       const summaryTitle = document.createElement('span');
       summaryTitle.className = 'docs-title';
       summaryTitle.textContent = 'Maps & permit rules';
       const summaryMeta = document.createElement('span');
       summaryMeta.className = 'docs-meta';
       summaryMeta.textContent = `${docs.length} item${docs.length === 1 ? '' : 's'}`;
-      summary.appendChild(summaryTitle);
-      summary.appendChild(summaryMeta);
+      const summaryText = document.createElement('span');
+      summaryText.className = 'docs-text';
+      summaryText.appendChild(summaryTitle);
+      summaryText.appendChild(summaryMeta);
+      const chevron = document.createElement('span');
+      chevron.className = 'docs-chev';
+      chevron.setAttribute('aria-hidden', 'true');
+      chevron.textContent = '▾';
+      summary.appendChild(summaryText);
+      summary.appendChild(chevron);
       details.appendChild(summary);
 
       const docsWrap = document.createElement('div');
@@ -890,8 +894,6 @@
         const input = card.querySelector('input[type="radio"]');
         const selected = Boolean(input && input.checked);
         card.classList.toggle('is-selected', selected);
-        card.setAttribute('aria-selected', String(selected));
-        card.setAttribute('aria-checked', String(selected));
       });
     }
 
@@ -926,28 +928,21 @@
 
       const card = document.createElement('label');
       card.className = 'prod';
-      card.setAttribute('role', 'radio');
-      card.setAttribute('aria-selected', 'false');
-      card.setAttribute('aria-checked', 'false');
       card.setAttribute('for', id);
       const input = document.createElement('input');
       input.type = 'radio';
       input.name = 'product';
       input.id = id;
       input.value = String(idx);
-      card.appendChild(input);
-
-      const selectionIcon = document.createElement('div');
-      selectionIcon.className = 'prod-select';
-      selectionIcon.setAttribute('aria-hidden', 'true');
-      selectionIcon.textContent = '✓';
-      card.appendChild(selectionIcon);
+      input.className = 'prod-radio';
 
       const body = document.createElement('div');
       body.className = 'prod-body';
       const top = document.createElement('div');
       top.className = 'prod-top';
       const nameWrap = document.createElement('div');
+      nameWrap.className = 'prod-title';
+      nameWrap.appendChild(input);
       const name = document.createElement('div');
       name.className = 'name';
       name.textContent = p.name;
@@ -1159,48 +1154,6 @@
         dot.classList.toggle('complete', stepState.completed[idx]);
       });
 
-      if (summaryStep1) summaryStep1.textContent = getStep1Summary();
-      if (summaryStep2) summaryStep2.textContent = getStep2Summary();
-      if (summaryStep3) summaryStep3.textContent = getStep3Summary();
-
-      progressItems.forEach((item, idx) => {
-        item.classList.toggle('is-active', idx === activeIdx);
-        item.classList.toggle('is-complete', stepState.completed[idx]);
-        item.setAttribute('aria-current', idx === activeIdx ? 'step' : 'false');
-      });
-
-      progressEditButtons.forEach((btn) => {
-        const idx = Number(btn.dataset.editStep);
-        const canEdit = stepState.completed[idx];
-        btn.disabled = !canEdit;
-        btn.setAttribute('aria-disabled', String(!canEdit));
-      });
-    }
-
-    function getStep1Summary() {
-      if (!stepState.completed[0]) return 'Choose what you are collecting and where.';
-      const typeLabel = PRODUCT_TYPES.find(t => t.id === model.ptype)?.label || '—';
-      const stateName = DATA[model.state]?.name || model.state || '—';
-      const officeName = model.officeName || '—';
-      return `${typeLabel} · ${stateName} · ${officeName}`;
-    }
-
-    function getStep2Summary() {
-      if (!model.product) return 'Select a permit and quantity.';
-      if (!model.qty) return `${model.product.name} · Add quantity`;
-      const total = (model.product?.price || 0) * (model.qty || 0);
-      const totalLabel = totalLabelFor(model.product?.price || 0, total);
-      const qtyLabel = `${model.qty} ${model.product?.unit || 'unit'}${model.qty === 1 ? '' : 's'}`;
-      return `${model.product.name} · ${qtyLabel} · ${totalLabel}`;
-    }
-
-    function getStep3Summary() {
-      if (!stepState.available[2]) return 'Confirm acknowledgements and purchaser info.';
-      const fullName = [purchaser.FirstName.value.trim(), purchaser.MiddleName.value.trim(), purchaser.LastName.value.trim()].filter(Boolean).join(' ');
-      if (stepState.completed[2]) {
-        return fullName ? `${fullName} · Ready to submit` : 'Purchaser details complete';
-      }
-      return fullName ? `${fullName} · Finish acknowledgements` : 'Confirm acknowledgements and purchaser info.';
     }
 
     function updateReviewActions() {
