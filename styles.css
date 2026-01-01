@@ -121,6 +121,7 @@ body{
     .pagehead h1{margin:0; font-size:var(--font-size-h1); letter-spacing:-.02em}
 .pagehead p{margin:6px 0 0; color:var(--muted); max-width:80ch}
 .hero-subtitle{font-size:16px; color:var(--muted); margin-top:6px;}
+.issuer-line{font-size:14px; color:var(--muted); margin-top:6px;}
     .prototype-banner{background:#b42318; color:#fff; text-align:center; padding:10px 14px; font-weight:800; letter-spacing:.02em;}
     /* Alerts */
 .alert{display:flex; gap:10px; align-items:flex-start; border:1px solid rgba(29,107,66,.2); background:rgba(29,107,66,.08); border-radius:var(--radius-card); padding:12px 14px; margin-top:14px; box-shadow:var(--shadow-sm);}
