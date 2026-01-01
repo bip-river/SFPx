@@ -1,12 +1,12 @@
 (function () {
   'use strict';
 
-    let DATA = {};
-    let dataReady = false;
+    let catalogData = {};
+    let catalogReady = false;
     const STORAGE_KEY = 'sfp-demo-state';
-    const DATA_SOURCE = 'products.json';
+    const CATALOG_SOURCE = 'products.json';
 
-    const PRODUCT_TYPES = [
+    const PRODUCT_TYPE_OPTIONS = [
       { id: 'fuelwood', label: 'Fuelwood', image: 'firewood.png' },
       { id: 'christmas', label: 'Christmas tree', image: 'xmas.png' },
       { id: 'mushrooms', label: 'Mushrooms', image: 'mushrooms.png' }
@@ -43,9 +43,9 @@
     const officeRow = document.getElementById('officeRow');
     const officeCombo = document.getElementById('officeCombo');
     const officeList = document.getElementById('officeList');
-    const ptypeGroup = document.getElementById('ptypeGroup');
-    const ptypeOptions = document.getElementById('ptypeOptions');
-    let ptypeRadios = [];
+    const productTypeGroup = document.getElementById('ptypeGroup');
+    const productTypeOptions = document.getElementById('ptypeOptions');
+    let productTypeRadios = [];
 
     const productListEl = document.getElementById('productList');
     const qtyEl = document.getElementById('qty');
@@ -77,7 +77,6 @@
     const progressSub = document.getElementById('progressSub');
     const progressBar = document.getElementById('progressBar');
     const progressSteps = Array.from(document.querySelectorAll('[data-progress-step]'));
-    const progressItems = progressSteps;
     const progressEditButtons = Array.from(document.querySelectorAll('[data-edit-step]'));
     const stepSections = [
       document.getElementById('step1'),
@@ -107,7 +106,6 @@
 
     const resetAllBtn = document.getElementById('resetAll');
 
-    let permitHolderWasLocked = true;
 
     let permitDownloadUrl = '';
 
@@ -133,7 +131,7 @@
       state: '',
       officeId: '',
       officeName: '',
-      ptype: '',
+      productType: '',
       productIndex: null,
       product: null,
       qty: 0
@@ -181,7 +179,7 @@
           officeId: model.officeId,
           officeName: model.officeName,
           officeInput: officeInput.value,
-          ptype: model.ptype,
+          productType: model.productType,
           productIndex: model.productIndex,
           qty: model.qty,
         },
@@ -216,13 +214,14 @@
       const savedModel = saved?.model || {};
       const savedAcknowledgements = saved?.acknowledgements || {};
 
-      if (savedModel.state && DATA[savedModel.state]) {
+      if (savedModel.state && catalogData[savedModel.state]) {
         stateEl.value = savedModel.state;
         model.state = savedModel.state;
       }
 
-      if (savedModel.ptype) {
-        setProductType(savedModel.ptype);
+      const savedProductType = savedModel.productType || savedModel.ptype;
+      if (savedProductType) {
+        setProductType(savedProductType);
       }
 
       if (savedModel.officeId) {
@@ -273,9 +272,9 @@
     }
 
     function renderProductTypes() {
-      if (!ptypeOptions) return;
-      ptypeOptions.innerHTML = '';
-      PRODUCT_TYPES.forEach((type) => {
+      if (!productTypeOptions) return;
+      productTypeOptions.innerHTML = '';
+      PRODUCT_TYPE_OPTIONS.forEach((type) => {
         const label = document.createElement('label');
         label.className = 'ptype-card';
 
@@ -300,25 +299,25 @@
         body.appendChild(name);
         label.appendChild(body);
 
-        ptypeOptions.appendChild(label);
+        productTypeOptions.appendChild(label);
       });
 
-      ptypeRadios = Array.from(ptypeOptions.querySelectorAll('input[name="ptype"]'));
-      ptypeRadios.forEach((radio) => {
+      productTypeRadios = Array.from(productTypeOptions.querySelectorAll('input[name="ptype"]'));
+      productTypeRadios.forEach((radio) => {
         radio.addEventListener('change', () => handleProductTypeChange(radio.value));
       });
     }
 
     function setProductType(value) {
-      const hasMatch = ptypeRadios.some(r => r.value === value);
-      model.ptype = hasMatch ? (value || '') : '';
-      ptypeRadios.forEach(r => { r.checked = r.value === value; });
+      const hasMatch = productTypeRadios.some(r => r.value === value);
+      model.productType = hasMatch ? (value || '') : '';
+      productTypeRadios.forEach(r => { r.checked = r.value === value; });
     }
 
     function validateProductType({ showErrors = true } = {}) {
-      const hasType = Boolean(model.ptype);
+      const hasType = Boolean(model.productType);
       const msg = hasType ? '' : 'Select what you are collecting to view available permits.';
-      if (showErrors) setFieldError(ptypeGroup, msg);
+      if (showErrors) setFieldError(productTypeGroup, msg);
       return hasType;
     }
 
@@ -354,9 +353,9 @@
     }
 
     function syncSelectionAvailability() {
-      const hasType = Boolean(model.ptype);
+      const hasType = Boolean(model.productType);
       const hasState = hasType && Boolean(model.state);
-      const canUseData = dataReady && Object.keys(DATA || {}).length > 0;
+      const canUseData = catalogReady && Object.keys(catalogData || {}).length > 0;
     
       if (!hasType) resetStateSelection();
       if (!hasState) resetOfficeSelection();
@@ -374,11 +373,11 @@
     function populateStates() {
       // Keep the first placeholder option, remove any prior dynamic options.
       while (stateEl.options.length > 1) stateEl.remove(1);
-      const codes = Object.keys(DATA).sort((a,b) => DATA[a].name.localeCompare(DATA[b].name));
+      const codes = Object.keys(catalogData).sort((a,b) => catalogData[a].name.localeCompare(catalogData[b].name));
       for (const code of codes) {
         const opt = document.createElement('option');
         opt.value = code;
-        opt.textContent = DATA[code].name;
+        opt.textContent = catalogData[code].name;
         stateEl.appendChild(opt);
       }
     }
@@ -412,17 +411,17 @@
       setControlEnabled(officeInput, false);
     
       try {
-        const res = await fetch(DATA_SOURCE);
+        const res = await fetch(CATALOG_SOURCE);
         if (!res.ok) throw new Error('Unable to load product catalog.');
         const json = await res.json();
     
-        DATA = json || {};
-        dataReady = true;
+        catalogData = json || {};
+        catalogReady = true;
         populateStates();
         hideErrors();
       } catch (err) {
         console.error(err);
-        dataReady = false;
+        catalogReady = false;
     
         // Uses the shared error summary so it is focusable and consistent.
         showErrors(['We could not load available products right now. Please refresh and try again.']);
@@ -445,10 +444,10 @@
     }
 
     function getOfficesForState(code) {
-      const base = DATA[code]?.offices || [];
-      const filtered = (!model.ptype)
+      const base = catalogData[code]?.offices || [];
+      const filtered = (!model.productType)
         ? base
-        : base.filter(o => Array.isArray(o.products?.[model.ptype]) && o.products[model.ptype].length > 0);
+        : base.filter(o => Array.isArray(o.products?.[model.productType]) && o.products[model.productType].length > 0);
       return filtered.map(o => ({ id:o.id, name:o.name }));
     }
 
@@ -461,9 +460,9 @@
         div.id = 'officeOptionEmpty';
         div.setAttribute('aria-selected','false');
         div.setAttribute('aria-disabled','true');
-        if (!model.ptype && !query) {
+        if (!model.productType && !query) {
           div.textContent = 'Start typing to search offices.';
-        } else if (model.ptype && !query) {
+        } else if (model.productType && !query) {
           div.textContent = 'No BWL offices in this state offer that collection type online.';
         } else {
           div.textContent = 'No matches. Try another search.';
@@ -539,14 +538,14 @@
 
     // Products
     function getSelectedOffice() {
-      const offices = DATA[model.state]?.offices || [];
+      const offices = catalogData[model.state]?.offices || [];
       return offices.find(o => o.id === model.officeId) || null;
     }
 
     function getProductsForSelection() {
       const office = getSelectedOffice();
-      if (!office || !model.ptype) return [];
-      return office.products?.[model.ptype] || [];
+      if (!office || !model.productType) return [];
+      return office.products?.[model.productType] || [];
     }
 
     function money(n) {
@@ -606,14 +605,14 @@
       return { durationLabel, expirationLabel, availableLabel };
     }
 
-    const DOCS_BY_TYPE = {
+    const DOCS_BY_PRODUCT_TYPE = {
       fuelwood: [{ label: 'How to Measure Fuelwood', url: '#' }],
       christmas: [{ label: 'Planning Your Trip', url: '#' }],
       mushrooms: [{ label: 'Foraging Guidelines', url: '#' }]
     };
 
     function getLocationAttachments() {
-      const stateDocs = DATA[model.state]?.attachments || [];
+      const stateDocs = catalogData[model.state]?.attachments || [];
       const officeDocs = getSelectedOffice()?.attachments || [];
       return [...stateDocs, ...officeDocs];
     }
@@ -623,7 +622,7 @@
         { label: 'Map', url: '#' },
         { label: 'Stipulations', url: '#' }
       ];
-      const typed = DOCS_BY_TYPE[model.ptype] || [];
+      const typed = DOCS_BY_PRODUCT_TYPE[model.productType] || [];
       const locationDocs = getLocationAttachments();
       const all = [...(product.requiredDocs || []), ...locationDocs, ...base, ...typed];
       // De-dupe by a stable key. Label-only de-duping can drop distinct docs that share a name.
@@ -699,7 +698,7 @@
 
     function renderLocationNotice() {
       if (!locationNotice) return;
-      const stateData = DATA[model.state];
+      const stateData = catalogData[model.state];
       const office = getSelectedOffice();
       const attachments = getLocationAttachments();
       const hasStateDesc = Boolean(stateData?.description);
@@ -782,7 +781,7 @@
         reviewSummary.style.display = 'none';
         return;
       }
-      const stateName = DATA[model.state]?.name || model.state || '—';
+      const stateName = catalogData[model.state]?.name || model.state || '—';
       const fullName = [permitHolder.FirstName.value.trim(), permitHolder.MiddleName.value.trim(), permitHolder.LastName.value.trim()].filter(Boolean).join(' ');
       const addressParts = [
         permitHolder.AddressLine1.value.trim(),
@@ -874,9 +873,9 @@
       const hasAnyOfficeProducts = (office?.products && Object.values(office.products).some(arr => (arr || []).length > 0));
 
       if (!products.length) {
-        const ptypeLabel = PRODUCT_TYPES.find(t => t.id === model.ptype)?.label || 'this permit type';
+        const productTypeLabel = PRODUCT_TYPE_OPTIONS.find(t => t.id === model.productType)?.label || 'this permit type';
         const msg = hasAnyOfficeProducts
-          ? `${office?.name || 'This office'} does not offer ${ptypeLabel.toLowerCase()} permits online right now. Try another collection type or office.`
+          ? `${office?.name || 'This office'} does not offer ${productTypeLabel.toLowerCase()} permits online right now. Try another collection type or office.`
           : `${office?.name || 'This office'} does not have online permits available right now. Please choose another office or check back later.`;
         productListEl.appendChild(buildProductAlert(msg));
         return;
@@ -1118,7 +1117,7 @@
         if (available && !prevAvailability[i]) {
           announce(`Step ${i + 1} unlocked. You can now complete this section.`);
       
-          const item = progressItems[i];
+          const item = progressSteps[i];
           if (item) {
             item.classList.add('just-unlocked');
             window.setTimeout(() => item.classList.remove('just-unlocked'), 1200);
@@ -1344,7 +1343,6 @@
       if (!unlocked) {
         Object.values(permitHolder).forEach(el => setFieldError(el, ''));
       }
-      permitHolderWasLocked = !unlocked ? true : false;
     }
 
     function resetAcknowledgements() {
@@ -1441,7 +1439,7 @@
       if (!el || el.disabled) return '';
       const id = el.id;
       const val = (el.value || '').trim();
-      if (id === 'ptypeGroup' && !model.ptype) return 'Select what you are collecting to view available permits.';
+      if (id === 'ptypeGroup' && !model.productType) return 'Select what you are collecting to view available permits.';
       if (id === 'state' && !val) return 'Choose a state to see offices in that area.';
       if (id === 'officeInput') {
         if (!model.state) return 'Select a state to choose a BWL office.';
@@ -1502,7 +1500,7 @@
     }
 
     function validateStep1() {
-      const ok = Boolean(model.state) && Boolean(model.officeId) && Boolean(model.ptype);
+      const ok = Boolean(model.state) && Boolean(model.officeId) && Boolean(model.productType);
       stepState.completed[0] = ok;
       return ok;
     }
@@ -1665,34 +1663,34 @@
     }
 
     function updateLockNotes() {
-  const humanJoin = (items) => {
-    if (items.length === 0) return '';
-    if (items.length === 1) return items[0];
-    if (items.length === 2) return `${items[0]} and ${items[1]}`;
-    return `${items.slice(0, -1).join(', ')}, and ${items[items.length - 1]}`;
-  };
+      const humanJoin = (items) => {
+        if (items.length === 0) return '';
+        if (items.length === 1) return items[0];
+        if (items.length === 2) return `${items[0]} and ${items[1]}`;
+        return `${items.slice(0, -1).join(', ')}, and ${items[items.length - 1]}`;
+      };
 
-  if (lockNotes[1]) {
-    const needs = [];
-    if (!model.ptype) needs.push('select what you are collecting');
-    if (!model.state) needs.push('choose a state');
-    if (!model.officeId) needs.push('pick a BWL office');
+      if (lockNotes[1]) {
+        const needs = [];
+        if (!model.productType) needs.push('select what you are collecting');
+        if (!model.state) needs.push('choose a state');
+        if (!model.officeId) needs.push('pick a BWL office');
 
-    lockNotes[1].textContent = needs.length
-      ? `To unlock Step 2, ${humanJoin(needs)}.`
-      : '';
-  }
+        lockNotes[1].textContent = needs.length
+          ? `To unlock Step 2, ${humanJoin(needs)}.`
+          : '';
+      }
 
-  if (lockNotes[2]) {
-    if (!model.product) {
-      lockNotes[2].textContent = 'To unlock Step 3, choose a product and enter a quantity.';
-    } else if (!model.qty) {
-      lockNotes[2].textContent = 'To unlock Step 3, enter a quantity within the allowed range.';
-    } else {
-      lockNotes[2].textContent = '';
+      if (lockNotes[2]) {
+        if (!model.product) {
+          lockNotes[2].textContent = 'To unlock Step 3, choose a product and enter a quantity.';
+        } else if (!model.qty) {
+          lockNotes[2].textContent = 'To unlock Step 3, enter a quantity within the allowed range.';
+        } else {
+          lockNotes[2].textContent = '';
+        }
+      }
     }
-  }
-}
 
     function evaluateFinalStep({ showErrorsOnFail = false } = {}) {
       const ackOk = ackRequirementsMet();
@@ -1732,7 +1730,7 @@
 
     // Events
     stateEl.addEventListener('change', () => {
-      if (!model.ptype) {
+      if (!model.productType) {
         stateEl.value = '';
         syncSelectionAvailability();
         return;
@@ -1945,22 +1943,22 @@
           state: model.state,
           officeId: model.officeId,
           officeName: model.officeName,
-          productType: model.ptype,
+          productType: model.productType,
           productName: model.product?.name,
           unit: model.product?.unit,
           unitPrice,
           quantity,
           total,
           permitHolder: {
-            FirstName: permitHolder.FirstName.value.trim(),
-            MiddleName: permitHolder.MiddleName.value.trim(),
-            LastName: permitHolder.LastName.value.trim(),
-            AddressLine1: permitHolder.AddressLine1.value.trim(),
-            AddressLine2: permitHolder.AddressLine2.value.trim(),
-            City: permitHolder.City.value.trim(),
-            State: permitHolder.AddrState.value,
-            Zip: permitHolder.Zip.value.trim(),
-            DeliveryEmail: permitHolderEmail
+            firstName: permitHolder.FirstName.value.trim(),
+            middleName: permitHolder.MiddleName.value.trim(),
+            lastName: permitHolder.LastName.value.trim(),
+            addressLine1: permitHolder.AddressLine1.value.trim(),
+            addressLine2: permitHolder.AddressLine2.value.trim(),
+            city: permitHolder.City.value.trim(),
+            state: permitHolder.AddrState.value,
+            zip: permitHolder.Zip.value.trim(),
+            deliveryEmail: permitHolderEmail
           },
           eligibility: productRequiresEligibility(model.product)
             ? { certified: Boolean(ackEligibility && ackEligibility.checked), basis: model.product?.eligibility?.basis || 'Eligibility certification required' }
@@ -2043,22 +2041,22 @@
         state: model.state,
         officeId: model.officeId,
         officeName: model.officeName,
-        productType: model.ptype,
+        productType: model.productType,
         productName: model.product?.name,
         unit: model.product?.unit,
         unitPrice,
         quantity,
         total,
         permitHolder: {
-          FirstName: permitHolder.FirstName.value.trim(),
-          MiddleName: permitHolder.MiddleName.value.trim(),
-          LastName: permitHolder.LastName.value.trim(),
-          AddressLine1: permitHolder.AddressLine1.value.trim(),
-          AddressLine2: permitHolder.AddressLine2.value.trim(),
-          City: permitHolder.City.value.trim(),
-          State: permitHolder.AddrState.value,
-          Zip: permitHolder.Zip.value.trim(),
-          DeliveryEmail: permitHolderEmail
+          firstName: permitHolder.FirstName.value.trim(),
+          middleName: permitHolder.MiddleName.value.trim(),
+          lastName: permitHolder.LastName.value.trim(),
+          addressLine1: permitHolder.AddressLine1.value.trim(),
+          addressLine2: permitHolder.AddressLine2.value.trim(),
+          city: permitHolder.City.value.trim(),
+          state: permitHolder.AddrState.value,
+          zip: permitHolder.Zip.value.trim(),
+          deliveryEmail: permitHolderEmail
         },
         nextStep: "Redirect to Pay.gov (secure payment processing), verify payment status server-side, then return to forestproducts.blm.gov to download the permit with this reference.",
         deliveryPlan: 'After Pay.gov returns, the permit download page uses the transaction reference to fetch verified payment status. Duplicate submissions reuse the same idempotent transaction.',
