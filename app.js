@@ -76,7 +76,9 @@
     const progressTitle = document.getElementById('progressTitle');
     const progressSub = document.getElementById('progressSub');
     const progressBar = document.getElementById('progressBar');
-    const progressDots = Array.from(document.querySelectorAll('[data-progress-dot]'));
+    const progressSteps = Array.from(document.querySelectorAll('[data-progress-step]'));
+    const progressItems = progressSteps;
+    const progressEditButtons = Array.from(document.querySelectorAll('[data-edit-step]'));
     const stepSections = [
       document.getElementById('step1'),
       document.getElementById('step2'),
@@ -938,24 +940,27 @@
 
       const body = document.createElement('div');
       body.className = 'prod-body';
-      const top = document.createElement('div');
-      top.className = 'prod-top';
-      const nameWrap = document.createElement('div');
-      nameWrap.className = 'prod-title';
-      nameWrap.appendChild(input);
+      const header = document.createElement('div');
+      header.className = 'prod-header';
+      const headerLeft = document.createElement('div');
+      headerLeft.className = 'prod-header-left';
+      headerLeft.appendChild(input);
+      const info = document.createElement('div');
+      info.className = 'prod-info';
       const name = document.createElement('div');
       name.className = 'name';
       name.textContent = p.name;
       const area = document.createElement('div');
       area.className = 'area';
       area.textContent = `District: ${officeName}`;
-      nameWrap.appendChild(name);
-      nameWrap.appendChild(area);
+      info.appendChild(name);
+      info.appendChild(area);
+      headerLeft.appendChild(info);
       const price = document.createElement('div');
       price.className = 'price';
       price.textContent = priceLine;
-      top.appendChild(nameWrap);
-      top.appendChild(price);
+      header.appendChild(headerLeft);
+      header.appendChild(price);
 
       const stats = document.createElement('ul');
       stats.className = 'stats';
@@ -972,7 +977,7 @@
 
       const docsDiv = buildDocLinks(docs);
 
-      [top, stats, available, docsDiv].forEach((node) => body.appendChild(node));
+      [header, stats, available, docsDiv].forEach((node) => body.appendChild(node));
       card.appendChild(body);
 
       card.querySelector('input').addEventListener('change', () => {
@@ -1149,9 +1154,14 @@
       const progressPercent = totalSteps > 1 ? (activeIdx / (totalSteps - 1)) * 100 : 0;
       if (progressBar) progressBar.style.width = `${progressPercent}%`;
 
-      progressDots.forEach((dot, idx) => {
-        dot.classList.toggle('active', idx === activeIdx);
-        dot.classList.toggle('complete', stepState.completed[idx]);
+      progressSteps.forEach((step, idx) => {
+        step.classList.toggle('is-active', idx === activeIdx);
+        step.classList.toggle('is-complete', stepState.completed[idx]);
+        if (idx === activeIdx) {
+          step.setAttribute('aria-current', 'step');
+        } else {
+          step.removeAttribute('aria-current');
+        }
       });
 
     }
@@ -1419,7 +1429,6 @@
       }
       errorBox.setAttribute('aria-hidden', 'false');
       errorBox.style.display = 'block';
-      errorBox.focus();
     }
 
     function hideErrors() {
