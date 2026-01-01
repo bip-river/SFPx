@@ -122,7 +122,6 @@ body{
     .pagehead h1{margin:0; font-size:var(--font-size-h1); letter-spacing:-.02em}
 .pagehead p{margin:6px 0 0; color:var(--muted); max-width:80ch}
 .hero-subtitle{font-size:16px; color:var(--muted); margin-top:6px;}
-.federal-note{font-weight:700; margin-top:12px; color:#0d3b25; background:rgba(29,107,66,.10); padding:12px 14px; border-radius:var(--radius-input); display:inline-block; box-shadow:var(--shadow-sm); border:1px solid rgba(29,107,66,.18);}
     .prototype-banner{background:#b42318; color:#fff; text-align:center; padding:10px 14px; font-weight:800; letter-spacing:.02em;}
     /* Alerts */
 .alert{display:flex; gap:10px; align-items:flex-start; border:1px solid rgba(29,107,66,.2); background:rgba(29,107,66,.08); border-radius:var(--radius-card); padding:12px 14px; margin-top:14px; box-shadow:var(--shadow-sm);}
@@ -134,89 +133,6 @@ body{
     .layout{display:grid; gap:18px; align-items:start}
     @media(min-width: 980px){ .layout{grid-template-columns: minmax(0, 1.25fr) 340px; gap:26px; align-items:start} }
 .card{background:var(--card); border:1px solid var(--border); border-radius:var(--radius-card); box-shadow:var(--shadow-md); padding:16px; position:relative; overflow:visible;}
-    /* Progress header */
-    .progress-header{
-      position:sticky;
-      top:0;
-      z-index:30;
-      margin:4px 0 8px;
-      background:rgba(255,255,255,.98);
-      border-bottom:1px solid var(--color-border);
-      box-shadow:none;
-      padding:4px 0 6px;
-      display:grid;
-      gap:2px;
-      min-height:28px;
-    }
-    .progress-meta{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      font-size:12px;
-      color:var(--muted);
-    }
-    .progress-count{font-weight:600; letter-spacing:.01em;}
-    .progress-current{font-weight:700; color:var(--ink); font-size:13px;}
-    .progress-stepper{position:relative; --dot-size:4px; --dot-active-size:7px;}
-    .progress-track{position:relative; min-height:12px;}
-    .progress-steps{
-      list-style:none;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:0;
-      margin:0;
-      padding:0;
-      position:relative;
-      z-index:2;
-    }
-    .progress-step{display:flex; align-items:center; justify-content:center;}
-    .progress-dot{
-      width:var(--dot-size);
-      height:var(--dot-size);
-      border-radius:999px;
-      background:rgba(15,28,31,.28);
-      transition:width var(--motion-fast) var(--motion-ease), height var(--motion-fast) var(--motion-ease), background var(--motion-fast) var(--motion-ease);
-    }
-    .progress-step.is-active .progress-dot{
-      width:var(--dot-active-size);
-      height:var(--dot-active-size);
-      background:var(--color-primary);
-    }
-    .progress-step.is-complete .progress-dot{
-      background:var(--color-primary);
-    }
-    .progress-step{opacity:.55;}
-    .progress-step.is-active,
-    .progress-step.is-complete{opacity:1;}
-    .progress-line{
-      position:absolute;
-      left:0;
-      right:0;
-      top:50%;
-      transform:translateY(-50%);
-      height:2px;
-    }
-    .progress-line-bg,
-    .progress-line-fill{
-      position:absolute;
-      left:0;
-      top:0;
-      height:100%;
-      border-radius:999px;
-    }
-    .progress-line-bg{width:100%; background:rgba(15,28,31,.2);}
-    .progress-line-fill{
-      width:0%;
-      background:var(--color-primary);
-      transition:width var(--motion-base) var(--motion-ease);
-    }
-    @media (max-width: 640px){
-      .progress-header{padding:6px 0 6px;}
-      .progress-meta{font-size:12px;}
-      .progress-current{font-size:12px;}
-    }
     /* Stepper */
     .stepper{display:flex; flex-wrap:wrap; gap:10px; padding:12px; border-radius:var(--radius-card); border:1px solid var(--color-border); background:rgba(255,255,255,.7); box-shadow:var(--shadow-sm);}
     .step{display:flex; align-items:center; gap:10px; padding:12px 14px; border-radius:var(--radius-input); border:1px solid var(--color-border); background:var(--color-surface); min-width: 210px; cursor:pointer; text-align:left; transition: border-color var(--motion-fast) var(--motion-ease), box-shadow var(--motion-fast) var(--motion-ease), transform var(--motion-fast) var(--motion-ease); box-shadow:var(--shadow-sm);}
