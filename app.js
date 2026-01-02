@@ -140,7 +140,7 @@
     let prevAvailability = [...stepState.available];
 
     function hasSelectionForReview() {
-      return Boolean(stepState.completed[1] && model.product);
+      return Boolean(model.product && model.qty);
     }
 
     function setControlEnabled(el, enabled) {
@@ -1429,6 +1429,7 @@
 
     function validateQty() {
       const p = model.product;
+      model.qty = 0;
       if (!p) return false;
       const v = Number(qtyEl.value);
       if (!Number.isFinite(v) || v < 1) return false;
