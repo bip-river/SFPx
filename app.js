@@ -48,6 +48,11 @@
     let productTypeRadios = [];
 
     const productListEl = document.getElementById('productList');
+    const docsDialog = document.getElementById('docsDialog');
+    const docsDialogTitle = document.getElementById('docsDialogTitle');
+    const docsDialogSubtitle = document.getElementById('docsDialogSubtitle');
+    const docsDialogBody = document.getElementById('docsDialogBody');
+    const docsDialogClose = document.getElementById('docsDialogClose');
     const qtyEl = document.getElementById('qty');
     const qtyHint = document.getElementById('qtyHint');
     const qtyGuard = document.getElementById('qtyGuard');
@@ -101,6 +106,14 @@
 
     const resetAllBtn = document.getElementById('resetAll');
 
+    if (docsDialogClose) {
+      docsDialogClose.addEventListener('click', () => closeDocsDialog());
+    }
+    if (docsDialog) {
+      docsDialog.addEventListener('click', (event) => {
+        if (event.target === docsDialog) closeDocsDialog();
+      });
+    }
 
     let permitDownloadUrl = '';
 
@@ -623,47 +636,71 @@
       });
     }
 
-    function buildDocLinks(docs = [], { includePrefix = true } = {}) {
-      if (!includePrefix) {
-        const docsDiv = document.createElement('div');
-        docsDiv.className = 'docs';
-        return docsDiv;
-      }
+    function buildDocAction(product, docs = []) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'docs-trigger';
+      button.textContent = 'Maps & permit rules';
+      button.setAttribute('aria-label', `Maps and permit rules for ${product?.name || 'this permit'}`);
+      button.setAttribute('aria-haspopup', 'dialog');
+      button.setAttribute('aria-controls', 'docsDialog');
+      button.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        openDocsDialog(product, docs);
+      });
+      button.addEventListener('pointerdown', (event) => {
+        event.stopPropagation();
+      });
+      return button;
+    }
 
-      const details = document.createElement('details');
-      details.className = 'docs';
-      const summary = document.createElement('summary');
-      summary.className = 'docs-action';
-      summary.setAttribute('aria-label', 'Maps and permit rules');
-      const summaryTitle = document.createElement('span');
-      summaryTitle.className = 'docs-title';
-      summaryTitle.textContent = 'Maps & permit rules';
-      const summaryText = document.createElement('span');
-      summaryText.className = 'docs-text';
-      summaryText.appendChild(summaryTitle);
-      summary.appendChild(summaryText);
-      details.appendChild(summary);
-
+    function buildDocLinksList(docs = []) {
       const docsWrap = document.createElement('div');
       docsWrap.className = 'doc-links';
-
       if (!docs.length) {
         const empty = document.createElement('div');
         empty.className = 'doc-empty';
         empty.textContent = 'No additional documents for this permit.';
         docsWrap.appendChild(empty);
-      } else {
-        docs.forEach((doc) => {
-          const link = document.createElement('a');
-          link.href = doc.url;
-          link.textContent = doc.label;
-          link.addEventListener('click', (event) => event.stopPropagation());
-          docsWrap.appendChild(link);
-        });
+        return docsWrap;
       }
 
-      details.appendChild(docsWrap);
-      return details;
+      docs.forEach((doc) => {
+        const link = document.createElement('a');
+        link.href = doc.url;
+        link.textContent = doc.label;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        docsWrap.appendChild(link);
+      });
+      return docsWrap;
+    }
+
+    function openDocsDialog(product, docs = []) {
+      if (!docsDialog || !docsDialogTitle || !docsDialogBody || !docsDialogSubtitle) return;
+      docsDialogTitle.textContent = 'Maps & permit rules';
+      docsDialogSubtitle.textContent = product?.name || 'Permit documents';
+      docsDialogBody.innerHTML = '';
+      const intro = document.createElement('div');
+      intro.textContent = 'Open the documents below to review rules, maps, and other permit details.';
+      docsDialogBody.appendChild(intro);
+      docsDialogBody.appendChild(buildDocLinksList(docs));
+
+      if (typeof docsDialog.showModal === 'function') {
+        docsDialog.showModal();
+      } else {
+        docsDialog.setAttribute('open', '');
+      }
+    }
+
+    function closeDocsDialog() {
+      if (!docsDialog) return;
+      if (typeof docsDialog.close === 'function') {
+        docsDialog.close();
+      } else {
+        docsDialog.removeAttribute('open');
+      }
     }
 
     function hideLocationNotice() {
@@ -924,21 +961,23 @@
       const name = document.createElement('div');
       name.className = 'name';
       name.textContent = p.name;
+      const validity = document.createElement('div');
+      validity.className = 'validity';
+      validity.textContent = validityLine;
       info.appendChild(name);
+      info.appendChild(validity);
       headerLeft.appendChild(info);
       const price = document.createElement('div');
       price.className = 'price';
       price.textContent = priceLine;
+      const meta = document.createElement('div');
+      meta.className = 'prod-meta';
+      meta.appendChild(price);
+      meta.appendChild(buildDocAction(p, docs));
       header.appendChild(headerLeft);
-      header.appendChild(price);
+      header.appendChild(meta);
 
-      const validity = document.createElement('div');
-      validity.className = 'validity';
-      validity.textContent = validityLine;
-
-      const docsDiv = buildDocLinks(docs);
-
-      [header, validity, docsDiv].forEach((node) => body.appendChild(node));
+      body.appendChild(header);
       card.appendChild(body);
 
       card.querySelector('input').addEventListener('change', () => {

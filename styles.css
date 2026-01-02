@@ -222,24 +222,33 @@ body{
     .opt:hover, .opt[aria-selected="true"]{background:rgba(29,107,66,.10)}
     .opt .small{display:block; margin-top:2px; color:var(--muted); font-size:12px}
     /* Products */
-    .products{display:grid; gap:10px; margin-top:12px}
-    .prod{
+    .products{
+      display:grid;
+      gap:0;
+      margin-top:12px;
       border:1px solid rgba(29,107,66,.18);
-      border-radius:var(--radius-card);
-      padding:12px;
+      border-radius:14px;
+      overflow:hidden;
+      background:#fff;
+    }
+    .prod{
+      border:0;
+      border-bottom:1px solid rgba(29,107,66,.14);
+      border-radius:0;
+      padding:10px 12px;
       background:#fff;
       display:block;
-      transition: border-color var(--motion-fast) var(--motion-ease), box-shadow var(--motion-fast) var(--motion-ease), transform var(--motion-fast) var(--motion-ease);
+      transition: border-color var(--motion-fast) var(--motion-ease), box-shadow var(--motion-fast) var(--motion-ease), background var(--motion-fast) var(--motion-ease);
       font-weight:500;
-      box-shadow:var(--shadow-sm);
+      box-shadow:none;
       position:relative;
     }
-    .prod:hover{border-color: rgba(29,107,66,.35); box-shadow:var(--shadow-md); transform:translateY(-1px);}
+    .prod:last-child{border-bottom:0;}
+    .prod:hover{background:rgba(29,107,66,.04);}
     /* Fallback for browsers that do not support :has(). JS adds .is-selected on the label. */
     .prod.is-selected{
-      border-color: rgba(29,107,66,.65);
-      background:#fff;
-      box-shadow:0 0 0 2px rgba(29,107,66,.18), var(--shadow-md);
+      background:rgba(29,107,66,.06);
+      box-shadow:inset 3px 0 0 rgba(29,107,66,.65);
     }
     /* Fallback focus style without :has(input:focus-visible). */
     .prod:focus-within{
@@ -247,67 +256,57 @@ body{
       box-shadow:0 0 0 3px rgba(37,111,176,.28), var(--shadow-md);
     }
     .prod:has(input:checked){
-      border-color: rgba(29,107,66,.65);
-      background:#fff;
-      box-shadow:0 0 0 2px rgba(29,107,66,.18), var(--shadow-md);
+      background:rgba(29,107,66,.06);
+      box-shadow:inset 3px 0 0 rgba(29,107,66,.65);
     }
     .prod:has(input:focus-visible){
       border-color: rgba(29,107,66,.65);
       box-shadow:0 0 0 3px rgba(37,111,176,.28), var(--shadow-md);
     }
-    .prod-body{display:grid; gap:6px}
-    .prod-header{display:flex; justify-content:space-between; gap:12px; align-items:center;}
+    .prod-body{display:grid; gap:4px}
+    .prod-header{display:flex; justify-content:space-between; gap:12px; align-items:flex-start;}
     .prod-header-left{display:flex; gap:10px; align-items:center; min-width:0;}
     .prod-info{display:grid; gap:4px; min-width:0;}
+    .prod-meta{display:flex; flex-direction:column; align-items:flex-end; gap:4px;}
     .prod-radio{margin-top:0; width:18px; height:18px; accent-color: var(--brand);}
-    .prod .name{font-weight:800; font-size:16px; line-height:1.25}
-    .prod .price{font-weight:800; font-size:16px; color:var(--ink); white-space:nowrap}
-    .prod .validity{font-size:12.5px; color:var(--muted);}
-    .prod .docs{
-      margin-top:2px;
-      border:0;
-      border-radius:0;
-      background:transparent;
-      padding:0;
-      box-shadow:none;
+    .prod .name{
+      font-weight:800;
+      font-size:15px;
+      line-height:1.25;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
-    .prod .docs summary{
+    .prod .price{font-weight:800; font-size:15px; color:var(--ink); white-space:nowrap}
+    .prod .validity{
+      font-size:12px;
+      color:var(--muted);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .docs-trigger{
+      font-size:12px;
       font-weight:600;
-      font-size:12.5px;
       color:var(--link);
-      cursor:pointer;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
+      background:none;
       border:0;
-      background:transparent;
-      border-radius:6px;
-      padding:2px 0;
-      width:100%;
+      padding:0;
+      cursor:pointer;
       text-decoration:underline;
       text-underline-offset:2px;
     }
-    .prod .docs summary::-webkit-details-marker{display:none;}
-    .docs-text{display:flex; align-items:center; gap:6px;}
-    .prod .docs summary:focus-visible{outline:3px solid rgba(37,111,176,.35); outline-offset:3px}
-    .prod .docs summary:hover{color:var(--link-hover);}
-    .docs-title{font-size:12.5px}
+    .docs-trigger:hover{color:var(--link-hover);}
+    .docs-trigger:focus-visible{outline:3px solid rgba(37,111,176,.35); outline-offset:3px; border-radius:6px;}
     .doc-links{
-      display:flex;
-      flex-wrap:wrap;
+      display:grid;
       gap:8px;
-      margin-top:10px;
-      padding:10px 12px;
-      border-radius:var(--radius-input);
-      background:var(--color-surface-muted);
-      border:1px solid var(--color-border);
     }
     .doc-links a{
       color:var(--link);
       text-decoration:underline;
       text-underline-offset:2px;
-      font-size:12.5px;
+      font-size:13px;
       font-weight:600;
       display:inline-flex;
       padding:2px 4px;
@@ -315,7 +314,31 @@ body{
     }
     .doc-links a:hover{background:rgba(11,92,171,.12)}
     .doc-links a:focus-visible{outline:3px solid rgba(37,111,176,.35); outline-offset:2px}
-    .doc-empty{font-size:12.5px; color:var(--muted)}
+    .doc-empty{font-size:13px; color:var(--muted)}
+    .docs-dialog{
+      border:0;
+      border-radius:16px;
+      padding:0;
+      width:min(92vw, 420px);
+      box-shadow:0 18px 40px rgba(9,16,20,.28);
+    }
+    .docs-dialog::backdrop{background:rgba(9,16,20,.45);}
+    .docs-dialog-inner{padding:16px; display:grid; gap:12px;}
+    .docs-dialog-head{display:flex; align-items:flex-start; justify-content:space-between; gap:16px;}
+    .docs-dialog-head h2{margin:0; font-size:18px;}
+    .docs-dialog-subtitle{font-size:13px; color:var(--muted); margin-top:4px;}
+    .docs-dialog-body{display:grid; gap:8px;}
+    .docs-dialog-body .doc-links{margin-top:4px;}
+    .icon-btn{
+      border:1px solid rgba(29,107,66,.18);
+      background:#fff;
+      border-radius:10px;
+      padding:4px 8px;
+      cursor:pointer;
+      font-size:16px;
+      line-height:1;
+    }
+    .icon-btn:focus-visible{outline:3px solid rgba(37,111,176,.35); outline-offset:2px;}
     .location-note{margin-top:12px; border:1px solid rgba(29,107,66,.16); border-radius:var(--radius-card); padding:12px; background:rgba(29,107,66,.04); box-shadow:var(--shadow-sm);}
     .location-note .title{font-weight:900; font-size:14px; display:flex; align-items:center; gap:8px;}
       .location-note .title .badge{width:22px; height:22px; border-radius:8px; background:rgba(29,107,66,.14); color:var(--brand); display:grid; place-items:center; font-weight:900;}
