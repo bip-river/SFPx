@@ -139,8 +139,18 @@
     };
     let prevAvailability = [...stepState.available];
 
+    function resolveQtyValue({ syncModel = false } = {}) {
+      const v = Number(qtyEl?.value);
+      const max = model.product?.maxQty;
+      if (Number.isFinite(v) && v > 0 && (!max || v <= max)) {
+        if (syncModel) model.qty = v;
+        return v;
+      }
+      return model.qty || 0;
+    }
+
     function hasSelectionForReview() {
-      return Boolean(model.product && model.qty);
+      return Boolean(model.product && resolveQtyValue() > 0);
     }
 
     function setControlEnabled(el, enabled) {
@@ -765,9 +775,10 @@
         [permitHolder.City.value.trim(), permitHolder.AddrState.value, permitHolder.Zip.value.trim()].filter(Boolean).join(' ')
       ].filter(Boolean).join(', ');
       const deliveryEmail = permitHolder.DeliveryEmail.value.trim();
-      const total = (model.product?.price || 0) * (model.qty || 0);
+      const qtyValue = resolveQtyValue({ syncModel: true });
+      const total = (model.product?.price || 0) * (qtyValue || 0);
       const totalLabel = totalLabelFor(model.product?.price || 0, total);
-      const qtyLabel = model.qty ? `${model.qty} ${model.product?.unit || 'unit'}${model.qty === 1 ? '' : 's'}` : '—';
+      const qtyLabel = qtyValue ? `${qtyValue} ${model.product?.unit || 'unit'}${qtyValue === 1 ? '' : 's'}` : '—';
       const { durationLabel, expirationLabel } = getValidityLabels(model.product);
 
       handoff.style.display = 'none';
