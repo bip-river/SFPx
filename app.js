@@ -830,7 +830,8 @@
       reviewActions.style.display = 'flex';
       const ready = stepState.completed[2];
       confirmPaygovBtn.disabled = !ready;
-      reviewNotice.style.display = ready ? 'flex' : 'none';
+      confirmPaygovBtn.setAttribute('aria-disabled', String(!ready));
+      reviewNotice.style.display = 'flex';
     }
 
     function renderProducts() {
