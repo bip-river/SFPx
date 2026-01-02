@@ -591,6 +591,19 @@
       return `Valid ${durationDays} day${durationDays === 1 ? '' : 's'} • Expires ${formatDate(expirationDate)}`;
     }
 
+    function getValidityLabels(product) {
+      if (!product) {
+        return { durationLabel: 'Valid —', expirationLabel: 'Expires —' };
+      }
+
+      const { validForDays, expirationDate, actualDays, shortened } = calculatePermitValidity(product);
+      const durationDays = shortened ? actualDays : validForDays;
+      return {
+        durationLabel: `Valid ${durationDays} day${durationDays === 1 ? '' : 's'}`,
+        expirationLabel: `Expires ${formatDate(expirationDate)}`
+      };
+    }
+  
     const DOCS_BY_PRODUCT_TYPE = {
       fuelwood: [{ label: 'How to Measure Fuelwood', url: '#' }],
       christmas: [{ label: 'Planning Your Trip', url: '#' }],
