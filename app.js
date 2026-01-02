@@ -140,7 +140,7 @@
     let prevAvailability = [...stepState.available];
 
     function hasSelectionForReview() {
-      return Boolean(model.product && model.qty);
+      return Boolean(stepState.completed[1] && model.product);
     }
 
     function setControlEnabled(el, enabled) {
