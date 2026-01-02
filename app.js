@@ -140,7 +140,8 @@
     let prevAvailability = [...stepState.available];
 
     function hasSelectionForReview() {
-      return Boolean(model.product && model.qty);
+      if (!model.product) return false;
+      return validateQty();
     }
 
     function setControlEnabled(el, enabled) {
@@ -1429,16 +1430,29 @@
 
     function validateQty() {
       const p = model.product;
-      model.qty = 0;
-      if (!p) return false;
+
       const v = Number(qtyEl.value);
-      if (!Number.isFinite(v) || v < 1) return false;
-      if (p.maxQty && v > p.maxQty) return false;
+      const max = p?.maxQty;
+      const invalid = !p || !Number.isFinite(v) || v < 1 || (max && v > max);
+      if (invalid) {
+        // Keep model/UI consistent so downstream logic does not rely on stale quantities/totals.
+        model.qty = 0;
+        totalEl.value = '';
+        if (totalAmount) totalAmount.textContent = '—';
+        totalCalc.textContent = '';
+        return false;
+      }
+  
       model.qty = v;
-      const total = v * (p.price || 0);
-      totalEl.value = p.price === 0 ? 'No fee' : money(total);
-      if (totalAmount) totalAmount.textContent = totalLabelFor(p.price || 0, total);
-      totalCalc.textContent = `${p.price === 0 ? 'No-fee permit' : `${money(p.price)} × ${v} ${p.unit}${v === 1 ? '' : 's'} = ${totalEl.value}`}`;
+      const unitPrice = p.price || 0;
+      const total = v * unitPrice;
+
+      totalEl.value = unitPrice === 0 ? 'No fee' : money(total);
+      if (totalAmount) totalAmount.textContent = totalLabelFor(unitPrice, total);
+
+      totalCalc.textContent = unitPrice === 0
+        ? 'No-fee permit'
+        : `${money(unitPrice)} × ${v} ${p.unit}${v === 1 ? '' : 's'} = ${totalEl.value}`;
       animateTotalUpdate();
       return true;
     }
