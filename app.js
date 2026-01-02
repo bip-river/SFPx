@@ -580,24 +580,14 @@
       return { validForDays, expirationDate, startDate, actualDays, shortened };
     }
 
-    function getValidityLabels(product) {
+    function getValidityLine(product) {
       if (!product) {
-        return {
-          durationLabel: 'Valid for —',
-          expirationLabel: 'Permit expires —',
-          availableLabel: 'Available until —'
-        };
+        return 'Valid — • Expires —';
       }
 
       const { validForDays, expirationDate, actualDays, shortened } = calculatePermitValidity(product);
       const durationDays = shortened ? actualDays : validForDays;
-      const durationLabel = `Valid for ${durationDays} day${durationDays === 1 ? '' : 's'}`;
-      const expirationLabel = `Permit expires ${formatDate(expirationDate)}`;
-      const availableLabel = product.availableUntil
-        ? `Available until ${formatDate(product.availableUntil)}`
-        : 'Availability varies';
-
-      return { durationLabel, expirationLabel, availableLabel };
+      return `Valid ${durationDays} day${durationDays === 1 ? '' : 's'} • Expires ${formatDate(expirationDate)}`;
     }
 
     const DOCS_BY_PRODUCT_TYPE = {
@@ -648,19 +638,10 @@
       const summaryTitle = document.createElement('span');
       summaryTitle.className = 'docs-title';
       summaryTitle.textContent = 'Maps & permit rules';
-      const summaryMeta = document.createElement('span');
-      summaryMeta.className = 'docs-meta';
-      summaryMeta.textContent = `${docs.length} item${docs.length === 1 ? '' : 's'}`;
       const summaryText = document.createElement('span');
       summaryText.className = 'docs-text';
       summaryText.appendChild(summaryTitle);
-      summaryText.appendChild(summaryMeta);
-      const chevron = document.createElement('span');
-      chevron.className = 'docs-chev';
-      chevron.setAttribute('aria-hidden', 'true');
-      chevron.textContent = '▾';
       summary.appendChild(summaryText);
-      summary.appendChild(chevron);
       details.appendChild(summary);
 
       const docsWrap = document.createElement('div');
@@ -918,9 +899,8 @@
     function createProductCard(p, idx) {
       const id = `prod_${idx}`;
       const priceLine = feeLabelForUnit(p.price, p.unit);
-      const { durationLabel, expirationLabel, availableLabel } = getValidityLabels(p);
+      const validityLine = getValidityLine(p);
       const docs = buildRequiredDocs(p);
-      const officeName = getSelectedOffice()?.name || '—';
 
       const card = document.createElement('label');
       card.className = 'prod';
@@ -944,11 +924,7 @@
       const name = document.createElement('div');
       name.className = 'name';
       name.textContent = p.name;
-      const area = document.createElement('div');
-      area.className = 'area';
-      area.textContent = `District: ${officeName}`;
       info.appendChild(name);
-      info.appendChild(area);
       headerLeft.appendChild(info);
       const price = document.createElement('div');
       price.className = 'price';
@@ -956,22 +932,13 @@
       header.appendChild(headerLeft);
       header.appendChild(price);
 
-      const stats = document.createElement('ul');
-      stats.className = 'stats';
-      stats.setAttribute('aria-label', 'Permit details');
-      [durationLabel, expirationLabel].forEach((label) => {
-        const item = document.createElement('li');
-        item.textContent = label;
-        stats.appendChild(item);
-      });
-
-      const available = document.createElement('div');
-      available.className = 'meta';
-      available.textContent = availableLabel;
+      const validity = document.createElement('div');
+      validity.className = 'validity';
+      validity.textContent = validityLine;
 
       const docsDiv = buildDocLinks(docs);
 
-      [header, stats, available, docsDiv].forEach((node) => body.appendChild(node));
+      [header, validity, docsDiv].forEach((node) => body.appendChild(node));
       card.appendChild(body);
 
       card.querySelector('input').addEventListener('change', () => {
