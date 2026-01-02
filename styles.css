@@ -178,6 +178,13 @@ body{
     .ptype-card input:focus-visible + .ptype-card-body{outline:3px solid var(--color-focus); outline-offset:2px;}
     .ptype-card input:checked + .ptype-card-body{background:rgba(29,107,66,.08); border:1px solid rgba(29,107,66,.4); box-shadow:var(--shadow-md);}
     .ptype-card input:disabled + .ptype-card-body{opacity:.6; cursor:not-allowed;}
+    @media(max-width: 640px){
+      .ptype-grid{grid-template-columns: repeat(2, minmax(0, 1fr)); gap:10px;}
+      .ptype-card{padding:4px;}
+      .ptype-card-body{flex-direction:column; gap:6px; padding:10px 8px; text-align:center;}
+      .ptype-card img{width:44px; height:44px; border-radius:10px; padding:6px;}
+      .ptype-card-name{font-size:13px;}
+    }
     input, select, textarea{width:100%; padding:12px 13px; border:1px solid rgba(29,107,66,.28); border-radius:var(--radius-input); font-size:15px; background:var(--field); box-shadow:inset 0 1px 0 rgba(255,255,255,.6);}
     input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible, summary:focus-visible{outline:3px solid var(--color-focus); outline-offset:2px; box-shadow:0 0 0 3px rgba(37,111,176,.25);}
     .row{display:grid; gap:8px}
