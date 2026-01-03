@@ -56,6 +56,8 @@
     const totalCalc = document.getElementById('totalCalc');
 
     const qtySection = document.getElementById('qtySection');
+    const comingSoonSection = document.getElementById('comingSoonSection');
+    const comingSoonList = document.getElementById('comingSoonList');
 
     const ackPrivacy = document.getElementById('ackPrivacy');
     const ackTerms = document.getElementById('ackTerms');
@@ -246,8 +248,9 @@
           radio.checked = true;
           updateProductCardSelection();
         }
-        qtyHint.textContent = `Enter 1–${p.maxQty} ${p.unit}(s). Price: ${feeLabelForUnit(p.price, p.unit)}.`;
-        qtyEl.min = 1;
+        const minQty = Number.isFinite(p.minQty) ? p.minQty : 1;
+        qtyHint.textContent = `Enter ${minQty}–${p.maxQty} ${p.unit}(s). Price: ${feeLabelForUnit(p.price, p.unit)}.`;
+        qtyEl.min = minQty;
         qtyEl.max = p.maxQty || '';
         setControlEnabled(qtyEl, true);
         qtySection.style.display = 'block';
@@ -346,6 +349,8 @@
       setControlEnabled(qtyEl, false);
       qtySection.style.display = 'none';
       productListEl.innerHTML = '';
+      if (comingSoonSection) comingSoonSection.style.display = 'none';
+      if (comingSoonList) comingSoonList.innerHTML = '';
     }
 
     function syncSelectionAvailability() {
@@ -538,10 +543,12 @@
       return offices.find(o => o.id === model.officeId) || null;
     }
 
-    function getProductsForSelection() {
+    function getProductsForSelection({ includeInactive = false } = {}) {
       const office = getSelectedOffice();
       if (!office || !model.productType) return [];
-      return office.products?.[model.productType] || [];
+      const products = office.products?.[model.productType] || [];
+      if (includeInactive) return products;
+      return products.filter(p => isSaleActive(p));
     }
 
     function money(n) {
@@ -566,19 +573,46 @@
       return Number.isNaN(d.getTime()) ? null : d;
     }
 
+    function getTodayStart() {
+      const d = new Date();
+      d.setHours(0, 0, 0, 0);
+      return d;
+    }
+
+    function isSaleActive(product, today = getTodayStart()) {
+      const start = parseDate(product?.saleStartDate);
+      const end = parseDate(product?.saleEndDate);
+      if (!start || !end) return true;
+      return start <= today && end >= today;
+    }
+
+    function isSaleComingSoon(product, days = 15, today = getTodayStart()) {
+      const start = parseDate(product?.saleStartDate);
+      if (!start) return false;
+      const endWindow = new Date(today.getTime());
+      endWindow.setDate(endWindow.getDate() + days);
+      return start > today && start <= endWindow;
+    }
+
     function calculatePermitValidity(product) {
-      const today = new Date();
+      const today = getTodayStart();
       const validForDays = Number.isFinite(product.validForDays) ? Number(product.validForDays) : 30;
-      const startCandidate = parseDate(product.harvestStartDate);
+      const startCandidate = parseDate(product.saleStartDate);
       const startDate = (startCandidate && startCandidate > today) ? startCandidate : today;
       const endByDuration = new Date(startDate.getTime());
       endByDuration.setDate(endByDuration.getDate() + validForDays);
-      const harvestEnd = parseDate(product.harvestEndDate || product.availableUntil);
-      const expirationDate = harvestEnd ? new Date(Math.min(endByDuration.getTime(), harvestEnd.getTime())) : endByDuration;
+      const saleEnd = parseDate(product.saleEndDate);
+      const expirationDate = saleEnd ? new Date(Math.min(endByDuration.getTime(), saleEnd.getTime())) : endByDuration;
       const msPerDay = 1000 * 60 * 60 * 24;
       const actualDays = Math.max(1, Math.ceil((expirationDate.getTime() - startDate.getTime()) / msPerDay));
-      const shortened = Boolean(harvestEnd && harvestEnd.getTime() < endByDuration.getTime());
+      const shortened = Boolean(saleEnd && saleEnd.getTime() < endByDuration.getTime());
       return { validForDays, expirationDate, startDate, actualDays, shortened };
+    }
+
+    function getAvailableUntilLabel(product) {
+      const endDate = parseDate(product?.saleEndDate);
+      if (!endDate) return 'Available until —';
+      return `Available until ${formatDate(endDate)}`;
     }
 
     function getValidityLine(product) {
@@ -847,9 +881,48 @@
       reviewNotice.style.display = ready ? 'flex' : 'none';
     }
 
+    function renderComingSoon(products) {
+      if (!comingSoonSection || !comingSoonList) return;
+      comingSoonList.innerHTML = '';
+      if (!products.length) {
+        comingSoonSection.style.display = 'none';
+        return;
+      }
+
+      const title = document.createElement('div');
+      title.className = 'coming-soon-title';
+      title.textContent = 'Coming soon';
+      const subtitle = document.createElement('div');
+      subtitle.className = 'coming-soon-subtitle';
+      subtitle.textContent = 'Sales that open within the next 15 days.';
+      const list = document.createElement('div');
+      list.className = 'coming-soon-items';
+      products.forEach((p) => {
+        const item = document.createElement('div');
+        item.className = 'coming-soon-item';
+        const name = document.createElement('div');
+        name.className = 'coming-soon-name';
+        name.textContent = p.name;
+        const date = document.createElement('div');
+        date.className = 'coming-soon-date';
+        const startDate = parseDate(p.saleStartDate);
+        date.textContent = startDate ? `Starts ${formatDate(startDate)}` : 'Start date to be announced';
+        item.appendChild(name);
+        item.appendChild(date);
+        list.appendChild(item);
+      });
+
+      comingSoonList.appendChild(title);
+      comingSoonList.appendChild(subtitle);
+      comingSoonList.appendChild(list);
+      comingSoonSection.style.display = 'block';
+    }
+
     function renderProducts() {
       const office = getSelectedOffice();
-      const products = getProductsForSelection();
+      const allProducts = getProductsForSelection({ includeInactive: true });
+      const products = allProducts.filter(p => isSaleActive(p));
+      const comingSoonProducts = allProducts.filter(p => isSaleComingSoon(p, 15));
       productListEl.innerHTML = '';
       model.productIndex = null;
       model.product = null;
@@ -859,6 +932,7 @@
       stepState.available[2] = false;
 
       renderLocationNotice();
+      renderComingSoon(comingSoonProducts);
 
       const hasAnyOfficeProducts = (office?.products && Object.values(office.products).some(arr => (arr || []).length > 0));
 
@@ -914,6 +988,7 @@
       const id = `prod_${idx}`;
       const priceLine = feeLabelForUnit(p.price, p.unit);
       const validityLine = getValidityLine(p);
+      const availableUntil = getAvailableUntilLabel(p);
       const docs = buildRequiredDocs(p);
 
       const card = document.createElement('label');
@@ -950,19 +1025,24 @@
       validity.className = 'validity';
       validity.textContent = validityLine;
 
+      const availability = document.createElement('div');
+      availability.className = 'availability';
+      availability.textContent = availableUntil;
+
       const docsDiv = buildDocLinks(docs);
 
-      [header, validity, docsDiv].forEach((node) => body.appendChild(node));
+      [header, validity, availability, docsDiv].forEach((node) => body.appendChild(node));
       card.appendChild(body);
 
       card.querySelector('input').addEventListener('change', () => {
         updateProductCardSelection();
         model.productIndex = idx;
         model.product = p;
-        qtyHint.textContent = `Enter 1–${p.maxQty} ${p.unit}(s). Price: ${feeLabelForUnit(p.price, p.unit)}.`;
+        const minQty = Number.isFinite(p.minQty) ? p.minQty : 1;
+        qtyHint.textContent = `Enter ${minQty}–${p.maxQty} ${p.unit}(s). Price: ${feeLabelForUnit(p.price, p.unit)}.`;
         const maxLine = p.maxQty ? `Maximum allowed per permit: ${p.maxQty} ${p.unit}${p.maxQty === 1 ? '' : 's'}` : '';
         qtyGuard.textContent = maxLine || '';
-        qtyEl.min = 1;
+        qtyEl.min = minQty;
         qtyEl.max = p.maxQty || '';
         qtyEl.value = '';
         totalEl.value = '';
@@ -1105,8 +1185,35 @@
       updateReviewPanels();
     }
 
+    const ANILCA_ELIGIBILITY = {
+      requiresCertification: true,
+      basis: 'ANILCA Title VIII subsistence eligibility (16 U.S.C. § 3113)',
+      label: 'I certify that I qualify for subsistence uses under ANILCA (16 U.S.C. § 3113) for this no-fee permit.',
+      intro: 'This no-fee permit option is available only to eligible subsistence users in Alaska.',
+      bullets: [
+        'I am eligible for subsistence uses as defined in 16 U.S.C. § 3113.',
+        'I will use the forest products collected under this permit for personal or family subsistence use (not commercial resale).',
+        'I understand that false statements may be subject to penalties.'
+      ],
+      citations: [
+        {
+          label: '16 U.S.C. § 3113',
+          url: 'https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title16-section3113&num=0&edition=prelim'
+        }
+      ]
+    };
+
+    function getProductEligibility(product) {
+      if (!product) return null;
+      const name = (product.name || '').toLowerCase();
+      if (name.includes('subsistence') && name.includes('anilca')) {
+        return ANILCA_ELIGIBILITY;
+      }
+      return null;
+    }
+
     function productRequiresEligibility(product) {
-      return Boolean(product?.eligibility?.requiresCertification);
+      return Boolean(getProductEligibility(product)?.requiresCertification);
     }
 
     function ackRequirementsMet() {
@@ -1138,7 +1245,7 @@
         return;
       }
 
-      const elig = model.product?.eligibility || {};
+      const elig = getProductEligibility(model.product) || {};
       eligibilityAgreement.style.display = 'block';
       eligibilityLabel.textContent = elig.label || 'I certify that I meet the eligibility requirements for this permit.';
 
@@ -1446,7 +1553,8 @@
 
       const v = Number(qtyEl.value);
       const max = p?.maxQty;
-      const invalid = !p || !Number.isFinite(v) || v < 1 || (max && v > max);
+      const min = Number.isFinite(p?.minQty) ? p.minQty : 1;
+      const invalid = !p || !Number.isFinite(v) || v < min || (max && v > max);
       if (invalid) {
         // Keep model/UI consistent so downstream logic does not rely on stale quantities/totals.
         model.qty = 0;
@@ -1903,7 +2011,7 @@
             deliveryEmail: permitHolderEmail
           },
           eligibility: productRequiresEligibility(model.product)
-            ? { certified: Boolean(ackEligibility && ackEligibility.checked), basis: model.product?.eligibility?.basis || 'Eligibility certification required' }
+            ? { certified: Boolean(ackEligibility && ackEligibility.checked), basis: getProductEligibility(model.product)?.basis || 'Eligibility certification required' }
             : { certified: false, basis: 'Not required' },
           nextStep: 'Issue permit (no fee) server-side, then present a confirmation page with a download link for the permit PDF.',
           deliveryPlan: 'Permit is available immediately after confirmation and sent to the provided email address (demo behavior).',

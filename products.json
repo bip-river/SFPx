@@ -30,12 +30,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Anchorage North",
+              "name": "Fuelwood Permit \u2014 Anchorage North",
               "unit": "cord",
               "price": 10,
-              "availableUntil": "2026-12-31",
               "maxQty": 10,
-              "description": "Personal use only. Dead and down collection in designated areas.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -49,15 +47,16 @@
                   "label": "How to Measure Fuelwood",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-03"
             },
             {
-              "name": "Fuelwood Permit — Anchorage South",
+              "name": "Fuelwood Permit \u2014 Anchorage South",
               "unit": "cord",
               "price": 12,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Personal use only. Check seasonal restrictions and road access.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -67,32 +66,16 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-23",
+              "saleEndDate": "2028-01-13"
             },
             {
-              "name": "Fuelwood Permit — Subsistence (ANILCA, No fee)",
+              "name": "Fuelwood Permit \u2014 Subsistence (ANILCA, No fee)",
               "unit": "cord",
               "price": 0,
-              "availableUntil": "2026-12-31",
               "maxQty": 5,
-              "description": "No-fee permit for eligible subsistence users. Personal/family subsistence use only.",
-              "eligibility": {
-                "requiresCertification": true,
-                "basis": "ANILCA Title VIII subsistence eligibility (16 U.S.C. § 3113)",
-                "label": "I certify that I qualify for subsistence uses under ANILCA (16 U.S.C. § 3113) for this no-fee permit.",
-                "intro": "This no-fee permit option is available only to eligible subsistence users in Alaska.",
-                "bullets": [
-                  "I am eligible for subsistence uses as defined in 16 U.S.C. § 3113.",
-                  "I will use the forest products collected under this permit for personal or family subsistence use (not commercial resale).",
-                  "I understand that false statements may be subject to penalties."
-                ],
-                "citations": [
-                  {
-                    "label": "16 U.S.C. § 3113",
-                    "url": "https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title16-section3113&num=0&edition=prelim"
-                  }
-                ]
-              },
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -102,15 +85,16 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-22",
+              "saleEndDate": "2028-01-23"
             },
             {
-              "name": "Fuelwood Permit — Free Use (No fee)",
+              "name": "Fuelwood Permit \u2014 Free Use (No fee)",
               "unit": "cord",
               "price": 0,
-              "availableUntil": "2026-12-31",
               "maxQty": 2,
-              "description": "No-fee personal use permit issued under free-use authority. Not for commercial resale.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -120,17 +104,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-21",
+              "saleEndDate": "2028-02-02"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Chugach Access",
+              "name": "Christmas Tree Permit \u2014 Chugach Access",
               "unit": "tree",
               "price": 5,
-              "availableUntil": "2025-12-25",
               "maxQty": 5,
-              "description": "Harvest only within designated areas. Follow stump height and size limits.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -144,15 +129,16 @@
                   "label": "Planning Your Trip",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-03"
             },
             {
-              "name": "Christmas Tree Permit — Turnagain Arm",
+              "name": "Christmas Tree Permit \u2014 Turnagain Arm",
               "unit": "tree",
               "price": 5,
-              "availableUntil": "2025-12-25",
               "maxQty": 3,
-              "description": "Limited areas; verify winter travel conditions before departure.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -162,15 +148,16 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-23",
+              "saleEndDate": "2028-01-13"
             },
             {
-              "name": "Christmas Tree Permit — Free Use (No fee)",
+              "name": "Christmas Tree Permit \u2014 Free Use (No fee)",
               "unit": "tree",
               "price": 0,
-              "availableUntil": "2025-12-25",
               "maxQty": 1,
-              "description": "No-fee personal use tree permit for designated areas.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -180,7 +167,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-22",
+              "saleEndDate": "2028-01-23"
             }
           ],
           "mushrooms": [
@@ -188,9 +178,7 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 3,
-              "availableUntil": "2026-09-30",
               "maxQty": 20,
-              "description": "Personal use collection. Seasonal restrictions may apply.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -200,21 +188,25 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 4,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use only. No commercial resale permitted.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-23",
+              "saleEndDate": "2028-01-13"
             }
           ]
         }
@@ -231,12 +223,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Juneau Coastal",
+              "name": "Fuelwood Permit \u2014 Juneau Coastal",
               "unit": "cord",
               "price": 10,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Personal use fuelwood. Verify access and seasonal closures.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -246,15 +236,16 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-03"
             },
             {
-              "name": "Fuelwood Permit — Juneau Interior",
+              "name": "Fuelwood Permit \u2014 Juneau Interior",
               "unit": "cord",
               "price": 12,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Designated areas only. Dead and down collection.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -264,32 +255,16 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-23",
+              "saleEndDate": "2028-01-13"
             },
             {
-              "name": "Fuelwood Permit — Subsistence (ANILCA, No fee)",
+              "name": "Fuelwood Permit \u2014 Subsistence (ANILCA, No fee)",
               "unit": "cord",
               "price": 0,
-              "availableUntil": "2026-12-31",
               "maxQty": 4,
-              "description": "No-fee permit for eligible subsistence users. Personal/family subsistence use only.",
-              "eligibility": {
-                "requiresCertification": true,
-                "basis": "ANILCA Title VIII subsistence eligibility (16 U.S.C. § 3113)",
-                "label": "I certify that I qualify for subsistence uses under ANILCA (16 U.S.C. § 3113) for this no-fee permit.",
-                "intro": "This no-fee permit option is available only to eligible subsistence users in Alaska.",
-                "bullets": [
-                  "I am eligible for subsistence uses as defined in 16 U.S.C. § 3113.",
-                  "I will use the forest products collected under this permit for personal or family subsistence use (not commercial resale).",
-                  "I understand that false statements may be subject to penalties."
-                ],
-                "citations": [
-                  {
-                    "label": "16 U.S.C. § 3113",
-                    "url": "https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title16-section3113&num=0&edition=prelim"
-                  }
-                ]
-              },
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -299,15 +274,16 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-22",
+              "saleEndDate": "2028-01-23"
             },
             {
-              "name": "Fuelwood Permit — Free Use (No fee)",
+              "name": "Fuelwood Permit \u2014 Free Use (No fee)",
               "unit": "cord",
               "price": 0,
-              "availableUntil": "2026-12-31",
               "maxQty": 2,
-              "description": "No-fee personal use permit issued under free-use authority. Not for commercial resale.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -317,17 +293,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-21",
+              "saleEndDate": "2028-02-02"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Juneau Limited",
+              "name": "Christmas Tree Permit \u2014 Juneau Limited",
               "unit": "tree",
               "price": 5,
-              "availableUntil": "2025-12-25",
               "maxQty": 3,
-              "description": "Limited availability. Verify access and winter travel conditions.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -337,15 +314,16 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-03"
             },
             {
-              "name": "Christmas Tree Permit — Juneau Standard",
+              "name": "Christmas Tree Permit \u2014 Juneau Standard",
               "unit": "tree",
               "price": 5,
-              "availableUntil": "2025-12-25",
               "maxQty": 5,
-              "description": "Designated areas only.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -355,15 +333,16 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-23",
+              "saleEndDate": "2028-01-13"
             },
             {
-              "name": "Christmas Tree Permit — Free Use (No fee)",
+              "name": "Christmas Tree Permit \u2014 Free Use (No fee)",
               "unit": "tree",
               "price": 0,
-              "availableUntil": "2025-12-25",
               "maxQty": 1,
-              "description": "No-fee personal use tree permit for designated areas.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -373,7 +352,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-22",
+              "saleEndDate": "2028-01-23"
             }
           ],
           "mushrooms": [
@@ -381,23 +363,22 @@
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 4,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use permit. No resale permitted.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 3,
-              "availableUntil": "2026-09-30",
               "maxQty": 15,
-              "description": "Seasonal permit; check collection areas.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -407,7 +388,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-23",
+              "saleEndDate": "2028-01-13"
             }
           ]
         }
@@ -423,12 +407,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Parashant",
+              "name": "Fuelwood Permit \u2014 Parashant",
               "unit": "cord",
               "price": 15,
-              "availableUntil": "2026-12-31",
               "maxQty": 8,
-              "description": "Dead and down only; check closure areas.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -438,15 +420,16 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-29",
+              "saleEndDate": "2028-01-03"
             },
             {
-              "name": "Fuelwood Permit — Scenic Byways",
+              "name": "Fuelwood Permit \u2014 Scenic Byways",
               "unit": "cord",
               "price": 17,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Designated corridors only. Verify access.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -456,15 +439,16 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             },
             {
-              "name": "Fuelwood Permit — Free Use (No fee)",
+              "name": "Fuelwood Permit \u2014 Free Use (No fee)",
               "unit": "cord",
               "price": 0,
-              "availableUntil": "2026-12-31",
               "maxQty": 1,
-              "description": "No-fee personal use permit issued under free-use authority. Not for commercial resale.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -474,17 +458,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas/Holiday Tree Permit — Designated Areas",
+              "name": "Christmas/Holiday Tree Permit \u2014 Designated Areas",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Designated cutting areas only.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -498,15 +483,16 @@
                   "label": "Planning Your Trip",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             },
             {
-              "name": "Christmas/Holiday Tree Permit — Limited",
+              "name": "Christmas/Holiday Tree Permit \u2014 Limited",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 3,
-              "description": "Limited permit; verify availability.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -516,15 +502,16 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
-              "name": "Christmas Tree Permit — Free Use (No fee)",
+              "name": "Christmas Tree Permit \u2014 Free Use (No fee)",
               "unit": "tree",
               "price": 0,
-              "availableUntil": "2025-12-24",
               "maxQty": 1,
-              "description": "No-fee personal use tree permit for designated areas.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -534,7 +521,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ],
           "mushrooms": [
@@ -542,23 +532,22 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 3,
-              "availableUntil": "2026-09-30",
               "maxQty": 20,
-              "description": "Seasonal availability.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-23",
+              "saleEndDate": "2028-01-09"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 4,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use only.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -568,7 +557,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-22",
+              "saleEndDate": "2028-01-10"
             }
           ]
         }
@@ -579,26 +571,25 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Gila Standard",
+              "name": "Fuelwood Permit \u2014 Gila Standard",
               "unit": "cord",
               "price": 12,
-              "availableUntil": "2026-12-31",
               "maxQty": 10,
-              "description": "Personal use fuelwood.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2025-02-03",
+              "saleEndDate": "2027-02-03"
             },
             {
-              "name": "Fuelwood Permit — Gila Roadside",
+              "name": "Fuelwood Permit \u2014 Gila Roadside",
               "unit": "cord",
               "price": 14,
-              "availableUntil": "2026-12-31",
               "maxQty": 8,
-              "description": "Roadside designated areas only.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -608,15 +599,16 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             },
             {
-              "name": "Fuelwood Permit — Free Use (No fee)",
+              "name": "Fuelwood Permit \u2014 Free Use (No fee)",
               "unit": "cord",
               "price": 0,
-              "availableUntil": "2026-12-31",
               "maxQty": 2,
-              "description": "No-fee personal use permit issued under free-use authority. Not for commercial resale.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -626,31 +618,33 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Gila North",
+              "name": "Christmas Tree Permit \u2014 Gila North",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Seasonal permit.",
               "requiredDocs": [
                 {
                   "label": "Map",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             },
             {
-              "name": "Christmas Tree Permit — Gila South",
+              "name": "Christmas Tree Permit \u2014 Gila South",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Designated cutting areas only.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -660,15 +654,16 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
-              "name": "Christmas Tree Permit — Free Use (No fee)",
+              "name": "Christmas Tree Permit \u2014 Free Use (No fee)",
               "unit": "tree",
               "price": 0,
-              "availableUntil": "2025-12-24",
               "maxQty": 1,
-              "description": "No-fee personal use tree permit for designated areas.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -678,7 +673,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ],
           "mushrooms": [
@@ -686,23 +684,22 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 2.5,
-              "availableUntil": "2026-08-31",
               "maxQty": 25,
-              "description": "Seasonal availability.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-23",
+              "saleEndDate": "2028-01-09"
             },
             {
-              "name": "Mushroom Permit (Personal Use) — Mixed Species",
+              "name": "Mushroom Permit (Personal Use) \u2014 Mixed Species",
               "unit": "pound",
               "price": 3.5,
-              "availableUntil": "2026-10-31",
               "maxQty": 20,
-              "description": "Personal use only; check collection areas.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -712,7 +709,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-22",
+              "saleEndDate": "2028-01-10"
             }
           ]
         }
@@ -723,26 +723,25 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Desert Standard",
+              "name": "Fuelwood Permit \u2014 Desert Standard",
               "unit": "cord",
-              "price": 10,
-              "availableUntil": "2026-12-31",
+              "price": 0,
               "maxQty": 6,
-              "description": "Desert fuelwood rules apply.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2025-02-04",
+              "saleEndDate": "2027-02-04"
             },
             {
-              "name": "Fuelwood Permit — Desert Limited",
+              "name": "Fuelwood Permit \u2014 Desert Limited",
               "unit": "cord",
               "price": 12,
-              "availableUntil": "2026-12-31",
               "maxQty": 4,
-              "description": "Limited zones; verify closures.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -752,67 +751,74 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Yuma (Special)",
+              "name": "Christmas Tree Permit \u2014 Yuma (Special)",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 2,
-              "description": "Limited seasonal offering.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             },
             {
-              "name": "Christmas Tree Permit — Yuma (Standard)",
+              "name": "Christmas Tree Permit \u2014 Yuma (Standard)",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 3,
-              "description": "Designated areas only.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             }
           ],
           "mushrooms": [
             {
-              "name": "Mushroom Permit (Personal Use) — Spring",
+              "name": "Mushroom Permit (Personal Use) \u2014 Spring",
               "unit": "pound",
               "price": 3,
-              "availableUntil": "2026-06-30",
               "maxQty": 10,
-              "description": "Personal use only.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
-              "name": "Mushroom Permit (Personal Use) — Fall",
+              "name": "Mushroom Permit (Personal Use) \u2014 Fall",
               "unit": "pound",
               "price": 3,
-              "availableUntil": "2026-10-31",
               "maxQty": 10,
-              "description": "Personal use only.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ]
         }
@@ -828,12 +834,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Standard",
+              "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 20,
-              "availableUntil": "2026-12-31",
+              "price": 0,
               "maxQty": 10,
-              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -847,15 +851,16 @@
                   "label": "How to Measure Fuelwood",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2025-01-07",
+              "saleEndDate": "2027-01-07"
             },
             {
-              "name": "Fuelwood Permit — Limited Areas",
+              "name": "Fuelwood Permit \u2014 Limited Areas",
               "unit": "cord",
               "price": 22,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Limited zones. Review stipulations before purchase.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -865,17 +870,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Designated Areas",
+              "name": "Christmas Tree Permit \u2014 Designated Areas",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Harvest only within designated areas. Tag tree before transport.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -889,15 +895,16 @@
                   "label": "Planning Your Trip",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             },
             {
-              "name": "Christmas Tree Permit — Limited",
+              "name": "Christmas Tree Permit \u2014 Limited",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 3,
-              "description": "Limited availability. Verify access and seasonal restrictions.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -907,7 +914,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             }
           ],
           "mushrooms": [
@@ -915,9 +925,7 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 4,
-              "availableUntil": "2026-09-30",
               "maxQty": 20,
-              "description": "Personal use collection. Seasonal restrictions may apply.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -927,21 +935,25 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 5,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use only. No commercial resale permitted.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ]
         }
@@ -952,12 +964,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Standard",
+              "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 18,
-              "availableUntil": "2026-12-31",
+              "price": 0,
               "maxQty": 10,
-              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -971,15 +981,16 @@
                   "label": "How to Measure Fuelwood",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2025-02-06",
+              "saleEndDate": "2027-02-06"
             },
             {
-              "name": "Fuelwood Permit — Limited Areas",
+              "name": "Fuelwood Permit \u2014 Limited Areas",
               "unit": "cord",
               "price": 20,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Limited zones. Review stipulations before purchase.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -989,17 +1000,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Designated Areas",
+              "name": "Christmas Tree Permit \u2014 Designated Areas",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Harvest only within designated areas. Tag tree before transport.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -1013,15 +1025,16 @@
                   "label": "Planning Your Trip",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             },
             {
-              "name": "Christmas Tree Permit — Limited",
+              "name": "Christmas Tree Permit \u2014 Limited",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 3,
-              "description": "Limited availability. Verify access and seasonal restrictions.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -1031,7 +1044,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             }
           ],
           "mushrooms": [
@@ -1039,9 +1055,7 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 4,
-              "availableUntil": "2026-09-30",
               "maxQty": 20,
-              "description": "Personal use collection. Seasonal restrictions may apply.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -1051,21 +1065,25 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 5,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use only. No commercial resale permitted.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ]
         }
@@ -1073,126 +1091,7 @@
       {
         "id": "CA-RDD",
         "name": "Redding Riverbend Outpost",
-        "products": {
-          "fuelwood": [
-            {
-              "name": "Fuelwood Permit — Standard",
-              "unit": "cord",
-              "price": 18,
-              "availableUntil": "2026-12-31",
-              "maxQty": 10,
-              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
-              "requiredDocs": [
-                {
-                  "label": "Map",
-                  "url": "#"
-                },
-                {
-                  "label": "Stipulations",
-                  "url": "#"
-                },
-                {
-                  "label": "How to Measure Fuelwood",
-                  "url": "#"
-                }
-              ]
-            },
-            {
-              "name": "Fuelwood Permit — Limited Areas",
-              "unit": "cord",
-              "price": 20,
-              "availableUntil": "2026-12-31",
-              "maxQty": 6,
-              "description": "Limited zones. Review stipulations before purchase.",
-              "requiredDocs": [
-                {
-                  "label": "Map",
-                  "url": "#"
-                },
-                {
-                  "label": "Stipulations",
-                  "url": "#"
-                }
-              ]
-            }
-          ],
-          "christmas": [
-            {
-              "name": "Christmas Tree Permit — Designated Areas",
-              "unit": "tree",
-              "price": 10,
-              "availableUntil": "2025-12-24",
-              "maxQty": 5,
-              "description": "Harvest only within designated areas. Tag tree before transport.",
-              "requiredDocs": [
-                {
-                  "label": "Map",
-                  "url": "#"
-                },
-                {
-                  "label": "Stipulations",
-                  "url": "#"
-                },
-                {
-                  "label": "Planning Your Trip",
-                  "url": "#"
-                }
-              ]
-            },
-            {
-              "name": "Christmas Tree Permit — Limited",
-              "unit": "tree",
-              "price": 10,
-              "availableUntil": "2025-12-24",
-              "maxQty": 3,
-              "description": "Limited availability. Verify access and seasonal restrictions.",
-              "requiredDocs": [
-                {
-                  "label": "Map",
-                  "url": "#"
-                },
-                {
-                  "label": "Stipulations",
-                  "url": "#"
-                }
-              ]
-            }
-          ],
-          "mushrooms": [
-            {
-              "name": "Morel Mushroom Permit (Personal Use)",
-              "unit": "pound",
-              "price": 4,
-              "availableUntil": "2026-09-30",
-              "maxQty": 20,
-              "description": "Personal use collection. Seasonal restrictions may apply.",
-              "requiredDocs": [
-                {
-                  "label": "Collection Areas",
-                  "url": "#"
-                },
-                {
-                  "label": "Stipulations",
-                  "url": "#"
-                }
-              ]
-            },
-            {
-              "name": "Chanterelle Mushroom Permit (Personal Use)",
-              "unit": "pound",
-              "price": 5,
-              "availableUntil": "2026-10-31",
-              "maxQty": 15,
-              "description": "Personal use only. No commercial resale permitted.",
-              "requiredDocs": [
-                {
-                  "label": "Stipulations",
-                  "url": "#"
-                }
-              ]
-            }
-          ]
-        }
+        "products": {}
       }
     ]
   },
@@ -1205,12 +1104,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Standard",
+              "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 10,
-              "availableUntil": "2026-12-31",
+              "price": 0,
               "maxQty": 10,
-              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -1224,15 +1121,16 @@
                   "label": "How to Measure Fuelwood",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2025-01-10",
+              "saleEndDate": "2027-01-10"
             },
             {
-              "name": "Fuelwood Permit — Limited Areas",
+              "name": "Fuelwood Permit \u2014 Limited Areas",
               "unit": "cord",
               "price": 12,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Limited zones. Review stipulations before purchase.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -1242,17 +1140,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Designated Areas",
+              "name": "Christmas Tree Permit \u2014 Designated Areas",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Harvest only within designated areas. Tag tree before transport.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -1266,15 +1165,16 @@
                   "label": "Planning Your Trip",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             },
             {
-              "name": "Christmas Tree Permit — Limited",
+              "name": "Christmas Tree Permit \u2014 Limited",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 3,
-              "description": "Limited availability. Verify access and seasonal restrictions.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -1284,7 +1184,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             }
           ],
           "mushrooms": [
@@ -1292,9 +1195,7 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 3,
-              "availableUntil": "2026-09-30",
               "maxQty": 20,
-              "description": "Personal use collection. Seasonal restrictions may apply.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -1304,21 +1205,25 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 4,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use only. No commercial resale permitted.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ]
         }
@@ -1329,12 +1234,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Standard",
+              "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 10,
-              "availableUntil": "2026-12-31",
+              "price": 0,
               "maxQty": 10,
-              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -1348,15 +1251,16 @@
                   "label": "How to Measure Fuelwood",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2025-02-09",
+              "saleEndDate": "2027-02-09"
             },
             {
-              "name": "Fuelwood Permit — Limited Areas",
+              "name": "Fuelwood Permit \u2014 Limited Areas",
               "unit": "cord",
               "price": 12,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Limited zones. Review stipulations before purchase.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -1366,17 +1270,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Designated Areas",
+              "name": "Christmas Tree Permit \u2014 Designated Areas",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Harvest only within designated areas. Tag tree before transport.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -1390,15 +1295,16 @@
                   "label": "Planning Your Trip",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             },
             {
-              "name": "Christmas Tree Permit — Limited",
+              "name": "Christmas Tree Permit \u2014 Limited",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 3,
-              "description": "Limited availability. Verify access and seasonal restrictions.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -1408,7 +1314,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             }
           ],
           "mushrooms": [
@@ -1416,9 +1325,7 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 3,
-              "availableUntil": "2026-09-30",
               "maxQty": 20,
-              "description": "Personal use collection. Seasonal restrictions may apply.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -1428,21 +1335,25 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 4,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use only. No commercial resale permitted.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ]
         }
@@ -1453,12 +1364,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Standard",
+              "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 12,
-              "availableUntil": "2026-12-31",
+              "price": 0,
               "maxQty": 10,
-              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -1472,15 +1381,16 @@
                   "label": "How to Measure Fuelwood",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2025-02-10",
+              "saleEndDate": "2027-02-10"
             },
             {
-              "name": "Fuelwood Permit — Limited Areas",
+              "name": "Fuelwood Permit \u2014 Limited Areas",
               "unit": "cord",
               "price": 14,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Limited zones. Review stipulations before purchase.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -1490,17 +1400,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Designated Areas",
+              "name": "Christmas Tree Permit \u2014 Designated Areas",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Harvest only within designated areas. Tag tree before transport.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -1514,15 +1425,16 @@
                   "label": "Planning Your Trip",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             },
             {
-              "name": "Christmas Tree Permit — Limited",
+              "name": "Christmas Tree Permit \u2014 Limited",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 3,
-              "description": "Limited availability. Verify access and seasonal restrictions.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -1532,7 +1444,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             }
           ],
           "mushrooms": [
@@ -1540,9 +1455,7 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 3,
-              "availableUntil": "2026-09-30",
               "maxQty": 20,
-              "description": "Personal use collection. Seasonal restrictions may apply.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -1552,21 +1465,25 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 4,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use only. No commercial resale permitted.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ]
         }
@@ -1582,12 +1499,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Standard",
+              "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 10,
-              "availableUntil": "2026-12-31",
+              "price": 0,
               "maxQty": 10,
-              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -1601,15 +1516,16 @@
                   "label": "How to Measure Fuelwood",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2025-01-13",
+              "saleEndDate": "2027-01-13"
             },
             {
-              "name": "Fuelwood Permit — Limited Areas",
+              "name": "Fuelwood Permit \u2014 Limited Areas",
               "unit": "cord",
               "price": 12,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Limited zones. Review stipulations before purchase.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -1619,17 +1535,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Designated Areas",
+              "name": "Christmas Tree Permit \u2014 Designated Areas",
               "unit": "tree",
               "price": 5,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Harvest only within designated areas. Tag tree before transport.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -1643,15 +1560,16 @@
                   "label": "Planning Your Trip",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             },
             {
-              "name": "Christmas Tree Permit — Limited",
+              "name": "Christmas Tree Permit \u2014 Limited",
               "unit": "tree",
               "price": 5,
-              "availableUntil": "2025-12-24",
               "maxQty": 3,
-              "description": "Limited availability. Verify access and seasonal restrictions.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -1661,7 +1579,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             }
           ],
           "mushrooms": [
@@ -1669,9 +1590,7 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 3,
-              "availableUntil": "2026-09-30",
               "maxQty": 20,
-              "description": "Personal use collection. Seasonal restrictions may apply.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -1681,21 +1600,25 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 4,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use only. No commercial resale permitted.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ]
         }
@@ -1706,12 +1629,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Standard",
+              "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 12,
-              "availableUntil": "2026-12-31",
+              "price": 0,
               "maxQty": 10,
-              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -1725,15 +1646,16 @@
                   "label": "How to Measure Fuelwood",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-29",
+              "saleEndDate": "2028-01-03"
             },
             {
-              "name": "Fuelwood Permit — Limited Areas",
+              "name": "Fuelwood Permit \u2014 Limited Areas",
               "unit": "cord",
               "price": 14,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Limited zones. Review stipulations before purchase.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -1743,17 +1665,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Designated Areas",
+              "name": "Christmas Tree Permit \u2014 Designated Areas",
               "unit": "tree",
               "price": 5,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Harvest only within designated areas. Tag tree before transport.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -1767,15 +1690,16 @@
                   "label": "Planning Your Trip",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             },
             {
-              "name": "Christmas Tree Permit — Limited",
+              "name": "Christmas Tree Permit \u2014 Limited",
               "unit": "tree",
               "price": 5,
-              "availableUntil": "2025-12-24",
               "maxQty": 3,
-              "description": "Limited availability. Verify access and seasonal restrictions.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -1785,7 +1709,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             }
           ],
           "mushrooms": [
@@ -1793,9 +1720,7 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 3,
-              "availableUntil": "2026-09-30",
               "maxQty": 20,
-              "description": "Personal use collection. Seasonal restrictions may apply.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -1805,21 +1730,25 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 4,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use only. No commercial resale permitted.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ]
         }
@@ -1830,12 +1759,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Standard",
+              "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 10,
-              "availableUntil": "2026-12-31",
+              "price": 0,
               "maxQty": 10,
-              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -1849,15 +1776,16 @@
                   "label": "How to Measure Fuelwood",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2025-02-13",
+              "saleEndDate": "2027-02-13"
             },
             {
-              "name": "Fuelwood Permit — Limited Areas",
+              "name": "Fuelwood Permit \u2014 Limited Areas",
               "unit": "cord",
               "price": 12,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Limited zones. Review stipulations before purchase.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -1867,17 +1795,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Designated Areas",
+              "name": "Christmas Tree Permit \u2014 Designated Areas",
               "unit": "tree",
               "price": 5,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Harvest only within designated areas. Tag tree before transport.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -1891,15 +1820,16 @@
                   "label": "Planning Your Trip",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             },
             {
-              "name": "Christmas Tree Permit — Limited",
+              "name": "Christmas Tree Permit \u2014 Limited",
               "unit": "tree",
               "price": 5,
-              "availableUntil": "2025-12-24",
               "maxQty": 3,
-              "description": "Limited availability. Verify access and seasonal restrictions.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -1909,7 +1839,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             }
           ],
           "mushrooms": [
@@ -1917,9 +1850,7 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 3,
-              "availableUntil": "2026-09-30",
               "maxQty": 20,
-              "description": "Personal use collection. Seasonal restrictions may apply.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -1929,21 +1860,25 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 4,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use only. No commercial resale permitted.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ]
         }
@@ -1959,12 +1894,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Standard",
+              "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 10,
-              "availableUntil": "2026-12-31",
+              "price": 0,
               "maxQty": 10,
-              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -1978,15 +1911,16 @@
                   "label": "How to Measure Fuelwood",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2025-01-16",
+              "saleEndDate": "2027-01-16"
             },
             {
-              "name": "Fuelwood Permit — Limited Areas",
+              "name": "Fuelwood Permit \u2014 Limited Areas",
               "unit": "cord",
               "price": 12,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Limited zones. Review stipulations before purchase.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -1996,17 +1930,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Designated Areas",
+              "name": "Christmas Tree Permit \u2014 Designated Areas",
               "unit": "tree",
               "price": 5,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Harvest only within designated areas. Tag tree before transport.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2020,15 +1955,16 @@
                   "label": "Planning Your Trip",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             },
             {
-              "name": "Christmas Tree Permit — Limited",
+              "name": "Christmas Tree Permit \u2014 Limited",
               "unit": "tree",
               "price": 5,
-              "availableUntil": "2025-12-24",
               "maxQty": 3,
-              "description": "Limited availability. Verify access and seasonal restrictions.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2038,7 +1974,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             }
           ],
           "mushrooms": [
@@ -2046,9 +1985,7 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 3,
-              "availableUntil": "2026-09-30",
               "maxQty": 20,
-              "description": "Personal use collection. Seasonal restrictions may apply.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -2058,21 +1995,25 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 4,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use only. No commercial resale permitted.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ]
         }
@@ -2083,12 +2024,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Standard",
+              "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 12,
-              "availableUntil": "2026-12-31",
+              "price": 0,
               "maxQty": 10,
-              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2102,15 +2041,16 @@
                   "label": "How to Measure Fuelwood",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2025-02-15",
+              "saleEndDate": "2027-02-15"
             },
             {
-              "name": "Fuelwood Permit — Limited Areas",
+              "name": "Fuelwood Permit \u2014 Limited Areas",
               "unit": "cord",
               "price": 14,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Limited zones. Review stipulations before purchase.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2120,17 +2060,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Designated Areas",
+              "name": "Christmas Tree Permit \u2014 Designated Areas",
               "unit": "tree",
               "price": 5,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Harvest only within designated areas. Tag tree before transport.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2144,15 +2085,16 @@
                   "label": "Planning Your Trip",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             },
             {
-              "name": "Christmas Tree Permit — Limited",
+              "name": "Christmas Tree Permit \u2014 Limited",
               "unit": "tree",
               "price": 5,
-              "availableUntil": "2025-12-24",
               "maxQty": 3,
-              "description": "Limited availability. Verify access and seasonal restrictions.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2162,7 +2104,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             }
           ],
           "mushrooms": [
@@ -2170,9 +2115,7 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 3,
-              "availableUntil": "2026-09-30",
               "maxQty": 20,
-              "description": "Personal use collection. Seasonal restrictions may apply.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -2182,21 +2125,25 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 4,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use only. No commercial resale permitted.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ]
         }
@@ -2207,12 +2154,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Standard",
+              "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 10,
-              "availableUntil": "2026-12-31",
+              "price": 0,
               "maxQty": 10,
-              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2226,15 +2171,16 @@
                   "label": "How to Measure Fuelwood",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2025-02-16",
+              "saleEndDate": "2027-02-16"
             },
             {
-              "name": "Fuelwood Permit — Limited Areas",
+              "name": "Fuelwood Permit \u2014 Limited Areas",
               "unit": "cord",
               "price": 12,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Limited zones. Review stipulations before purchase.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2244,17 +2190,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Designated Areas",
+              "name": "Christmas Tree Permit \u2014 Designated Areas",
               "unit": "tree",
               "price": 5,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Harvest only within designated areas. Tag tree before transport.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2268,15 +2215,16 @@
                   "label": "Planning Your Trip",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             },
             {
-              "name": "Christmas Tree Permit — Limited",
+              "name": "Christmas Tree Permit \u2014 Limited",
               "unit": "tree",
               "price": 5,
-              "availableUntil": "2025-12-24",
               "maxQty": 3,
-              "description": "Limited availability. Verify access and seasonal restrictions.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2286,7 +2234,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             }
           ],
           "mushrooms": [
@@ -2294,9 +2245,7 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 3,
-              "availableUntil": "2026-09-30",
               "maxQty": 20,
-              "description": "Personal use collection. Seasonal restrictions may apply.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -2306,21 +2255,25 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 4,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use only. No commercial resale permitted.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ]
         }
@@ -2336,12 +2289,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Standard",
+              "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
               "price": 10,
-              "availableUntil": "2026-12-31",
               "maxQty": 10,
-              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2355,15 +2306,16 @@
                   "label": "How to Measure Fuelwood",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-29",
+              "saleEndDate": "2028-01-03"
             },
             {
-              "name": "Fuelwood Permit — Limited Areas",
+              "name": "Fuelwood Permit \u2014 Limited Areas",
               "unit": "cord",
               "price": 12,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Limited zones. Review stipulations before purchase.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2373,17 +2325,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Designated Areas",
+              "name": "Christmas Tree Permit \u2014 Designated Areas",
               "unit": "tree",
               "price": 0,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Harvest only within designated areas. Tag tree before transport.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2397,15 +2350,16 @@
                   "label": "Planning Your Trip",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             },
             {
-              "name": "Christmas Tree Permit — Limited",
+              "name": "Christmas Tree Permit \u2014 Limited",
               "unit": "tree",
               "price": 0,
-              "availableUntil": "2025-12-24",
               "maxQty": 3,
-              "description": "Limited availability. Verify access and seasonal restrictions.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2415,7 +2369,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             }
           ],
           "mushrooms": [
@@ -2423,9 +2380,7 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 3,
-              "availableUntil": "2026-09-30",
               "maxQty": 20,
-              "description": "Personal use collection. Seasonal restrictions may apply.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -2435,21 +2390,25 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 4,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use only. No commercial resale permitted.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ]
         }
@@ -2460,12 +2419,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Standard",
+              "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 10,
-              "availableUntil": "2026-12-31",
+              "price": 0,
               "maxQty": 10,
-              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2479,15 +2436,16 @@
                   "label": "How to Measure Fuelwood",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2025-02-18",
+              "saleEndDate": "2027-02-18"
             },
             {
-              "name": "Fuelwood Permit — Limited Areas",
+              "name": "Fuelwood Permit \u2014 Limited Areas",
               "unit": "cord",
               "price": 12,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Limited zones. Review stipulations before purchase.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2497,17 +2455,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Designated Areas",
+              "name": "Christmas Tree Permit \u2014 Designated Areas",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Harvest only within designated areas. Tag tree before transport.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2521,15 +2480,16 @@
                   "label": "Planning Your Trip",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             },
             {
-              "name": "Christmas Tree Permit — Limited",
+              "name": "Christmas Tree Permit \u2014 Limited",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 3,
-              "description": "Limited availability. Verify access and seasonal restrictions.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2539,7 +2499,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             }
           ],
           "mushrooms": [
@@ -2547,9 +2510,7 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 3,
-              "availableUntil": "2026-09-30",
               "maxQty": 20,
-              "description": "Personal use collection. Seasonal restrictions may apply.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -2559,21 +2520,25 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 4,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use only. No commercial resale permitted.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ]
         }
@@ -2584,12 +2549,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Standard",
+              "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 12,
-              "availableUntil": "2026-12-31",
+              "price": 0,
               "maxQty": 10,
-              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2603,15 +2566,16 @@
                   "label": "How to Measure Fuelwood",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2025-02-19",
+              "saleEndDate": "2027-02-19"
             },
             {
-              "name": "Fuelwood Permit — Limited Areas",
+              "name": "Fuelwood Permit \u2014 Limited Areas",
               "unit": "cord",
               "price": 14,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Limited zones. Review stipulations before purchase.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2621,17 +2585,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Designated Areas",
+              "name": "Christmas Tree Permit \u2014 Designated Areas",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Harvest only within designated areas. Tag tree before transport.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2645,15 +2610,16 @@
                   "label": "Planning Your Trip",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             },
             {
-              "name": "Christmas Tree Permit — Limited",
+              "name": "Christmas Tree Permit \u2014 Limited",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 3,
-              "description": "Limited availability. Verify access and seasonal restrictions.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2663,7 +2629,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             }
           ],
           "mushrooms": [
@@ -2671,9 +2640,7 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 3,
-              "availableUntil": "2026-09-30",
               "maxQty": 20,
-              "description": "Personal use collection. Seasonal restrictions may apply.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -2683,21 +2650,25 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 4,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use only. No commercial resale permitted.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ]
         }
@@ -2713,12 +2684,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Standard",
+              "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 15,
-              "availableUntil": "2026-12-31",
+              "price": 0,
               "maxQty": 10,
-              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2732,15 +2701,16 @@
                   "label": "How to Measure Fuelwood",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2025-01-07",
+              "saleEndDate": "2027-01-07"
             },
             {
-              "name": "Fuelwood Permit — Limited Areas",
+              "name": "Fuelwood Permit \u2014 Limited Areas",
               "unit": "cord",
               "price": 17,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Limited zones. Review stipulations before purchase.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2750,17 +2720,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Designated Areas",
+              "name": "Christmas Tree Permit \u2014 Designated Areas",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Harvest only within designated areas. Tag tree before transport.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2774,15 +2745,16 @@
                   "label": "Planning Your Trip",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             },
             {
-              "name": "Christmas Tree Permit — Limited",
+              "name": "Christmas Tree Permit \u2014 Limited",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 3,
-              "description": "Limited availability. Verify access and seasonal restrictions.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2792,7 +2764,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             }
           ],
           "mushrooms": [
@@ -2800,9 +2775,7 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 3,
-              "availableUntil": "2026-09-30",
               "maxQty": 20,
-              "description": "Personal use collection. Seasonal restrictions may apply.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -2812,21 +2785,25 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 4,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use only. No commercial resale permitted.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ]
         }
@@ -2837,12 +2814,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Standard",
+              "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 15,
-              "availableUntil": "2026-12-31",
+              "price": 0,
               "maxQty": 10,
-              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2856,15 +2831,16 @@
                   "label": "How to Measure Fuelwood",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2025-02-21",
+              "saleEndDate": "2027-02-21"
             },
             {
-              "name": "Fuelwood Permit — Limited Areas",
+              "name": "Fuelwood Permit \u2014 Limited Areas",
               "unit": "cord",
               "price": 17,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Limited zones. Review stipulations before purchase.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2874,17 +2850,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Designated Areas",
+              "name": "Christmas Tree Permit \u2014 Designated Areas",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Harvest only within designated areas. Tag tree before transport.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2898,15 +2875,16 @@
                   "label": "Planning Your Trip",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             },
             {
-              "name": "Christmas Tree Permit — Limited",
+              "name": "Christmas Tree Permit \u2014 Limited",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 3,
-              "description": "Limited availability. Verify access and seasonal restrictions.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2916,7 +2894,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             }
           ],
           "mushrooms": [
@@ -2924,9 +2905,7 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 3,
-              "availableUntil": "2026-09-30",
               "maxQty": 20,
-              "description": "Personal use collection. Seasonal restrictions may apply.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -2936,21 +2915,25 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 4,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use only. No commercial resale permitted.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ]
         }
@@ -2961,12 +2944,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Standard",
+              "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 12,
-              "availableUntil": "2026-12-31",
+              "price": 0,
               "maxQty": 10,
-              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2980,15 +2961,16 @@
                   "label": "How to Measure Fuelwood",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-29",
+              "saleEndDate": "2028-01-03"
             },
             {
-              "name": "Fuelwood Permit — Limited Areas",
+              "name": "Fuelwood Permit \u2014 Limited Areas",
               "unit": "cord",
               "price": 14,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Limited zones. Review stipulations before purchase.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -2998,17 +2980,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Designated Areas",
+              "name": "Christmas Tree Permit \u2014 Designated Areas",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Harvest only within designated areas. Tag tree before transport.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -3022,15 +3005,16 @@
                   "label": "Planning Your Trip",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             },
             {
-              "name": "Christmas Tree Permit — Limited",
+              "name": "Christmas Tree Permit \u2014 Limited",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 3,
-              "description": "Limited availability. Verify access and seasonal restrictions.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -3040,7 +3024,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             }
           ],
           "mushrooms": [
@@ -3048,9 +3035,7 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 3,
-              "availableUntil": "2026-09-30",
               "maxQty": 20,
-              "description": "Personal use collection. Seasonal restrictions may apply.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -3060,21 +3045,25 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 4,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use only. No commercial resale permitted.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ]
         }
@@ -3097,12 +3086,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Standard",
+              "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 20,
-              "availableUntil": "2026-12-31",
+              "price": 0,
               "maxQty": 10,
-              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -3116,15 +3103,16 @@
                   "label": "How to Measure Fuelwood",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2025-01-10",
+              "saleEndDate": "2027-01-10"
             },
             {
-              "name": "Fuelwood Permit — Limited Areas",
+              "name": "Fuelwood Permit \u2014 Limited Areas",
               "unit": "cord",
               "price": 22,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Limited zones. Review stipulations before purchase.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -3134,17 +3122,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Designated Areas",
+              "name": "Christmas Tree Permit \u2014 Designated Areas",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Harvest only within designated areas. Tag tree before transport.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -3158,15 +3147,16 @@
                   "label": "Planning Your Trip",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             },
             {
-              "name": "Christmas Tree Permit — Limited",
+              "name": "Christmas Tree Permit \u2014 Limited",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 3,
-              "description": "Limited availability. Verify access and seasonal restrictions.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -3176,7 +3166,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             }
           ],
           "mushrooms": [
@@ -3184,9 +3177,7 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 5,
-              "availableUntil": "2026-09-30",
               "maxQty": 20,
-              "description": "Personal use collection. Seasonal restrictions may apply.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -3196,21 +3187,25 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 6,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use only. No commercial resale permitted.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ]
         }
@@ -3228,12 +3223,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Standard",
+              "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 15,
-              "availableUntil": "2026-12-31",
+              "price": 0,
               "maxQty": 10,
-              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -3247,15 +3240,16 @@
                   "label": "How to Measure Fuelwood",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2025-02-24",
+              "saleEndDate": "2027-02-24"
             },
             {
-              "name": "Fuelwood Permit — Limited Areas",
+              "name": "Fuelwood Permit \u2014 Limited Areas",
               "unit": "cord",
               "price": 17,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Limited zones. Review stipulations before purchase.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -3265,17 +3259,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Designated Areas",
+              "name": "Christmas Tree Permit \u2014 Designated Areas",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Harvest only within designated areas. Tag tree before transport.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -3289,15 +3284,16 @@
                   "label": "Planning Your Trip",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             },
             {
-              "name": "Christmas Tree Permit — Limited",
+              "name": "Christmas Tree Permit \u2014 Limited",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 3,
-              "description": "Limited availability. Verify access and seasonal restrictions.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -3307,7 +3303,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             }
           ],
           "mushrooms": [
@@ -3315,9 +3314,7 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 4,
-              "availableUntil": "2026-09-30",
               "maxQty": 20,
-              "description": "Personal use collection. Seasonal restrictions may apply.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -3327,21 +3324,25 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 5,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use only. No commercial resale permitted.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ]
         }
@@ -3352,12 +3353,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Standard",
+              "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 15,
-              "availableUntil": "2026-12-31",
+              "price": 0,
               "maxQty": 10,
-              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -3371,15 +3370,16 @@
                   "label": "How to Measure Fuelwood",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2025-02-25",
+              "saleEndDate": "2027-02-25"
             },
             {
-              "name": "Fuelwood Permit — Limited Areas",
+              "name": "Fuelwood Permit \u2014 Limited Areas",
               "unit": "cord",
               "price": 17,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Limited zones. Review stipulations before purchase.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -3389,17 +3389,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Designated Areas",
+              "name": "Christmas Tree Permit \u2014 Designated Areas",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Harvest only within designated areas. Tag tree before transport.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -3413,15 +3414,16 @@
                   "label": "Planning Your Trip",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             },
             {
-              "name": "Christmas Tree Permit — Limited",
+              "name": "Christmas Tree Permit \u2014 Limited",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 3,
-              "description": "Limited availability. Verify access and seasonal restrictions.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -3431,7 +3433,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             }
           ],
           "mushrooms": [
@@ -3439,9 +3444,7 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 4,
-              "availableUntil": "2026-09-30",
               "maxQty": 20,
-              "description": "Personal use collection. Seasonal restrictions may apply.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -3451,21 +3454,25 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 5,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use only. No commercial resale permitted.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ]
         }
@@ -3481,12 +3488,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Standard",
+              "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 1,
-              "availableUntil": "2026-12-31",
+              "price": 0,
               "maxQty": 10,
-              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -3500,15 +3505,16 @@
                   "label": "How to Measure Fuelwood",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2025-01-13",
+              "saleEndDate": "2027-01-13"
             },
             {
-              "name": "Fuelwood Permit — Limited Areas",
+              "name": "Fuelwood Permit \u2014 Limited Areas",
               "unit": "cord",
               "price": 3,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Limited zones. Review stipulations before purchase.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -3518,17 +3524,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Designated Areas",
+              "name": "Christmas Tree Permit \u2014 Designated Areas",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Harvest only within designated areas. Tag tree before transport.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -3542,15 +3549,16 @@
                   "label": "Planning Your Trip",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             },
             {
-              "name": "Christmas Tree Permit — Limited",
+              "name": "Christmas Tree Permit \u2014 Limited",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 3,
-              "description": "Limited availability. Verify access and seasonal restrictions.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -3560,7 +3568,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             }
           ],
           "mushrooms": [
@@ -3568,9 +3579,7 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 3,
-              "availableUntil": "2026-09-30",
               "maxQty": 20,
-              "description": "Personal use collection. Seasonal restrictions may apply.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -3580,21 +3589,25 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 4,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use only. No commercial resale permitted.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ]
         }
@@ -3611,12 +3624,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Standard",
+              "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 15,
-              "availableUntil": "2026-12-31",
+              "price": 0,
               "maxQty": 10,
-              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -3630,15 +3641,16 @@
                   "label": "How to Measure Fuelwood",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2025-02-28",
+              "saleEndDate": "2027-02-28"
             },
             {
-              "name": "Fuelwood Permit — Limited Areas",
+              "name": "Fuelwood Permit \u2014 Limited Areas",
               "unit": "cord",
               "price": 17,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Limited zones. Review stipulations before purchase.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -3648,17 +3660,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Designated Areas",
+              "name": "Christmas Tree Permit \u2014 Designated Areas",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Harvest only within designated areas. Tag tree before transport.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -3672,15 +3685,16 @@
                   "label": "Planning Your Trip",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             },
             {
-              "name": "Christmas Tree Permit — Limited",
+              "name": "Christmas Tree Permit \u2014 Limited",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 3,
-              "description": "Limited availability. Verify access and seasonal restrictions.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -3690,7 +3704,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             }
           ],
           "mushrooms": [
@@ -3698,9 +3715,7 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 3,
-              "availableUntil": "2026-09-30",
               "maxQty": 20,
-              "description": "Personal use collection. Seasonal restrictions may apply.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -3710,21 +3725,25 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 4,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use only. No commercial resale permitted.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ]
         }
@@ -3740,12 +3759,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Standard",
+              "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 20,
-              "availableUntil": "2026-12-31",
+              "price": 0,
               "maxQty": 10,
-              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -3759,15 +3776,16 @@
                   "label": "How to Measure Fuelwood",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2025-01-16",
+              "saleEndDate": "2027-01-16"
             },
             {
-              "name": "Fuelwood Permit — Limited Areas",
+              "name": "Fuelwood Permit \u2014 Limited Areas",
               "unit": "cord",
               "price": 22,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Limited zones. Review stipulations before purchase.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -3777,17 +3795,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Designated Areas",
+              "name": "Christmas Tree Permit \u2014 Designated Areas",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Harvest only within designated areas. Tag tree before transport.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -3801,15 +3820,16 @@
                   "label": "Planning Your Trip",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             },
             {
-              "name": "Christmas Tree Permit — Limited",
+              "name": "Christmas Tree Permit \u2014 Limited",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 3,
-              "description": "Limited availability. Verify access and seasonal restrictions.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -3819,7 +3839,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             }
           ],
           "mushrooms": [
@@ -3827,9 +3850,7 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 5,
-              "availableUntil": "2026-09-30",
               "maxQty": 20,
-              "description": "Personal use collection. Seasonal restrictions may apply.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -3839,21 +3860,25 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 6,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use only. No commercial resale permitted.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ]
         }
@@ -3864,12 +3889,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Standard",
+              "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 18,
-              "availableUntil": "2026-12-31",
+              "price": 0,
               "maxQty": 10,
-              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -3883,15 +3906,16 @@
                   "label": "How to Measure Fuelwood",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2025-03-02",
+              "saleEndDate": "2027-03-02"
             },
             {
-              "name": "Fuelwood Permit — Limited Areas",
+              "name": "Fuelwood Permit \u2014 Limited Areas",
               "unit": "cord",
               "price": 20,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Limited zones. Review stipulations before purchase.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -3901,17 +3925,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Designated Areas",
+              "name": "Christmas Tree Permit \u2014 Designated Areas",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Harvest only within designated areas. Tag tree before transport.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -3925,15 +3950,16 @@
                   "label": "Planning Your Trip",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             },
             {
-              "name": "Christmas Tree Permit — Limited",
+              "name": "Christmas Tree Permit \u2014 Limited",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 3,
-              "description": "Limited availability. Verify access and seasonal restrictions.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -3943,7 +3969,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             }
           ],
           "mushrooms": [
@@ -3951,9 +3980,7 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 4,
-              "availableUntil": "2026-09-30",
               "maxQty": 20,
-              "description": "Personal use collection. Seasonal restrictions may apply.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -3963,21 +3990,25 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 5,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use only. No commercial resale permitted.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ]
         }
@@ -3988,12 +4019,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Standard",
+              "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 18,
-              "availableUntil": "2026-12-31",
+              "price": 0,
               "maxQty": 10,
-              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -4007,15 +4036,16 @@
                   "label": "How to Measure Fuelwood",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2025-03-03",
+              "saleEndDate": "2027-03-03"
             },
             {
-              "name": "Fuelwood Permit — Limited Areas",
+              "name": "Fuelwood Permit \u2014 Limited Areas",
               "unit": "cord",
               "price": 20,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Limited zones. Review stipulations before purchase.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -4025,17 +4055,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Designated Areas",
+              "name": "Christmas Tree Permit \u2014 Designated Areas",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Harvest only within designated areas. Tag tree before transport.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -4049,15 +4080,16 @@
                   "label": "Planning Your Trip",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             },
             {
-              "name": "Christmas Tree Permit — Limited",
+              "name": "Christmas Tree Permit \u2014 Limited",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 3,
-              "description": "Limited availability. Verify access and seasonal restrictions.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -4067,7 +4099,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             }
           ],
           "mushrooms": [
@@ -4075,9 +4110,7 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 4,
-              "availableUntil": "2026-09-30",
               "maxQty": 20,
-              "description": "Personal use collection. Seasonal restrictions may apply.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -4087,21 +4120,25 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 5,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use only. No commercial resale permitted.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ]
         }
@@ -4117,12 +4154,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Standard",
+              "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 15,
-              "availableUntil": "2026-12-31",
+              "price": 0,
               "maxQty": 10,
-              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -4136,15 +4171,16 @@
                   "label": "How to Measure Fuelwood",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-29",
+              "saleEndDate": "2028-01-03"
             },
             {
-              "name": "Fuelwood Permit — Limited Areas",
+              "name": "Fuelwood Permit \u2014 Limited Areas",
               "unit": "cord",
               "price": 17,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Limited zones. Review stipulations before purchase.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -4154,17 +4190,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Designated Areas",
+              "name": "Christmas Tree Permit \u2014 Designated Areas",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Harvest only within designated areas. Tag tree before transport.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -4178,15 +4215,16 @@
                   "label": "Planning Your Trip",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             },
             {
-              "name": "Christmas Tree Permit — Limited",
+              "name": "Christmas Tree Permit \u2014 Limited",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 3,
-              "description": "Limited availability. Verify access and seasonal restrictions.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -4196,7 +4234,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             }
           ],
           "mushrooms": [
@@ -4204,9 +4245,7 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 3,
-              "availableUntil": "2026-09-30",
               "maxQty": 20,
-              "description": "Personal use collection. Seasonal restrictions may apply.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -4216,21 +4255,25 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 4,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use only. No commercial resale permitted.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ]
         }
@@ -4241,12 +4284,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Standard",
+              "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 12,
-              "availableUntil": "2026-12-31",
+              "price": 0,
               "maxQty": 10,
-              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -4260,15 +4301,16 @@
                   "label": "How to Measure Fuelwood",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2025-03-05",
+              "saleEndDate": "2027-03-05"
             },
             {
-              "name": "Fuelwood Permit — Limited Areas",
+              "name": "Fuelwood Permit \u2014 Limited Areas",
               "unit": "cord",
               "price": 14,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Limited zones. Review stipulations before purchase.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -4278,17 +4320,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Designated Areas",
+              "name": "Christmas Tree Permit \u2014 Designated Areas",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Harvest only within designated areas. Tag tree before transport.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -4302,15 +4345,16 @@
                   "label": "Planning Your Trip",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             },
             {
-              "name": "Christmas Tree Permit — Limited",
+              "name": "Christmas Tree Permit \u2014 Limited",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 3,
-              "description": "Limited availability. Verify access and seasonal restrictions.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -4320,7 +4364,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             }
           ],
           "mushrooms": [
@@ -4328,9 +4375,7 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 3,
-              "availableUntil": "2026-09-30",
               "maxQty": 20,
-              "description": "Personal use collection. Seasonal restrictions may apply.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -4340,21 +4385,25 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 4,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use only. No commercial resale permitted.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ]
         }
@@ -4365,12 +4414,10 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit — Standard",
+              "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 12,
-              "availableUntil": "2026-12-31",
+              "price": 0,
               "maxQty": 10,
-              "description": "Personal use only. Dead and down collection in designated areas. Verify closures and access.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -4384,15 +4431,16 @@
                   "label": "How to Measure Fuelwood",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2025-03-06",
+              "saleEndDate": "2027-03-06"
             },
             {
-              "name": "Fuelwood Permit — Limited Areas",
+              "name": "Fuelwood Permit \u2014 Limited Areas",
               "unit": "cord",
               "price": 14,
-              "availableUntil": "2026-12-31",
               "maxQty": 6,
-              "description": "Limited zones. Review stipulations before purchase.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -4402,17 +4450,18 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-28",
+              "saleEndDate": "2028-01-04"
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit — Designated Areas",
+              "name": "Christmas Tree Permit \u2014 Designated Areas",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 5,
-              "description": "Harvest only within designated areas. Tag tree before transport.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -4426,15 +4475,16 @@
                   "label": "Planning Your Trip",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-27",
+              "saleEndDate": "2028-01-05"
             },
             {
-              "name": "Christmas Tree Permit — Limited",
+              "name": "Christmas Tree Permit \u2014 Limited",
               "unit": "tree",
               "price": 10,
-              "availableUntil": "2025-12-24",
               "maxQty": 3,
-              "description": "Limited availability. Verify access and seasonal restrictions.",
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -4444,7 +4494,10 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 2,
+              "saleStartDate": "2024-12-26",
+              "saleEndDate": "2028-01-06"
             }
           ],
           "mushrooms": [
@@ -4452,9 +4505,7 @@
               "name": "Morel Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 3,
-              "availableUntil": "2026-09-30",
               "maxQty": 20,
-              "description": "Personal use collection. Seasonal restrictions may apply.",
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
@@ -4464,21 +4515,25 @@
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 3,
+              "saleStartDate": "2024-12-25",
+              "saleEndDate": "2028-01-07"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
               "unit": "pound",
               "price": 4,
-              "availableUntil": "2026-10-31",
               "maxQty": 15,
-              "description": "Personal use only. No commercial resale permitted.",
               "requiredDocs": [
                 {
                   "label": "Stipulations",
                   "url": "#"
                 }
-              ]
+              ],
+              "minQty": 1,
+              "saleStartDate": "2024-12-24",
+              "saleEndDate": "2028-01-08"
             }
           ]
         }
