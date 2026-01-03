@@ -262,6 +262,7 @@ body{
     .prod .name{font-weight:800; font-size:16px; line-height:1.25}
     .prod .price{font-weight:800; font-size:16px; color:var(--ink); white-space:nowrap}
     .prod .validity{font-size:12.5px; color:var(--muted);}
+    .prod .availability{font-size:12px; color:var(--muted);}
     .prod .docs{
       margin-top:2px;
       border:0;
@@ -320,6 +321,20 @@ body{
       .location-note .title .badge{width:22px; height:22px; border-radius:8px; background:rgba(29,107,66,.14); color:var(--brand); display:grid; place-items:center; font-weight:900;}
     .location-note .detail{margin-top:8px; color:var(--muted); font-size:13px;}
     .location-note ul{margin:8px 0 0 18px; color:var(--muted); font-size:13px}
+    .coming-soon{
+      margin-top:12px;
+      border:1px solid rgba(29,107,66,.16);
+      border-radius:var(--radius-card);
+      padding:12px;
+      background:#fff;
+      box-shadow:var(--shadow-sm);
+    }
+    .coming-soon-title{font-weight:800; font-size:14px;}
+    .coming-soon-subtitle{font-size:12.5px; color:var(--muted); margin-top:2px;}
+    .coming-soon-items{display:grid; gap:8px; margin-top:10px;}
+    .coming-soon-item{display:flex; justify-content:space-between; gap:10px; font-size:13px;}
+    .coming-soon-name{font-weight:600;}
+    .coming-soon-date{color:var(--muted); white-space:nowrap;}
     /* Summary */
     .summary{border:1px solid rgba(29,107,66,.2); background:rgba(29,107,66,.06); border-radius:var(--radius-card); padding:12px; margin-top:10px; box-shadow:var(--shadow-sm);}
     .summary .k{color:var(--muted); font-size:12px}
