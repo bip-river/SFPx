@@ -76,23 +76,6 @@
               "unit": "cord",
               "price": 0,
               "maxQty": 5,
-              "eligibility": {
-                "requiresCertification": true,
-                "basis": "ANILCA Title VIII subsistence eligibility (16 U.S.C. \u00a7 3113)",
-                "label": "I certify that I qualify for subsistence uses under ANILCA (16 U.S.C. \u00a7 3113) for this no-fee permit.",
-                "intro": "This no-fee permit option is available only to eligible subsistence users in Alaska.",
-                "bullets": [
-                  "I am eligible for subsistence uses as defined in 16 U.S.C. \u00a7 3113.",
-                  "I will use the forest products collected under this permit for personal or family subsistence use (not commercial resale).",
-                  "I understand that false statements may be subject to penalties."
-                ],
-                "citations": [
-                  {
-                    "label": "16 U.S.C. \u00a7 3113",
-                    "url": "https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title16-section3113&num=0&edition=prelim"
-                  }
-                ]
-              },
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -282,23 +265,6 @@
               "unit": "cord",
               "price": 0,
               "maxQty": 4,
-              "eligibility": {
-                "requiresCertification": true,
-                "basis": "ANILCA Title VIII subsistence eligibility (16 U.S.C. \u00a7 3113)",
-                "label": "I certify that I qualify for subsistence uses under ANILCA (16 U.S.C. \u00a7 3113) for this no-fee permit.",
-                "intro": "This no-fee permit option is available only to eligible subsistence users in Alaska.",
-                "bullets": [
-                  "I am eligible for subsistence uses as defined in 16 U.S.C. \u00a7 3113.",
-                  "I will use the forest products collected under this permit for personal or family subsistence use (not commercial resale).",
-                  "I understand that false statements may be subject to penalties."
-                ],
-                "citations": [
-                  {
-                    "label": "16 U.S.C. \u00a7 3113",
-                    "url": "https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title16-section3113&num=0&edition=prelim"
-                  }
-                ]
-              },
               "requiredDocs": [
                 {
                   "label": "Map",
@@ -520,7 +486,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-12",
-              "saleEndDate": "2026-02-23"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Christmas/Holiday Tree Permit \u2014 Limited",
@@ -539,7 +505,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-11",
-              "saleEndDate": "2026-02-24"
+              "saleEndDate": "2029-01-03"
             },
             {
               "name": "Christmas Tree Permit \u2014 Free Use (No fee)",
@@ -558,7 +524,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-10",
-              "saleEndDate": "2026-02-25"
+              "saleEndDate": "2030-01-04"
             }
           ],
           "mushrooms": [
@@ -575,7 +541,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-09",
-              "saleEndDate": "2026-02-26"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
@@ -594,7 +560,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-08",
-              "saleEndDate": "2026-02-27"
+              "saleEndDate": "2029-01-03"
             }
           ]
         }
@@ -617,7 +583,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-07",
-              "saleEndDate": "2026-02-28"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Fuelwood Permit \u2014 Gila Roadside",
@@ -636,7 +602,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-06",
-              "saleEndDate": "2026-03-01"
+              "saleEndDate": "2029-01-03"
             },
             {
               "name": "Fuelwood Permit \u2014 Free Use (No fee)",
@@ -655,7 +621,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-05",
-              "saleEndDate": "2026-03-02"
+              "saleEndDate": "2030-01-04"
             }
           ],
           "christmas": [
@@ -672,7 +638,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-04",
-              "saleEndDate": "2026-03-03"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Christmas Tree Permit \u2014 Gila South",
@@ -691,7 +657,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-03",
-              "saleEndDate": "2026-03-04"
+              "saleEndDate": "2029-01-03"
             },
             {
               "name": "Christmas Tree Permit \u2014 Free Use (No fee)",
@@ -710,7 +676,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-02",
-              "saleEndDate": "2026-03-05"
+              "saleEndDate": "2030-01-04"
             }
           ],
           "mushrooms": [
@@ -727,7 +693,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-01",
-              "saleEndDate": "2026-03-06"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Mushroom Permit (Personal Use) \u2014 Mixed Species",
@@ -746,7 +712,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-11-30",
-              "saleEndDate": "2026-03-07"
+              "saleEndDate": "2029-01-03"
             }
           ]
         }
@@ -759,7 +725,7 @@
             {
               "name": "Fuelwood Permit \u2014 Desert Standard",
               "unit": "cord",
-              "price": 10,
+              "price": 0,
               "maxQty": 6,
               "requiredDocs": [
                 {
@@ -769,7 +735,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-11-29",
-              "saleEndDate": "2026-03-08"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Fuelwood Permit \u2014 Desert Limited",
@@ -788,7 +754,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-11-28",
-              "saleEndDate": "2026-03-09"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "christmas": [
@@ -805,7 +771,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-11-27",
-              "saleEndDate": "2026-03-10"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Christmas Tree Permit \u2014 Yuma (Standard)",
@@ -820,7 +786,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-11-26",
-              "saleEndDate": "2026-03-11"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "mushrooms": [
@@ -837,7 +803,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-11-25",
-              "saleEndDate": "2026-03-12"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Mushroom Permit (Personal Use) \u2014 Fall",
@@ -852,7 +818,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-11-24",
-              "saleEndDate": "2026-03-13"
+              "saleEndDate": "2029-01-03"
             }
           ]
         }
@@ -870,7 +836,7 @@
             {
               "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 20,
+              "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
@@ -888,7 +854,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-11-23",
-              "saleEndDate": "2026-03-14"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Fuelwood Permit \u2014 Limited Areas",
@@ -907,7 +873,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-11-22",
-              "saleEndDate": "2026-03-15"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "christmas": [
@@ -932,7 +898,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-11-21",
-              "saleEndDate": "2026-03-16"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Christmas Tree Permit \u2014 Limited",
@@ -951,7 +917,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-11-20",
-              "saleEndDate": "2026-03-17"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "mushrooms": [
@@ -972,7 +938,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-11-19",
-              "saleEndDate": "2026-03-18"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
@@ -987,7 +953,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2026-01-02",
-              "saleEndDate": "2026-03-19"
+              "saleEndDate": "2029-01-03"
             }
           ]
         }
@@ -1000,7 +966,7 @@
             {
               "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 18,
+              "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
@@ -1018,7 +984,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2026-01-01",
-              "saleEndDate": "2026-03-20"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Fuelwood Permit \u2014 Limited Areas",
@@ -1037,7 +1003,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-31",
-              "saleEndDate": "2026-03-21"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "christmas": [
@@ -1062,7 +1028,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-30",
-              "saleEndDate": "2026-03-22"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Christmas Tree Permit \u2014 Limited",
@@ -1081,7 +1047,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-29",
-              "saleEndDate": "2026-03-23"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "mushrooms": [
@@ -1102,7 +1068,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-28",
-              "saleEndDate": "2026-03-24"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
@@ -1117,7 +1083,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-27",
-              "saleEndDate": "2026-03-25"
+              "saleEndDate": "2029-01-03"
             }
           ]
         }
@@ -1125,132 +1091,7 @@
       {
         "id": "CA-RDD",
         "name": "Redding Riverbend Outpost",
-        "products": {
-          "fuelwood": [
-            {
-              "name": "Fuelwood Permit \u2014 Standard",
-              "unit": "cord",
-              "price": 18,
-              "maxQty": 10,
-              "requiredDocs": [
-                {
-                  "label": "Map",
-                  "url": "#"
-                },
-                {
-                  "label": "Stipulations",
-                  "url": "#"
-                },
-                {
-                  "label": "How to Measure Fuelwood",
-                  "url": "#"
-                }
-              ],
-              "minQty": 2,
-              "saleStartDate": "2025-12-26",
-              "saleEndDate": "2026-03-26"
-            },
-            {
-              "name": "Fuelwood Permit \u2014 Limited Areas",
-              "unit": "cord",
-              "price": 20,
-              "maxQty": 6,
-              "requiredDocs": [
-                {
-                  "label": "Map",
-                  "url": "#"
-                },
-                {
-                  "label": "Stipulations",
-                  "url": "#"
-                }
-              ],
-              "minQty": 3,
-              "saleStartDate": "2025-12-25",
-              "saleEndDate": "2026-03-27"
-            }
-          ],
-          "christmas": [
-            {
-              "name": "Christmas Tree Permit \u2014 Designated Areas",
-              "unit": "tree",
-              "price": 10,
-              "maxQty": 5,
-              "requiredDocs": [
-                {
-                  "label": "Map",
-                  "url": "#"
-                },
-                {
-                  "label": "Stipulations",
-                  "url": "#"
-                },
-                {
-                  "label": "Planning Your Trip",
-                  "url": "#"
-                }
-              ],
-              "minQty": 1,
-              "saleStartDate": "2025-12-24",
-              "saleEndDate": "2026-03-28"
-            },
-            {
-              "name": "Christmas Tree Permit \u2014 Limited",
-              "unit": "tree",
-              "price": 10,
-              "maxQty": 3,
-              "requiredDocs": [
-                {
-                  "label": "Map",
-                  "url": "#"
-                },
-                {
-                  "label": "Stipulations",
-                  "url": "#"
-                }
-              ],
-              "minQty": 2,
-              "saleStartDate": "2025-12-23",
-              "saleEndDate": "2026-03-29"
-            }
-          ],
-          "mushrooms": [
-            {
-              "name": "Morel Mushroom Permit (Personal Use)",
-              "unit": "pound",
-              "price": 4,
-              "maxQty": 20,
-              "requiredDocs": [
-                {
-                  "label": "Collection Areas",
-                  "url": "#"
-                },
-                {
-                  "label": "Stipulations",
-                  "url": "#"
-                }
-              ],
-              "minQty": 3,
-              "saleStartDate": "2025-12-22",
-              "saleEndDate": "2026-03-30"
-            },
-            {
-              "name": "Chanterelle Mushroom Permit (Personal Use)",
-              "unit": "pound",
-              "price": 5,
-              "maxQty": 15,
-              "requiredDocs": [
-                {
-                  "label": "Stipulations",
-                  "url": "#"
-                }
-              ],
-              "minQty": 1,
-              "saleStartDate": "2025-12-21",
-              "saleEndDate": "2026-03-31"
-            }
-          ]
-        }
+        "products": {}
       }
     ]
   },
@@ -1265,7 +1106,7 @@
             {
               "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 10,
+              "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
@@ -1283,7 +1124,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-20",
-              "saleEndDate": "2026-04-01"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Fuelwood Permit \u2014 Limited Areas",
@@ -1302,7 +1143,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-19",
-              "saleEndDate": "2026-04-02"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "christmas": [
@@ -1327,7 +1168,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-18",
-              "saleEndDate": "2026-04-03"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Christmas Tree Permit \u2014 Limited",
@@ -1346,7 +1187,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-17",
-              "saleEndDate": "2026-04-04"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "mushrooms": [
@@ -1367,7 +1208,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-16",
-              "saleEndDate": "2026-04-05"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
@@ -1382,7 +1223,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-15",
-              "saleEndDate": "2026-04-06"
+              "saleEndDate": "2029-01-03"
             }
           ]
         }
@@ -1395,7 +1236,7 @@
             {
               "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 10,
+              "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
@@ -1413,7 +1254,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-14",
-              "saleEndDate": "2026-04-07"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Fuelwood Permit \u2014 Limited Areas",
@@ -1432,7 +1273,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-13",
-              "saleEndDate": "2026-04-08"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "christmas": [
@@ -1457,7 +1298,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-12",
-              "saleEndDate": "2026-04-09"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Christmas Tree Permit \u2014 Limited",
@@ -1476,7 +1317,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-11",
-              "saleEndDate": "2026-04-10"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "mushrooms": [
@@ -1497,7 +1338,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-10",
-              "saleEndDate": "2026-04-11"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
@@ -1512,7 +1353,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-09",
-              "saleEndDate": "2026-04-12"
+              "saleEndDate": "2029-01-03"
             }
           ]
         }
@@ -1525,7 +1366,7 @@
             {
               "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 12,
+              "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
@@ -1543,7 +1384,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-08",
-              "saleEndDate": "2026-04-13"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Fuelwood Permit \u2014 Limited Areas",
@@ -1562,7 +1403,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-07",
-              "saleEndDate": "2026-04-14"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "christmas": [
@@ -1587,7 +1428,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-06",
-              "saleEndDate": "2026-04-15"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Christmas Tree Permit \u2014 Limited",
@@ -1606,7 +1447,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-05",
-              "saleEndDate": "2026-04-16"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "mushrooms": [
@@ -1627,7 +1468,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-04",
-              "saleEndDate": "2026-04-17"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
@@ -1642,7 +1483,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-03",
-              "saleEndDate": "2026-04-18"
+              "saleEndDate": "2029-01-03"
             }
           ]
         }
@@ -1660,7 +1501,7 @@
             {
               "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 10,
+              "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
@@ -1678,7 +1519,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-02",
-              "saleEndDate": "2026-04-19"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Fuelwood Permit \u2014 Limited Areas",
@@ -1697,7 +1538,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-01",
-              "saleEndDate": "2026-04-20"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "christmas": [
@@ -1722,7 +1563,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-11-30",
-              "saleEndDate": "2026-04-21"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Christmas Tree Permit \u2014 Limited",
@@ -1741,7 +1582,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-11-29",
-              "saleEndDate": "2026-04-22"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "mushrooms": [
@@ -1762,7 +1603,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-11-28",
-              "saleEndDate": "2026-04-23"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
@@ -1777,7 +1618,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-11-27",
-              "saleEndDate": "2026-04-24"
+              "saleEndDate": "2029-01-03"
             }
           ]
         }
@@ -1790,7 +1631,7 @@
             {
               "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 12,
+              "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
@@ -1808,7 +1649,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-11-26",
-              "saleEndDate": "2026-04-25"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Fuelwood Permit \u2014 Limited Areas",
@@ -1827,7 +1668,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-11-25",
-              "saleEndDate": "2026-04-26"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "christmas": [
@@ -1852,7 +1693,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-11-24",
-              "saleEndDate": "2026-04-27"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Christmas Tree Permit \u2014 Limited",
@@ -1871,7 +1712,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-11-23",
-              "saleEndDate": "2026-04-28"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "mushrooms": [
@@ -1892,7 +1733,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-11-22",
-              "saleEndDate": "2026-04-29"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
@@ -1907,7 +1748,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-11-21",
-              "saleEndDate": "2026-04-30"
+              "saleEndDate": "2029-01-03"
             }
           ]
         }
@@ -1920,7 +1761,7 @@
             {
               "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 10,
+              "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
@@ -1938,7 +1779,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-11-20",
-              "saleEndDate": "2026-05-01"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Fuelwood Permit \u2014 Limited Areas",
@@ -1957,7 +1798,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-11-19",
-              "saleEndDate": "2026-05-02"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "christmas": [
@@ -1982,7 +1823,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2026-01-02",
-              "saleEndDate": "2026-05-03"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Christmas Tree Permit \u2014 Limited",
@@ -2001,7 +1842,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2026-01-01",
-              "saleEndDate": "2026-05-04"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "mushrooms": [
@@ -2022,7 +1863,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-31",
-              "saleEndDate": "2026-05-05"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
@@ -2037,7 +1878,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-30",
-              "saleEndDate": "2026-05-06"
+              "saleEndDate": "2029-01-03"
             }
           ]
         }
@@ -2055,7 +1896,7 @@
             {
               "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 10,
+              "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
@@ -2073,7 +1914,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-29",
-              "saleEndDate": "2026-05-07"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Fuelwood Permit \u2014 Limited Areas",
@@ -2092,7 +1933,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-28",
-              "saleEndDate": "2026-05-08"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "christmas": [
@@ -2117,7 +1958,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-27",
-              "saleEndDate": "2026-05-09"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Christmas Tree Permit \u2014 Limited",
@@ -2136,7 +1977,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-26",
-              "saleEndDate": "2026-05-10"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "mushrooms": [
@@ -2157,7 +1998,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-25",
-              "saleEndDate": "2026-05-11"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
@@ -2172,7 +2013,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-24",
-              "saleEndDate": "2026-05-12"
+              "saleEndDate": "2029-01-03"
             }
           ]
         }
@@ -2185,7 +2026,7 @@
             {
               "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 12,
+              "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
@@ -2203,7 +2044,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-23",
-              "saleEndDate": "2026-05-13"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Fuelwood Permit \u2014 Limited Areas",
@@ -2222,7 +2063,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-22",
-              "saleEndDate": "2026-05-14"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "christmas": [
@@ -2247,7 +2088,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-21",
-              "saleEndDate": "2026-05-15"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Christmas Tree Permit \u2014 Limited",
@@ -2266,7 +2107,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-20",
-              "saleEndDate": "2026-05-16"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "mushrooms": [
@@ -2287,7 +2128,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-19",
-              "saleEndDate": "2026-05-17"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
@@ -2302,7 +2143,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-18",
-              "saleEndDate": "2026-05-18"
+              "saleEndDate": "2029-01-03"
             }
           ]
         }
@@ -2315,7 +2156,7 @@
             {
               "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 10,
+              "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
@@ -2333,7 +2174,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-17",
-              "saleEndDate": "2026-05-19"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Fuelwood Permit \u2014 Limited Areas",
@@ -2352,7 +2193,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-16",
-              "saleEndDate": "2026-05-20"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "christmas": [
@@ -2377,7 +2218,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-15",
-              "saleEndDate": "2026-05-21"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Christmas Tree Permit \u2014 Limited",
@@ -2396,7 +2237,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-14",
-              "saleEndDate": "2026-05-22"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "mushrooms": [
@@ -2417,7 +2258,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-13",
-              "saleEndDate": "2026-05-23"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
@@ -2432,7 +2273,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-12",
-              "saleEndDate": "2026-05-24"
+              "saleEndDate": "2029-01-03"
             }
           ]
         }
@@ -2468,7 +2309,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-11",
-              "saleEndDate": "2026-05-25"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Fuelwood Permit \u2014 Limited Areas",
@@ -2487,7 +2328,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-10",
-              "saleEndDate": "2026-05-26"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "christmas": [
@@ -2512,7 +2353,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-09",
-              "saleEndDate": "2026-05-27"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Christmas Tree Permit \u2014 Limited",
@@ -2531,7 +2372,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-08",
-              "saleEndDate": "2026-05-28"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "mushrooms": [
@@ -2552,7 +2393,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-07",
-              "saleEndDate": "2026-05-29"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
@@ -2567,7 +2408,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-06",
-              "saleEndDate": "2026-05-30"
+              "saleEndDate": "2029-01-03"
             }
           ]
         }
@@ -2580,7 +2421,7 @@
             {
               "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 10,
+              "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
@@ -2598,7 +2439,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-05",
-              "saleEndDate": "2026-05-31"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Fuelwood Permit \u2014 Limited Areas",
@@ -2617,7 +2458,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-04",
-              "saleEndDate": "2026-06-01"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "christmas": [
@@ -2642,7 +2483,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-03",
-              "saleEndDate": "2026-02-02"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Christmas Tree Permit \u2014 Limited",
@@ -2661,7 +2502,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-02",
-              "saleEndDate": "2026-02-03"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "mushrooms": [
@@ -2682,7 +2523,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-01",
-              "saleEndDate": "2026-02-04"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
@@ -2697,7 +2538,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-11-30",
-              "saleEndDate": "2026-02-05"
+              "saleEndDate": "2029-01-03"
             }
           ]
         }
@@ -2710,7 +2551,7 @@
             {
               "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 12,
+              "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
@@ -2728,7 +2569,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-11-29",
-              "saleEndDate": "2026-02-06"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Fuelwood Permit \u2014 Limited Areas",
@@ -2747,7 +2588,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-11-28",
-              "saleEndDate": "2026-02-07"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "christmas": [
@@ -2772,7 +2613,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-11-27",
-              "saleEndDate": "2026-02-08"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Christmas Tree Permit \u2014 Limited",
@@ -2791,7 +2632,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-11-26",
-              "saleEndDate": "2026-02-09"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "mushrooms": [
@@ -2812,7 +2653,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-11-25",
-              "saleEndDate": "2026-02-10"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
@@ -2827,7 +2668,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-11-24",
-              "saleEndDate": "2026-02-11"
+              "saleEndDate": "2029-01-03"
             }
           ]
         }
@@ -2845,7 +2686,7 @@
             {
               "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 15,
+              "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
@@ -2863,7 +2704,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-11-23",
-              "saleEndDate": "2026-02-12"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Fuelwood Permit \u2014 Limited Areas",
@@ -2882,7 +2723,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-11-22",
-              "saleEndDate": "2026-02-13"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "christmas": [
@@ -2907,7 +2748,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-11-21",
-              "saleEndDate": "2026-02-14"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Christmas Tree Permit \u2014 Limited",
@@ -2926,7 +2767,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-11-20",
-              "saleEndDate": "2026-02-15"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "mushrooms": [
@@ -2947,7 +2788,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-11-19",
-              "saleEndDate": "2026-02-16"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
@@ -2962,7 +2803,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2026-01-02",
-              "saleEndDate": "2026-02-17"
+              "saleEndDate": "2029-01-03"
             }
           ]
         }
@@ -2975,7 +2816,7 @@
             {
               "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 15,
+              "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
@@ -2993,7 +2834,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2026-01-01",
-              "saleEndDate": "2026-02-18"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Fuelwood Permit \u2014 Limited Areas",
@@ -3012,7 +2853,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-31",
-              "saleEndDate": "2026-02-19"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "christmas": [
@@ -3037,7 +2878,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-30",
-              "saleEndDate": "2026-02-20"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Christmas Tree Permit \u2014 Limited",
@@ -3056,7 +2897,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-29",
-              "saleEndDate": "2026-02-21"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "mushrooms": [
@@ -3077,7 +2918,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-28",
-              "saleEndDate": "2026-02-22"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
@@ -3092,7 +2933,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-27",
-              "saleEndDate": "2026-02-23"
+              "saleEndDate": "2029-01-03"
             }
           ]
         }
@@ -3105,7 +2946,7 @@
             {
               "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 12,
+              "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
@@ -3123,7 +2964,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-26",
-              "saleEndDate": "2026-02-24"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Fuelwood Permit \u2014 Limited Areas",
@@ -3142,7 +2983,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-25",
-              "saleEndDate": "2026-02-25"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "christmas": [
@@ -3167,7 +3008,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-24",
-              "saleEndDate": "2026-02-26"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Christmas Tree Permit \u2014 Limited",
@@ -3186,7 +3027,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-23",
-              "saleEndDate": "2026-02-27"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "mushrooms": [
@@ -3207,7 +3048,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-22",
-              "saleEndDate": "2026-02-28"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
@@ -3222,7 +3063,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-21",
-              "saleEndDate": "2026-03-01"
+              "saleEndDate": "2029-01-03"
             }
           ]
         }
@@ -3247,7 +3088,7 @@
             {
               "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 20,
+              "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
@@ -3265,7 +3106,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-20",
-              "saleEndDate": "2026-03-02"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Fuelwood Permit \u2014 Limited Areas",
@@ -3284,7 +3125,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-19",
-              "saleEndDate": "2026-03-03"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "christmas": [
@@ -3309,7 +3150,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-18",
-              "saleEndDate": "2026-03-04"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Christmas Tree Permit \u2014 Limited",
@@ -3328,7 +3169,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-17",
-              "saleEndDate": "2026-03-05"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "mushrooms": [
@@ -3349,7 +3190,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-16",
-              "saleEndDate": "2026-03-06"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
@@ -3364,7 +3205,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-15",
-              "saleEndDate": "2026-03-07"
+              "saleEndDate": "2029-01-03"
             }
           ]
         }
@@ -3384,7 +3225,7 @@
             {
               "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 15,
+              "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
@@ -3402,7 +3243,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-14",
-              "saleEndDate": "2026-03-08"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Fuelwood Permit \u2014 Limited Areas",
@@ -3421,7 +3262,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-13",
-              "saleEndDate": "2026-03-09"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "christmas": [
@@ -3446,7 +3287,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-12",
-              "saleEndDate": "2026-03-10"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Christmas Tree Permit \u2014 Limited",
@@ -3465,7 +3306,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-11",
-              "saleEndDate": "2026-03-11"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "mushrooms": [
@@ -3486,7 +3327,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-10",
-              "saleEndDate": "2026-03-12"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
@@ -3501,7 +3342,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-09",
-              "saleEndDate": "2026-03-13"
+              "saleEndDate": "2029-01-03"
             }
           ]
         }
@@ -3514,7 +3355,7 @@
             {
               "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 15,
+              "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
@@ -3532,7 +3373,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-08",
-              "saleEndDate": "2026-03-14"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Fuelwood Permit \u2014 Limited Areas",
@@ -3551,7 +3392,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-07",
-              "saleEndDate": "2026-03-15"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "christmas": [
@@ -3576,7 +3417,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-06",
-              "saleEndDate": "2026-03-16"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Christmas Tree Permit \u2014 Limited",
@@ -3595,7 +3436,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-05",
-              "saleEndDate": "2026-03-17"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "mushrooms": [
@@ -3616,7 +3457,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-04",
-              "saleEndDate": "2026-03-18"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
@@ -3631,7 +3472,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-03",
-              "saleEndDate": "2026-03-19"
+              "saleEndDate": "2029-01-03"
             }
           ]
         }
@@ -3649,7 +3490,7 @@
             {
               "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 1,
+              "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
@@ -3667,7 +3508,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-02",
-              "saleEndDate": "2026-03-20"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Fuelwood Permit \u2014 Limited Areas",
@@ -3686,7 +3527,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-01",
-              "saleEndDate": "2026-03-21"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "christmas": [
@@ -3711,7 +3552,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-11-30",
-              "saleEndDate": "2026-03-22"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Christmas Tree Permit \u2014 Limited",
@@ -3730,7 +3571,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-11-29",
-              "saleEndDate": "2026-03-23"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "mushrooms": [
@@ -3751,7 +3592,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-11-28",
-              "saleEndDate": "2026-03-24"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
@@ -3766,7 +3607,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-11-27",
-              "saleEndDate": "2026-03-25"
+              "saleEndDate": "2029-01-03"
             }
           ]
         }
@@ -3785,7 +3626,7 @@
             {
               "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 15,
+              "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
@@ -3803,7 +3644,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-11-26",
-              "saleEndDate": "2026-03-26"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Fuelwood Permit \u2014 Limited Areas",
@@ -3822,7 +3663,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-11-25",
-              "saleEndDate": "2026-03-27"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "christmas": [
@@ -3847,7 +3688,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-11-24",
-              "saleEndDate": "2026-03-28"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Christmas Tree Permit \u2014 Limited",
@@ -3866,7 +3707,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-11-23",
-              "saleEndDate": "2026-03-29"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "mushrooms": [
@@ -3887,7 +3728,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-11-22",
-              "saleEndDate": "2026-03-30"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
@@ -3902,7 +3743,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-11-21",
-              "saleEndDate": "2026-03-31"
+              "saleEndDate": "2029-01-03"
             }
           ]
         }
@@ -3920,7 +3761,7 @@
             {
               "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 20,
+              "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
@@ -3938,7 +3779,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-11-20",
-              "saleEndDate": "2026-04-01"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Fuelwood Permit \u2014 Limited Areas",
@@ -3957,7 +3798,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-11-19",
-              "saleEndDate": "2026-04-02"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "christmas": [
@@ -3982,7 +3823,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2026-01-02",
-              "saleEndDate": "2026-04-03"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Christmas Tree Permit \u2014 Limited",
@@ -4001,7 +3842,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2026-01-01",
-              "saleEndDate": "2026-04-04"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "mushrooms": [
@@ -4022,7 +3863,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-31",
-              "saleEndDate": "2026-04-05"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
@@ -4037,7 +3878,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-30",
-              "saleEndDate": "2026-04-06"
+              "saleEndDate": "2029-01-03"
             }
           ]
         }
@@ -4050,7 +3891,7 @@
             {
               "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 18,
+              "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
@@ -4068,7 +3909,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-29",
-              "saleEndDate": "2026-04-07"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Fuelwood Permit \u2014 Limited Areas",
@@ -4087,7 +3928,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-28",
-              "saleEndDate": "2026-04-08"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "christmas": [
@@ -4112,7 +3953,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-27",
-              "saleEndDate": "2026-04-09"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Christmas Tree Permit \u2014 Limited",
@@ -4131,7 +3972,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-26",
-              "saleEndDate": "2026-04-10"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "mushrooms": [
@@ -4152,7 +3993,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-25",
-              "saleEndDate": "2026-04-11"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Chanterelle Mushroom Permit (Personal Use)",
@@ -4167,7 +4008,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-24",
-              "saleEndDate": "2026-04-12"
+              "saleEndDate": "2029-01-03"
             }
           ]
         }
@@ -4180,7 +4021,7 @@
             {
               "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 18,
+              "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
@@ -4198,7 +4039,7 @@
               ],
               "minQty": 2,
               "saleStartDate": "2025-12-23",
-              "saleEndDate": "2026-04-13"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Fuelwood Permit \u2014 Limited Areas",
@@ -4217,7 +4058,7 @@
               ],
               "minQty": 3,
               "saleStartDate": "2025-12-22",
-              "saleEndDate": "2026-04-14"
+              "saleEndDate": "2029-01-03"
             }
           ],
           "christmas": [
@@ -4242,7 +4083,7 @@
               ],
               "minQty": 1,
               "saleStartDate": "2025-12-21",
-              "saleEndDate": "2026-04-15"
+              "saleEndDate": "2028-01-03"
             },
             {
               "name": "Christmas Tree Permit \u2014 Limited",
@@ -4315,7 +4156,7 @@
             {
               "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 15,
+              "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
@@ -4445,7 +4286,7 @@
             {
               "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 12,
+              "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
@@ -4575,7 +4416,7 @@
             {
               "name": "Fuelwood Permit \u2014 Standard",
               "unit": "cord",
-              "price": 12,
+              "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {

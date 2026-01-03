@@ -1185,8 +1185,35 @@
       updateReviewPanels();
     }
 
+    const ANILCA_ELIGIBILITY = {
+      requiresCertification: true,
+      basis: 'ANILCA Title VIII subsistence eligibility (16 U.S.C. § 3113)',
+      label: 'I certify that I qualify for subsistence uses under ANILCA (16 U.S.C. § 3113) for this no-fee permit.',
+      intro: 'This no-fee permit option is available only to eligible subsistence users in Alaska.',
+      bullets: [
+        'I am eligible for subsistence uses as defined in 16 U.S.C. § 3113.',
+        'I will use the forest products collected under this permit for personal or family subsistence use (not commercial resale).',
+        'I understand that false statements may be subject to penalties.'
+      ],
+      citations: [
+        {
+          label: '16 U.S.C. § 3113',
+          url: 'https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title16-section3113&num=0&edition=prelim'
+        }
+      ]
+    };
+
+    function getProductEligibility(product) {
+      if (!product) return null;
+      const name = (product.name || '').toLowerCase();
+      if (name.includes('subsistence') && name.includes('anilca')) {
+        return ANILCA_ELIGIBILITY;
+      }
+      return null;
+    }
+
     function productRequiresEligibility(product) {
-      return Boolean(product?.eligibility?.requiresCertification);
+      return Boolean(getProductEligibility(product)?.requiresCertification);
     }
 
     function ackRequirementsMet() {
@@ -1218,7 +1245,7 @@
         return;
       }
 
-      const elig = model.product?.eligibility || {};
+      const elig = getProductEligibility(model.product) || {};
       eligibilityAgreement.style.display = 'block';
       eligibilityLabel.textContent = elig.label || 'I certify that I meet the eligibility requirements for this permit.';
 
@@ -1984,7 +2011,7 @@
             deliveryEmail: permitHolderEmail
           },
           eligibility: productRequiresEligibility(model.product)
-            ? { certified: Boolean(ackEligibility && ackEligibility.checked), basis: model.product?.eligibility?.basis || 'Eligibility certification required' }
+            ? { certified: Boolean(ackEligibility && ackEligibility.checked), basis: getProductEligibility(model.product)?.basis || 'Eligibility certification required' }
             : { certified: false, basis: 'Not required' },
           nextStep: 'Issue permit (no fee) server-side, then present a confirmation page with a download link for the permit PDF.',
           deliveryPlan: 'Permit is available immediately after confirmation and sent to the provided email address (demo behavior).',
