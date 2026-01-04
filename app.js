@@ -130,6 +130,7 @@
       officeName: '',
       productType: '',
       productIndex: null,
+      productKey: '',
       product: null,
       qty: 0
     };
@@ -179,6 +180,7 @@
           officeInput: officeInput.value,
           productType: model.productType,
           productIndex: model.productIndex,
+          productKey: model.productKey,
           qty: model.qty,
         },
         acknowledgements: {
@@ -238,12 +240,18 @@
       syncSelectionAvailability();
       attemptAdvanceFromStep1();
 
-      const products = getProductsForSelection();
-      if (products.length && Number.isInteger(savedModel.productIndex) && products[savedModel.productIndex]) {
-        const p = products[savedModel.productIndex];
-        model.productIndex = savedModel.productIndex;
+      const products = getProductsForSelection({ includeInactive: true });
+      const savedKey = savedModel.productKey || '';
+      const matchedIndex = savedKey
+        ? products.findIndex(p => getProductKey(p) === savedKey)
+        : -1;
+      const resolvedIndex = matchedIndex >= 0 ? matchedIndex : savedModel.productIndex;
+      if (products.length && Number.isInteger(resolvedIndex) && products[resolvedIndex]) {
+        const p = products[resolvedIndex];
+        model.productIndex = resolvedIndex;
+        model.productKey = getProductKey(p);
         model.product = p;
-        const radio = document.getElementById(`prod_${savedModel.productIndex}`);
+        const radio = document.getElementById(`prod_${resolvedIndex}`);
         if (radio) {
           radio.checked = true;
           updateProductCardSelection();
@@ -339,6 +347,7 @@
 
     function resetProductSelection() {
       model.productIndex = null;
+      model.productKey = '';
       model.product = null;
       qtyEl.value = '';
       totalEl.value = '';
@@ -453,7 +462,7 @@
     }
 
     function renderOfficeList(items, query) {
-      officeList.innerHTML = '';
+      const fragment = document.createDocumentFragment();
       if (!items.length) {
         const div = document.createElement('div');
         div.className = 'opt';
@@ -468,7 +477,8 @@
         } else {
           div.textContent = 'No matches. Try another search.';
         }
-        officeList.appendChild(div);
+        fragment.appendChild(div);
+        officeList.replaceChildren(fragment);
         officeInput.removeAttribute('aria-activedescendant');
         return;
       }
@@ -493,8 +503,9 @@
           e.preventDefault();
           selectOffice(idx);
         });
-        officeList.appendChild(div);
+        fragment.appendChild(div);
       });
+      officeList.replaceChildren(fragment);
     }
 
     function filterOfficeOptions(q) {
@@ -643,6 +654,16 @@
       christmas: [{ label: 'Planning Your Trip', url: '#' }],
       mushrooms: [{ label: 'Foraging Guidelines', url: '#' }]
     };
+    const SAFE_URL_PATTERN = /^(https?:|mailto:|tel:)/i;
+    const HAS_URL_SCHEME = /^[a-zA-Z][a-zA-Z0-9+.-]*:/;
+
+    function sanitizeUrl(url) {
+      const trimmed = (url || '').trim();
+      if (!trimmed) return '#';
+      if (!HAS_URL_SCHEME.test(trimmed)) return trimmed;
+      if (SAFE_URL_PATTERN.test(trimmed)) return trimmed;
+      return '#';
+    }
 
     function getLocationAttachments() {
       const stateDocs = catalogData[model.state]?.attachments || [];
@@ -703,7 +724,7 @@
       } else {
         docs.forEach((doc) => {
           const link = document.createElement('a');
-          link.href = doc.url;
+          link.href = sanitizeUrl(doc.url);
           link.textContent = doc.label;
           link.addEventListener('click', (event) => event.stopPropagation());
           docsWrap.appendChild(link);
@@ -778,7 +799,7 @@
         attachments.forEach((doc) => {
           const li = document.createElement('li');
           const a = document.createElement('a');
-          a.href = doc.url;
+          a.href = sanitizeUrl(doc.url);
           a.textContent = doc.label;
           li.appendChild(a);
           list.appendChild(li);
@@ -1037,6 +1058,7 @@
       card.querySelector('input').addEventListener('change', () => {
         updateProductCardSelection();
         model.productIndex = idx;
+        model.productKey = getProductKey(p);
         model.product = p;
         const minQty = Number.isFinite(p.minQty) ? p.minQty : 1;
         qtyHint.textContent = `Enter ${minQty}–${p.maxQty} ${p.unit}(s). Price: ${feeLabelForUnit(p.price, p.unit)}.`;
@@ -1066,6 +1088,19 @@
       });
 
       return card;
+    }
+
+    function getProductKey(product) {
+      if (!product) return '';
+      return [
+        product.name || '',
+        product.unit || '',
+        Number(product.price || 0),
+        Number.isFinite(product.minQty) ? product.minQty : '',
+        Number.isFinite(product.maxQty) ? product.maxQty : '',
+        product.saleStartDate || '',
+        product.saleEndDate || ''
+      ].join('|');
     }
 
     function announce(message) {
@@ -1150,7 +1185,14 @@
         sec.classList.toggle('collapsed', !open);
         const body = sec.querySelector('.step-body');
         const toggle = sec.querySelector('.step-toggle');
-        if (body) body.setAttribute('aria-hidden', open ? 'false' : 'true');
+        if (body) {
+          body.setAttribute('aria-hidden', open ? 'false' : 'true');
+          if (open) {
+            body.removeAttribute('inert');
+          } else {
+            body.setAttribute('inert', '');
+          }
+        }
         if (toggle) {
           toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
           toggle.disabled = !stepState.available[i];
@@ -1470,6 +1512,7 @@
       }
       errorBox.setAttribute('aria-hidden', 'false');
       errorBox.style.display = 'block';
+      errorBox.focus();
     }
 
     function hideErrors() {
@@ -1478,62 +1521,92 @@
       errorList.innerHTML = '';
     }
 
-    function getFieldErrorMessage(el) {
-      if (!el || el.disabled) return '';
-      const id = el.id;
-      const val = (el.value || '').trim();
-      if (id === 'ptypeGroup' && !model.productType) return 'Select what you are collecting to view available permits.';
-      if (id === 'state' && !val) return 'Choose a state to see offices in that area.';
-      if (id === 'officeInput') {
+    const FIELD_VALIDATORS = {
+      ptypeGroup: () => (model.productType ? '' : 'Select what you are collecting to view available permits.'),
+      state: (el) => ((el.value || '').trim() ? '' : 'Choose a state to see offices in that area.'),
+      officeInput: () => {
         if (!model.state) return 'Select a state to choose a BWL office.';
         if (!model.officeId) return 'Select a BWL office from the list to continue.';
-      }
-      if (id === 'qty') {
+        return '';
+      },
+      qty: (el) => {
+        const val = (el.value || '').trim();
         const p = model.product;
         if (!p) return '';
         if (!val) return 'Enter a quantity to continue.';
         const v = Number(val);
         if (!Number.isFinite(v)) return 'Enter a quantity using numbers only.';
-        if (v < 1) return 'Quantity must be at least 1.';
+        const minQty = Number.isFinite(p.minQty) ? p.minQty : 1;
+        if (v < minQty) return `Enter ${minQty} or more ${p.unit}(s).`;
         if (p.maxQty && v > p.maxQty) return `Enter ${p.maxQty} or fewer ${p.unit}(s).`;
-      }
-      if (id === 'FirstName') {
+        return '';
+      },
+      FirstName: (el) => {
+        const val = (el.value || '').trim();
         if (!val) return 'Enter a first name.';
         if (val.length > LENGTH_LIMITS.FirstName) return `First name must be ${LENGTH_LIMITS.FirstName} characters or fewer.`;
-      }
-      if (id === 'LastName' && !val) return 'Enter a last name.';
-      if (id === 'LastName' && val.length > LENGTH_LIMITS.LastName) return `Last name must be ${LENGTH_LIMITS.LastName} characters or fewer.`;
-      if (id === 'MiddleName' && val.length > LENGTH_LIMITS.MiddleName) return `Middle name must be ${LENGTH_LIMITS.MiddleName} characters or fewer.`;
-      if (id === 'AddressLine1') {
+        return '';
+      },
+      MiddleName: (el) => {
+        const val = (el.value || '').trim();
+        if (val.length > LENGTH_LIMITS.MiddleName) return `Middle name must be ${LENGTH_LIMITS.MiddleName} characters or fewer.`;
+        return '';
+      },
+      LastName: (el) => {
+        const val = (el.value || '').trim();
+        if (!val) return 'Enter a last name.';
+        if (val.length > LENGTH_LIMITS.LastName) return `Last name must be ${LENGTH_LIMITS.LastName} characters or fewer.`;
+        return '';
+      },
+      AddressLine1: (el) => {
+        const val = (el.value || '').trim();
         if (!val) return 'Enter a street address.';
         if (val.length < 5) return 'Enter a full street address (5 characters or more).';
         if (val.length > LENGTH_LIMITS.AddressLine1) return `Street address line 1 must be ${LENGTH_LIMITS.AddressLine1} characters or fewer.`;
-      }
-      if (id === 'AddressLine2' && val && val.length > LENGTH_LIMITS.AddressLine2) return `Street address line 2 must be ${LENGTH_LIMITS.AddressLine2} characters or fewer.`;
-      if (id === 'City') {
+        return '';
+      },
+      AddressLine2: (el) => {
+        const val = (el.value || '').trim();
+        if (val && val.length > LENGTH_LIMITS.AddressLine2) return `Street address line 2 must be ${LENGTH_LIMITS.AddressLine2} characters or fewer.`;
+        return '';
+      },
+      City: (el) => {
+        const val = (el.value || '').trim();
         if (!val) return 'Enter a city.';
         if (val.length < 2) return 'City name must be at least 2 letters.';
         if (val.length > LENGTH_LIMITS.City) return `City name must be ${LENGTH_LIMITS.City} characters or fewer.`;
-      }
-      if (id === 'AddrState' && !val) return 'Choose a state.';
-      if (id === 'Zip') {
+        return '';
+      },
+      AddrState: (el) => ((el.value || '').trim() ? '' : 'Choose a state.'),
+      Zip: (el) => {
+        const val = (el.value || '').trim();
         if (!val) return 'Enter a ZIP code.';
         if (!/^\d{5}(-\d{4})?$/.test(val)) return 'Enter a ZIP in 5-digit or ZIP+4 format (##### or #####-####).';
         if (val.length > LENGTH_LIMITS.Zip) return `ZIP must be ${LENGTH_LIMITS.Zip} characters or fewer.`;
-      }
-      if (id === 'DeliveryEmail') {
+        return '';
+      },
+      DeliveryEmail: (el) => {
+        const val = (el.value || '').trim();
         if (!val) return 'Enter an email address for delivery.';
         if (!EMAIL_PATTERN.test(val)) return 'Enter an email in the format name@example.com.';
         if (val.length > LENGTH_LIMITS.DeliveryEmail) return `Email must be ${LENGTH_LIMITS.DeliveryEmail} characters or fewer.`;
-      }
-      if (id === 'ConfirmEmail') {
+        return '';
+      },
+      ConfirmEmail: (el) => {
+        const val = (el.value || '').trim();
         if (!val) return 'Confirm your email address.';
         if (!EMAIL_PATTERN.test(val)) return 'Enter an email in the format name@example.com.';
         const primary = (permitHolder.DeliveryEmail.value || '').trim();
         if (primary && primary.toLowerCase() !== val.toLowerCase()) return 'Confirm email must match the delivery email.';
         if (val.length > LENGTH_LIMITS.ConfirmEmail) return `Email must be ${LENGTH_LIMITS.ConfirmEmail} characters or fewer.`;
+        return '';
       }
-      return '';
+    };
+
+    function getFieldErrorMessage(el) {
+      if (!el || el.disabled) return '';
+      const validator = FIELD_VALIDATORS[el.id];
+      return validator ? validator(el) : '';
     }
 
     function validateField(el) {
