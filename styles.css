@@ -343,7 +343,7 @@ body{
     summary{cursor:pointer; font-weight:900}
     details .body{margin-top:10px; color:var(--muted); font-size:13.5px; white-space:pre-wrap}
     /* Sidebar */
-    .side h3{margin:0; font-size:16px}
+    .side h2{margin:0; font-size:16px}
     .side p{margin:8px 0 0; color:var(--muted); font-size:13.5px}
     .side ul{margin:10px 0 0 18px; color:var(--muted); font-size:13.5px}
     .side li{margin:6px 0}
@@ -373,3 +373,8 @@ body{
 .summary-group{margin-top:10px;}
 .payload-content{margin-top:6px; font:13px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; white-space:pre-wrap; overflow-wrap:anywhere;}
 .payload-note{margin-top:10px;}
+
+.step-heading{margin:0; font-size:inherit; flex:1; min-width:0;}
+.step-heading .step-toggle{width:100%;}
+p a, .txt a, .side a{text-decoration:underline; text-underline-offset:2px;}
+.location-note a, #eligibilityBody a{display:inline-flex; align-items:center; min-height:24px; min-width:24px; padding:2px 0; text-decoration:underline;}

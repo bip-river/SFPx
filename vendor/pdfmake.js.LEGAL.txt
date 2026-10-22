@@ -1,0 +1,14 @@
+Bundled license information:
+
+pdfmake/build/pdfmake.js:
+  /*! pdfmake v0.3.12, @license MIT, @link http://pdfmake.org */
+  /*! noble-hashes - MIT License (c) 2022 Paul Miller (paulmillr.com) */
+  /*! noble-ciphers - MIT License (c) 2023 Paul Miller (paulmillr.com) */
+  /*!
+   * The buffer module from node.js, for the browser.
+   *
+   * @author   Feross Aboukhadijeh <https://feross.org>
+   * @license  MIT
+   */
+  /*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
+  /*! http://mths.be/fromcodepoint v0.1.0 by @mathias */

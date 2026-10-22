@@ -87,8 +87,11 @@ const stepLiveRegion = document.getElementById('stepLiveRegion');
 const lockNotes = [null, document.getElementById('step2LockNote'), document.getElementById('step3LockNote')];
 
 const checkoutIdentity = createCheckoutIdentity();
+let checkoutRevision = 0;
+let checkoutPending = false;
 
 function invalidateCheckout() {
+  checkoutRevision += 1;
   clearConfirmation();
   handoff.replaceChildren();
   handoff.style.display = 'none';
@@ -655,7 +658,7 @@ function updateReviewPanels() {
   configureCheckoutCopy();
   reviewActions.style.display = 'flex';
   const ready = stepState.completed[2];
-  confirmPaygovBtn.disabled = !ready;
+  confirmPaygovBtn.disabled = !ready || checkoutPending;
   reviewNotice.style.display = ready ? 'flex' : 'none';
 }
 
@@ -887,6 +890,7 @@ function renderEligibilityAgreement() {
   if (!eligibilityAgreement || !ackEligibility || !eligibilityLabel || !eligibilityBody) return;
 
   const required = productRequiresEligibility(model.product);
+  ackEligibility.required = required;
   if (!required) {
     eligibilityAgreement.style.display = 'none';
     eligibilityBody.innerHTML = '';
@@ -1021,6 +1025,7 @@ function setFieldError(el, message) {
   if (!target) {
     target = document.createElement('div');
     target.className = 'field-error';
+    target.setAttribute('aria-live', 'polite');
     container.appendChild(target);
   }
   if (!target.id) {
@@ -1447,7 +1452,7 @@ document.addEventListener('click', (e) => {
 stepToggles.forEach((btn, idx) => {
   btn.addEventListener('click', () => {
     if (!stepState.available[idx]) return;
-    setStepOpenState(idx, true, { collapseOthers: false, scrollIfNeeded: true });
+    setStepOpenState(idx, !stepState.open[idx], { collapseOthers: false, scrollIfNeeded: !stepState.open[idx] });
   });
 });
 
@@ -1520,7 +1525,8 @@ function checkoutSnapshot() {
   };
 }
 
-confirmPaygovBtn.addEventListener('click', () => {
+confirmPaygovBtn.addEventListener('click', async () => {
+  if (checkoutPending) return;
   const current = getProductsForSelection().find(product => product.id === model.product?.id);
   if (!validateStep1() || !current || current !== model.product || !validateQty()) {
     resetProductSelection();
@@ -1570,7 +1576,24 @@ confirmPaygovBtn.addEventListener('click', () => {
       '',
       'This is a prototype-generated demo permit. Do not use for actual harvesting.'
     ];
-    const blob = buildDemoPermitPdf(lines);
+    const revision = checkoutRevision;
+    const snapshot = JSON.stringify(checkoutSnapshot());
+    checkoutPending = true;
+    confirmPaygovBtn.disabled = true;
+    confirmPaygovBtn.setAttribute('aria-busy', 'true');
+    announce('Generating your demo permit. Please wait.');
+    let blob;
+    try {
+      blob = await buildDemoPermitPdf(lines);
+      if (revision !== checkoutRevision || snapshot !== JSON.stringify(checkoutSnapshot())) return;
+    } catch (error) {
+      if (revision === checkoutRevision) showErrors([`We could not generate the demo permit. Your entries are still here. ${error.message}`]);
+      return;
+    } finally {
+      checkoutPending = false;
+      confirmPaygovBtn.removeAttribute('aria-busy');
+      confirmPaygovBtn.disabled = !stepState.completed[2];
+    }
     permitDownloadUrl = URL.createObjectURL(blob);
 
     if (permitRefEl) permitRefEl.textContent = permitReference;
@@ -1583,6 +1606,9 @@ confirmPaygovBtn.addEventListener('click', () => {
     });
 
     scrollIntoViewSafe(confirmation || handoff, { force: true });
+    confirmation?.focus({ preventScroll: true });
+    announce('Demo permit generated. The download button is ready.');
+    document.dispatchEvent(new CustomEvent('sfpx:pdf-ready'));
     return;
   }
 
