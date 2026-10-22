@@ -13,12 +13,20 @@
 - Malformed catalog data, malformed saved state, blocked storage, and fetch failures.
 - URL normalization and script-protocol rejection.
 
-`npm run test:browser` uses Playwright with Chromium and starts a temporary local HTTP server. It exercises keyboard office selection, both checkout paths, reload with purchaser reentry, a real PDF download, stale-confirmation invalidation, Reset, and horizontal overflow at 1280px and 390px. It also verifies all eight checks on `tests/smoke.html` pass. `CHROMIUM_EXECUTABLE` can point to an existing Chromium executable when the bundled browser is unavailable.
+`npm run test:browser` uses Chromium by default. Set `BROWSER=firefox` or `BROWSER=webkit` for the other Playwright engines. The tests cover keyboard office selection, required-field semantics, invalid-quantity descriptions without focus stealing, both checkout paths, reload with purchaser reentry, Unicode PDF download, confirmation focus, Reset, and horizontal overflow at 1280px and 390px. Axe scans check WCAG 2 A/AA, 2.1 AA and 2.2 AA at initial load, product selection, completed purchaser fields, and PDF confirmation. All eight smoke-page checks must pass. `CHROMIUM_EXECUTABLE` can point to an existing Chromium executable.
 
-GitHub Actions runs syntax/catalog checks, the logic/DOM suite, and Chromium checks on pull requests and pushes to `main`.
+`npm run test:safari` runs Selenium against installed Safari on macOS. Enable Safari automation first (`sudo safaridriver --enable`). This tests Safari itself; the separate WebKit job tests Playwright's WebKit build on Linux. Safari coverage includes keyboard office selection, both checkout paths, PDF generation, confirmation focus, reload, Reset, and the same automated accessibility rules. Actual PDF downloading is covered by the Playwright jobs.
+
+GitHub Actions runs syntax/catalog checks, logic/DOM/PDF tests, Chromium/Firefox/WebKit jobs, and an installed-Safari job on macOS. A passing automated scan does not substitute for a person listening with a screen reader; see [the manual checks](accessibility.md).
+
+## PDF checks
+
+The PDF tests extract Unicode text and check text coordinates on every page. They cover accented Latin and Navajo characters, Greek and Cyrillic names, decomposed accents, long unbroken strings, multi-page content, page numbers, unsupported glyph errors, and complete document tails. DOM tests also cover Reset during asynchronous generation, correction/retry after an error, select change events without input events, and back-forward cache purchaser-field clearing, and unchanged blur/change events preserving checkout content and button text nodes. Quantity edits explicitly refresh final readiness. PDF development verification uses Poppler rendering and visual inspection in addition to text extraction.
+
+The embedded DejaVu Sans font has finite character coverage. Latin, Greek, Cyrillic and the tested Navajo characters are supported; this is not a promise of every Unicode script or emoji. Missing glyphs cause an explicit error rather than silent replacement squares. The PDF remains a demo, and no PDF/UA or tagged-document accessibility certification is claimed.
 
 ## Checkout identity and demo limits
 
-An unchanged checkout snapshot reuses its reference for retry clicks. Editing a selection, quantity, purchaser value, or acknowledgement invalidates the displayed result and its identity. Reset starts a new checkout. Transaction snapshots and their purchaser information stay in memory, so reloading requires purchaser reentry and creates a new checkout identity.
+An unchanged checkout snapshot reuses its reference for retry clicks. Editing selections, quantities, purchaser values, or acknowledgements invalidates the displayed result. Generation is asynchronous: the confirm button announces busy status, failures retain entries for retry, and an outdated result cannot appear after Reset or edits. Transaction snapshots and purchaser information stay in memory; reload requires purchaser reentry and creates a new checkout identity.
 
-These checks do not implement or validate real Pay.gov, CBS, permit issuance, email, or server-side idempotency. The PDF remains a simple one-page demo with the existing built-in Helvetica font; Unicode shaping and long-line pagination are not covered. Production integrations require their own service tests and PDF implementation. Screen-reader testing and non-Chromium browser checks remain manual.
+These checks do not implement or validate real Pay.gov, CBS, permit issuance, email, or server-side idempotency.

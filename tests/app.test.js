@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { JSDOM } from 'jsdom';
 import { SourceTextModule } from 'node:vm';
+import { readPdf } from './pdf-text.mjs';
 
 const root = new URL('../', import.meta.url);
 const html = await readFile(new URL('index.html', root), 'utf8');
@@ -21,6 +22,8 @@ async function app(t, { data = structuredClone(catalog), saved, storageBlocked =
   const urls = new Map(), revoked = [];
   w.fetch = async () => { if (loadFails) throw new Error('test network failure'); return { ok: true, json: async () => data }; };
   w.TextEncoder = TextEncoder;
+  w.TextDecoder = TextDecoder;
+  w.setImmediate = setImmediate;
   w.Blob = Blob;
   w.matchMedia = () => ({ matches: true });
   w.HTMLElement.prototype.scrollIntoView = function () {};
@@ -34,7 +37,15 @@ async function app(t, { data = structuredClone(catalog), saved, storageBlocked =
   async function loadModule(url) {
     if (!modules.has(url.href)) {
       const source = await readFile(url, 'utf8');
-      modules.set(url.href, new SourceTextModule(source, { context: dom.getInternalVMContext(), identifier: url.href }));
+      modules.set(url.href, new SourceTextModule(source, {
+        context: dom.getInternalVMContext(), identifier: url.href,
+        importModuleDynamically: async (specifier, referencing) => {
+          const dependency = await loadModule(new URL(specifier, referencing.identifier));
+          if (dependency.status === 'unlinked') await dependency.link((name, parent) => loadModule(new URL(name, parent.identifier)));
+          if (dependency.status === 'linked') await dependency.evaluate();
+          return dependency;
+        }
+      }));
     }
     return modules.get(url.href);
   }
@@ -61,7 +72,16 @@ async function app(t, { data = structuredClone(catalog), saved, storageBlocked =
     assert.equal($('#confirmPaygov').disabled, false, 'checkout enabled');
   };
   const payload = () => JSON.parse($('#handoff .payload-content').textContent);
-  return { w, $, input, change, check, choose, holder, payload, urls, revoked, setNow(value) { now = value; } };
+  const generate = async () => {
+    $('#confirmPaygov').click();
+    for (let attempt = 0; attempt < 500; attempt++) {
+      if ($('#confirmation').style.display === 'flex') return;
+      if ($('#errorBox').style.display === 'block') throw new Error($('#errorList').textContent);
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
+    throw new Error('PDF generation timed out');
+  };
+  return { w, $, input, change, check, choose, holder, payload, generate, urls, revoked, setNow(value) { now = value; } };
 }
 
 const savedFor = (product, extra = {}) => ({ model: { state: 'AK', officeId: 'AK-ANCH', productType: 'fuelwood', productKey: product.id, productIndex: 0, qty: product.minQty, ...extra }, acknowledgements: { privacy: true, terms: true, eligibility: true } });
@@ -83,18 +103,18 @@ test('paid checkout validates holder data, preserves retry identity, and replace
 });
 
 test('no-fee checkout retries reuse identity and edits revoke stale PDFs', async t => {
-  const a = await app(t); a.choose('fuelwood', 3); a.holder(); a.$('#confirmPaygov').click();
+  const a = await app(t); a.choose('fuelwood', 3); a.holder(); await a.generate();
   const first = a.payload(), originalUrl = [...a.urls.keys()].at(-1);
   assert.equal(first.total, 0); assert.equal(a.$('#confirmation').style.display, 'flex');
-  assert.match(await a.urls.get(originalUrl).text(), /Issued to: Test Purchaser/);
-  a.$('#confirmPaygov').click(); assert.equal(a.payload().idempotencyKey, first.idempotencyKey);
+  assert.match((await readPdf(a.urls.get(originalUrl))).text, /Issued to: Test Purchaser/);
+  await a.generate(); assert.equal(a.payload().idempotencyKey, first.idempotencyKey);
   a.input('#FirstName', 'Changed');
   assert.equal(a.$('#confirmation').style.display, 'none');
   assert.equal(a.$('#permitDownloadBtn').disabled, true);
   assert.ok(a.revoked.includes(originalUrl));
-  a.$('#confirmPaygov').click();
+  await a.generate();
   assert.notEqual(a.payload().idempotencyKey, first.idempotencyKey);
-  assert.match(await [...a.urls.values()].at(-1).text(), /Issued to: Changed Purchaser/);
+  assert.match((await readPdf([...a.urls.values()].at(-1))).text, /Issued to: Changed Purchaser/);
   a.$('#ackTerms').click(); assert.equal(a.$('#confirmation').style.display, 'none');
 });
 
@@ -159,7 +179,7 @@ test('eligibility is driven by catalog rule even if display name changes', async
   const data = structuredClone(catalog); data.AK.offices[0].products.fuelwood[2].name = 'Renamed no-fee permit';
   const a = await app(t, { data }); a.choose('fuelwood', 2);
   a.check('#ackPrivacy'); a.check('#ackTerms'); assert.equal(a.$('#permitHolderFieldset').disabled, true);
-  a.holder(); a.$('#confirmPaygov').click(); assert.equal(a.payload().eligibility.certified, true);
+  a.holder(); await a.generate(); assert.equal(a.payload().eligibility.certified, true);
 });
 
 test('checkout rechecks availability after date changes in an open tab', async t => {
@@ -191,4 +211,54 @@ test('malformed saved state, unavailable storage, and fetch failures are handled
   const a = await app(t, { saved: '{broken' }); a.choose();
   const b = await app(t, { storageBlocked: true }); b.choose(); b.holder(); b.$('#confirmPaygov').click(); assert.ok(b.payload().idempotencyKey);
   const c = await app(t, { loadFails: true }); assert.equal(c.$('#state').disabled, true); assert.match(c.$('#errorList').textContent, /could not load/);
+});
+
+test('Reset during asynchronous PDF generation cannot publish a stale permit', async t => {
+  const a = await app(t); a.choose('fuelwood', 3); a.holder();
+  a.$('#confirmPaygov').click();
+  assert.equal(a.$('#confirmPaygov').getAttribute('aria-busy'), 'true');
+  a.$('#resetAll').click();
+  for (let n = 0; n < 500 && a.$('#confirmPaygov').hasAttribute('aria-busy'); n++) await new Promise(resolve => setTimeout(resolve, 10));
+  assert.equal(a.$('#confirmPaygov').hasAttribute('aria-busy'), false);
+  assert.equal(a.urls.size, 0);
+  assert.equal(a.$('#confirmation').style.display, 'none');
+  assert.equal(a.$('#permitDownloadBtn').disabled, true);
+});
+
+test('PDF failure keeps purchaser entries and allows a corrected retry', async t => {
+  const a = await app(t); a.choose('fuelwood', 3); a.holder(); a.input('#FirstName', '\u{10FFFF}');
+  await assert.rejects(a.generate(), /does not support/);
+  assert.equal(a.$('#FirstName').value, '\u{10FFFF}');
+  assert.equal(a.$('#confirmPaygov').disabled, false);
+  assert.equal(a.$('#permitDownloadBtn').disabled, true);
+  a.input('#FirstName', 'José'); await a.generate();
+  assert.match((await readPdf([...a.urls.values()].at(-1))).text, /Issued to: José Purchaser/);
+});
+
+
+test('address-state change alone updates checkout readiness', async t => {
+  const a = await app(t); a.choose(); a.holder();
+  a.input('#AddrState', ''); assert.equal(a.$('#confirmPaygov').disabled, true);
+  a.change('#AddrState', 'UT'); assert.equal(a.$('#confirmPaygov').disabled, false);
+});
+
+test('back-forward cache return clears browser-retained purchaser information', async t => {
+  const a = await app(t); a.choose(); a.holder();
+  a.w.dispatchEvent(new a.w.PageTransitionEvent('pageshow', { persisted: true }));
+  assert.equal(a.$('#FirstName').value, '');
+  assert.equal(a.$('#confirmPaygov').disabled, true);
+});
+
+
+test('holder blur and unchanged change events preserve checkout result and button text nodes', async t => {
+  const a = await app(t); a.choose(); a.holder(); a.$('#confirmPaygov').click();
+  const reference = a.payload().idempotencyKey;
+  const labelNode = a.$('#confirmPaygov').firstChild;
+  a.$('#FirstName').dispatchEvent(new a.w.Event('blur'));
+  a.$('#FirstName').dispatchEvent(new a.w.Event('change'));
+  assert.equal(a.$('#confirmPaygov').firstChild, labelNode);
+  assert.equal(a.$('#handoff').style.display, 'block');
+  assert.equal(a.payload().idempotencyKey, reference);
+  a.input('#qty', '2');
+  assert.equal(a.$('#confirmPaygov').disabled, false, 'quantity edit reevaluates existing purchaser information');
 });

@@ -1,53 +1,39 @@
-export function buildDemoPermitPdf(lines) {
-  const safe = (s) => String(s || '').replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
-  const content = (() => {
-    const out = [];
-    out.push('BT');
-    out.push('/F1 12 Tf');
-    out.push('14 TL');
-    out.push('72 740 Td');
-    (lines || []).forEach((line, i) => {
-      out.push(`(${safe(line)}) Tj`);
-      if (i < (lines.length - 1)) out.push('T*');
-    });
-    out.push('ET');
-    return out.join('\n') + '\n';
-  })();
+let enginePromise;
 
-  const encoder = new TextEncoder();
-  const contentBytes = encoder.encode(content);
-
-  const objects = [];
-  objects.push('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
-  objects.push('2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n');
-  objects.push('3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>\nendobj\n');
-  objects.push(`4 0 obj\n<< /Length ${contentBytes.length} >>\nstream\n${content}endstream\nendobj\n`);
-  objects.push('5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n');
-
-  const header = '%PDF-1.4\n';
-  const headerBytes = encoder.encode(header).length;
-
-  const offsets = [0];
-  let cursor = headerBytes;
-
-  for (const obj of objects) {
-    offsets.push(cursor);
-    cursor += encoder.encode(obj).length;
+async function loadPdfEngine() {
+  if (!enginePromise) {
+    enginePromise = Promise.all([import('../vendor/pdfmake.js'), import('../vendor/permit-font.js')])
+      .then(([engine, font]) => {
+        const pdfMake = engine.default;
+        pdfMake.addVirtualFileSystem(font.default);
+        pdfMake.addFonts({ DejaVu: { normal: 'DejaVuSans.ttf' } });
+        return { pdfMake, supported: new Set(font.codePoints) };
+      }).catch(error => { enginePromise = null; throw error; });
   }
+  return enginePromise;
+}
 
-  const xrefOffset = cursor;
-  const xrefLines = [];
-  xrefLines.push('xref\n');
-  xrefLines.push(`0 ${offsets.length}\n`);
-  xrefLines.push('0000000000 65535 f \n');
-  for (let i = 1; i < offsets.length; i++) {
-    const off = String(offsets[i]).padStart(10, '0');
-    xrefLines.push(`${off} 00000 n \n`);
+// Font data and the PDF engine load only when a PDF is requested.
+export async function buildDemoPermitPdf(lines) {
+  const { pdfMake, supported } = await loadPdfEngine();
+  const paragraphs = Array.from(lines || [], line => String(line ?? '').normalize('NFC').replace(/\t/g, '    '));
+  for (const text of paragraphs) {
+    for (const character of text) {
+      if (!['\r', '\n'].includes(character) && !supported.has(character.codePointAt(0))) {
+        throw new Error(`The embedded PDF font does not support U+${character.codePointAt(0).toString(16).toUpperCase()}. The permit has not been generated.`);
+      }
+    }
   }
-  const trailer =
-    `trailer\n<< /Size ${offsets.length} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF\n`;
-
-  const xref = xrefLines.join('');
-  const full = header + objects.join('') + xref + trailer;
-  return new Blob([full], { type: 'application/pdf' });
+  const doc = {
+    pageSize: 'LETTER', pageMargins: [48, 54, 48, 54],
+    language: 'en-US', displayTitle: true,
+    info: { title: 'Forest Product Permit - DEMO', author: 'Bureau of Wandering Lands', subject: 'Demo permit only; not valid for harvesting' },
+    defaultStyle: { font: 'DejaVu', fontSize: 10.5, lineHeight: 1.25 },
+    content: paragraphs.map((text, index) => ({
+      text: text || ' ', margin: [0, 0, 0, 7],
+      ...(index === 0 ? { fontSize: 15, color: '#155333', margin: [0, 0, 0, 15] } : {})
+    })),
+    footer: (page, pages) => ({ text: `DEMO - not valid for harvesting | Page ${page} of ${pages}`, fontSize: 8, color: '#4a5c65', alignment: 'center', margin: [48, 18, 48, 0] })
+  };
+  return pdfMake.createPdf(doc).getBlob();
 }

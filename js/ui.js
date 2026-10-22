@@ -178,9 +178,8 @@ export function buildProductCard(p, idx, { docs, onSelect }) {
   const validityLine = getValidityLine(p);
   const availableUntil = getAvailableUntilLabel(p);
 
-  const card = document.createElement('label');
+  const card = document.createElement('div');
   card.className = 'prod';
-  card.setAttribute('for', id);
   const input = document.createElement('input');
   input.type = 'radio';
   input.name = 'product';
@@ -190,8 +189,9 @@ export function buildProductCard(p, idx, { docs, onSelect }) {
 
   const body = document.createElement('div');
   body.className = 'prod-body';
-  const header = document.createElement('div');
+  const header = document.createElement('label');
   header.className = 'prod-header';
+  header.htmlFor = id;
   const headerLeft = document.createElement('div');
   headerLeft.className = 'prod-header-left';
   headerLeft.appendChild(input);
@@ -199,6 +199,9 @@ export function buildProductCard(p, idx, { docs, onSelect }) {
   info.className = 'prod-info';
   const name = document.createElement('div');
   name.className = 'name';
+  name.id = `${id}_name`;
+  input.setAttribute('aria-labelledby', name.id);
+  input.setAttribute('aria-describedby', `${id}_validity ${id}_availability`);
   name.textContent = p.name;
   info.appendChild(name);
   headerLeft.appendChild(info);
@@ -210,10 +213,12 @@ export function buildProductCard(p, idx, { docs, onSelect }) {
 
   const validity = document.createElement('div');
   validity.className = 'validity';
+  validity.id = `${id}_validity`;
   validity.textContent = validityLine;
 
   const availability = document.createElement('div');
   availability.className = 'availability';
+  availability.id = `${id}_availability`;
   availability.textContent = availableUntil;
 
   const docsDiv = buildDocLinks(docs);

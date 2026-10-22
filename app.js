@@ -87,8 +87,11 @@ const stepLiveRegion = document.getElementById('stepLiveRegion');
 const lockNotes = [null, document.getElementById('step2LockNote'), document.getElementById('step3LockNote')];
 
 const checkoutIdentity = createCheckoutIdentity();
+let checkoutRevision = 0;
+let checkoutPending = false;
 
 function invalidateCheckout() {
+  checkoutRevision += 1;
   clearConfirmation();
   handoff.replaceChildren();
   handoff.style.display = 'none';
@@ -115,6 +118,8 @@ const permitHolder = {
   DeliveryEmail: document.getElementById('DeliveryEmail'),
   ConfirmEmail: document.getElementById('ConfirmEmail'),
 };
+
+const holderValues = new WeakMap(Object.values(permitHolder).map(el => [el, el.value]));
 
 // Model
 const model = {
@@ -655,7 +660,7 @@ function updateReviewPanels() {
   configureCheckoutCopy();
   reviewActions.style.display = 'flex';
   const ready = stepState.completed[2];
-  confirmPaygovBtn.disabled = !ready;
+  confirmPaygovBtn.disabled = !ready || checkoutPending;
   reviewNotice.style.display = ready ? 'flex' : 'none';
 }
 
@@ -887,6 +892,7 @@ function renderEligibilityAgreement() {
   if (!eligibilityAgreement || !ackEligibility || !eligibilityLabel || !eligibilityBody) return;
 
   const required = productRequiresEligibility(model.product);
+  ackEligibility.required = required;
   if (!required) {
     eligibilityAgreement.style.display = 'none';
     eligibilityBody.innerHTML = '';
@@ -946,7 +952,8 @@ function configureCheckoutCopy() {
   const total = unitPrice * (model.qty || 0);
   const noFee = unitPrice === 0 && total === 0;
 
-  if (confirmPaygovBtn) confirmPaygovBtn.textContent = noFee ? 'Confirm and get permit' : 'Continue to Pay.gov';
+  const label = noFee ? 'Confirm and get permit' : 'Continue to Pay.gov';
+  if (confirmPaygovBtn && confirmPaygovBtn.textContent !== label) confirmPaygovBtn.textContent = label;
 
   if (nextStepsList) {
     nextStepsList.innerHTML = '';
@@ -1021,6 +1028,7 @@ function setFieldError(el, message) {
   if (!target) {
     target = document.createElement('div');
     target.className = 'field-error';
+    target.setAttribute('aria-live', 'polite');
     container.appendChild(target);
   }
   if (!target.id) {
@@ -1447,7 +1455,7 @@ document.addEventListener('click', (e) => {
 stepToggles.forEach((btn, idx) => {
   btn.addEventListener('click', () => {
     if (!stepState.available[idx]) return;
-    setStepOpenState(idx, true, { collapseOthers: false, scrollIfNeeded: true });
+    setStepOpenState(idx, !stepState.open[idx], { collapseOthers: false, scrollIfNeeded: !stepState.open[idx] });
   });
 });
 
@@ -1469,7 +1477,7 @@ qtyEl.addEventListener('input', () => {
   updateLockNotes();
   updateStepUI(model.step);
   persistState();
-  updateReviewPanels();
+  evaluateFinalStep();
 });
 
 qtyEl.addEventListener('keydown', (e) => {
@@ -1493,9 +1501,19 @@ ackPrivacy.addEventListener('change', onAckChange);
 ackTerms.addEventListener('change', onAckChange);
 if (ackEligibility) ackEligibility.addEventListener('change', onAckChange);
 
-Object.values(permitHolder).forEach((el) => {
-  el.addEventListener('input', () => { invalidateCheckout(); validateField(el); evaluateFinalStep(); });
-  el.addEventListener('blur', () => { validateField(el); evaluateFinalStep(); });
+function onPermitHolderEdit(el) {
+  validateField(el);
+  if (holderValues.get(el) === el.value) return;
+  holderValues.set(el, el.value);
+  invalidateCheckout();
+  evaluateFinalStep();
+}
+
+Object.values(permitHolder).forEach(el => {
+  el.addEventListener('input', () => onPermitHolderEdit(el));
+  el.addEventListener('change', () => onPermitHolderEdit(el));
+  // Rebuilding checkout on blur can cancel the pending pointer click in WebKit.
+  el.addEventListener('blur', () => validateField(el));
 });
 
 if (permitDownloadBtn) {
@@ -1520,7 +1538,8 @@ function checkoutSnapshot() {
   };
 }
 
-confirmPaygovBtn.addEventListener('click', () => {
+confirmPaygovBtn.addEventListener('click', async () => {
+  if (checkoutPending) return;
   const current = getProductsForSelection().find(product => product.id === model.product?.id);
   if (!validateStep1() || !current || current !== model.product || !validateQty()) {
     resetProductSelection();
@@ -1570,7 +1589,24 @@ confirmPaygovBtn.addEventListener('click', () => {
       '',
       'This is a prototype-generated demo permit. Do not use for actual harvesting.'
     ];
-    const blob = buildDemoPermitPdf(lines);
+    const revision = checkoutRevision;
+    const snapshot = JSON.stringify(checkoutSnapshot());
+    checkoutPending = true;
+    confirmPaygovBtn.disabled = true;
+    confirmPaygovBtn.setAttribute('aria-busy', 'true');
+    announce('Generating your demo permit. Please wait.');
+    let blob;
+    try {
+      blob = await buildDemoPermitPdf(lines);
+      if (revision !== checkoutRevision || snapshot !== JSON.stringify(checkoutSnapshot())) return;
+    } catch (error) {
+      if (revision === checkoutRevision) showErrors([`We could not generate the demo permit. Your entries are still here. ${error.message}`]);
+      return;
+    } finally {
+      checkoutPending = false;
+      confirmPaygovBtn.removeAttribute('aria-busy');
+      confirmPaygovBtn.disabled = !stepState.completed[2];
+    }
     permitDownloadUrl = URL.createObjectURL(blob);
 
     if (permitRefEl) permitRefEl.textContent = permitReference;
@@ -1583,6 +1619,9 @@ confirmPaygovBtn.addEventListener('click', () => {
     });
 
     scrollIntoViewSafe(confirmation || handoff, { force: true });
+    confirmation?.focus({ preventScroll: true });
+    announce('Demo permit generated. The download button is ready.');
+    document.dispatchEvent(new CustomEvent('sfpx:pdf-ready'));
     return;
   }
 
@@ -1604,7 +1643,7 @@ confirmPaygovBtn.addEventListener('click', () => {
 });
 
 resetAllBtn.addEventListener('click', () => {
-  Object.values(permitHolder).forEach(el => { el.value = ''; });
+  clearPermitHolder();
   resetStateSelection();
   setProductType('');
   resetProductSelection();
@@ -1623,10 +1662,24 @@ resetAllBtn.addEventListener('click', () => {
   selectionStorage.clear();
 });
 
+function clearPermitHolder() {
+  Object.values(permitHolder).forEach(el => { el.value = ''; holderValues.set(el, ''); });
+}
+
+// Firefox may restore native form values independently of sessionStorage.
+window.addEventListener('pageshow', event => {
+  if (event.persisted) {
+    clearPermitHolder();
+    invalidateCheckout();
+    evaluateFinalStep();
+  }
+});
+
 async function boot() {
   productTypeRadios = renderProductTypes(productTypeOptions, handleProductTypeChange);
   syncSelectionAvailability();
   await loadProductData();
+  clearPermitHolder();
   populateUSStates(permitHolder.AddrState);
   restoring = true;
   try { restoreState(); } finally { restoring = false; }
