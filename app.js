@@ -1501,6 +1501,9 @@ if (ackEligibility) ackEligibility.addEventListener('change', onAckChange);
 Object.values(permitHolder).forEach((el) => {
   el.addEventListener('input', () => { invalidateCheckout(); validateField(el); evaluateFinalStep(); });
   el.addEventListener('blur', () => { validateField(el); evaluateFinalStep(); });
+  if (el.tagName === 'SELECT') {
+    el.addEventListener('change', () => { invalidateCheckout(); validateField(el); evaluateFinalStep(); });
+  }
 });
 
 if (permitDownloadBtn) {
@@ -1630,7 +1633,7 @@ confirmPaygovBtn.addEventListener('click', async () => {
 });
 
 resetAllBtn.addEventListener('click', () => {
-  Object.values(permitHolder).forEach(el => { el.value = ''; });
+  clearPermitHolder();
   resetStateSelection();
   setProductType('');
   resetProductSelection();
@@ -1649,10 +1652,24 @@ resetAllBtn.addEventListener('click', () => {
   selectionStorage.clear();
 });
 
+function clearPermitHolder() {
+  Object.values(permitHolder).forEach(el => { el.value = ''; });
+}
+
+// Firefox may restore native form values independently of sessionStorage.
+window.addEventListener('pageshow', event => {
+  if (event.persisted) {
+    clearPermitHolder();
+    invalidateCheckout();
+    evaluateFinalStep();
+  }
+});
+
 async function boot() {
   productTypeRadios = renderProductTypes(productTypeOptions, handleProductTypeChange);
   syncSelectionAvailability();
   await loadProductData();
+  clearPermitHolder();
   populateUSStates(permitHolder.AddrState);
   restoring = true;
   try { restoreState(); } finally { restoring = false; }

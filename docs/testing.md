@@ -21,7 +21,7 @@ GitHub Actions runs syntax/catalog checks, logic/DOM/PDF tests, Chromium/Firefox
 
 ## PDF checks
 
-The PDF tests extract Unicode text and check text coordinates on every page. They cover accented Latin and Navajo characters, Greek and Cyrillic names, decomposed accents, long unbroken strings, multi-page content, page numbers, unsupported glyph errors, and complete document tails. DOM tests also cover Reset during asynchronous generation and correction/retry after an error. PDF development verification uses Poppler rendering and visual inspection in addition to text extraction.
+The PDF tests extract Unicode text and check text coordinates on every page. They cover accented Latin and Navajo characters, Greek and Cyrillic names, decomposed accents, long unbroken strings, multi-page content, page numbers, unsupported glyph errors, and complete document tails. DOM tests also cover Reset during asynchronous generation, correction/retry after an error, select change events without input events, and back-forward cache purchaser-field clearing. PDF development verification uses Poppler rendering and visual inspection in addition to text extraction.
 
 The embedded DejaVu Sans font has finite character coverage. Latin, Greek, Cyrillic and the tested Navajo characters are supported; this is not a promise of every Unicode script or emoji. Missing glyphs cause an explicit error rather than silent replacement squares. The PDF remains a demo, and no PDF/UA or tagged-document accessibility certification is claimed.
 

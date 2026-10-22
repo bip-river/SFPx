@@ -234,3 +234,17 @@ test('PDF failure keeps purchaser entries and allows a corrected retry', async t
   a.input('#FirstName', 'José'); await a.generate();
   assert.match((await readPdf([...a.urls.values()].at(-1))).text, /Issued to: José Purchaser/);
 });
+
+
+test('address-state change alone updates checkout readiness', async t => {
+  const a = await app(t); a.choose(); a.holder();
+  a.input('#AddrState', ''); assert.equal(a.$('#confirmPaygov').disabled, true);
+  a.change('#AddrState', 'UT'); assert.equal(a.$('#confirmPaygov').disabled, false);
+});
+
+test('back-forward cache return clears browser-retained purchaser information', async t => {
+  const a = await app(t); a.choose(); a.holder();
+  a.w.dispatchEvent(new a.w.PageTransitionEvent('pageshow', { persisted: true }));
+  assert.equal(a.$('#FirstName').value, '');
+  assert.equal(a.$('#confirmPaygov').disabled, true);
+});

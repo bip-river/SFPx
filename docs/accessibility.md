@@ -4,7 +4,7 @@
 
 The browser suite tests semantic roles/names, native required states, keyboard navigation, locked/inert panels, inline error descriptions, confirmation focus, and a polite ready announcement. Axe scans run at four stages with WCAG 2 A/AA, 2.1 AA and 2.2 AA rules. The CI matrix covers Chromium, Firefox, WebKit, and actual installed Safari on macOS.
 
-This work corrected an invalid `aria-required` on a fieldset, links distinguished only by color, and undersized location-document links. It also gives product radios concise names, separates document links from radio labels, adds step headings, and makes completed PDF generation announce itself and receive focus. Async PDF generation is announced as busy; errors preserve user entries.
+This work corrected an invalid `aria-required` on a fieldset, links distinguished only by color, and undersized location-document links. It also gives product radios concise names, separates document links from radio labels, adds step headings, and makes completed PDF generation announce itself and receive focus. Async PDF generation is announced as busy; errors preserve user entries. Browser-return/load handling clears purchaser fields, and address-state selects respond to native change events as well as input.
 
 Automated accessibility-tree and DOM checks are not a listening test with VoiceOver, NVDA, or JAWS. Human screen-reader testing has not been completed by this automation.
 
