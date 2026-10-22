@@ -1,41 +1,14 @@
-# Design System Notes
+# Design system notes
 
-## Tokens
-Design tokens live in `tokens.json` and are mirrored in `styles.css` under `:root`. The CSS custom properties are the source of truth for runtime styling, while the JSON file documents the scale for cross-platform use.
+Runtime tokens live under `:root` in `styles.css`; `tokens.json` documents the same palette and scale for reference. Keep both synchronized when changing token values.
 
-### Color roles
-- **Background/surface**: `--color-bg`, `--color-surface`, `--color-surface-muted`
-- **Text**: `--color-text`, `--color-text-muted`
-- **Primary/accent**: `--color-primary`, `--color-primary-strong`, `--color-accent`, `--color-accent-soft`
-- **Status**: `--color-warning`, `--color-danger`, `--color-success`
-- **Focus**: `--color-focus`
+- Colors distinguish surfaces, body/helper text, primary actions, status messages, and focus indicators.
+- Typography uses the system font stack and the existing heading/body/small text tokens.
+- Spacing tokens define an 8px scale; component-specific spacing also appears in the stylesheet.
+- Shared classes cover buttons, fields, product cards, alerts, document links, totals, and form grids. Generated payloads use `.payload-content`; repeated summary lines use `.summary-line`.
+- Form sections use `.flow-step`, `.step-toggle`, and `.step-body`. Obsolete stepper and progress-header styles are removed.
+- Selected cards use both `:has()` styles and the existing JavaScript `.is-selected` fallback.
 
-### Typography
-Mobile-first sizes are defined in `--font-size-h1`, `--font-size-h2`, `--font-size-body`, and `--font-size-small`. Body text defaults to 15px with a calm line height.
+Required purchaser fields have native `required` attributes. Step buttons identify their panels through `aria-controls`; unavailable/collapsed panels are inert. Inline validation attaches error descriptions to fields, and the shared error summary receives focus when shown. The office selector supports arrow keys, Enter, and Escape.
 
-### Spacing
-Spacing uses an 8pt grid (`--space-1` through `--space-6`). Use these values for padding, margins, and layout gaps.
-
-### Radii + elevation
-- Radii: `--radius-card`, `--radius-input`, `--radius-chip`, `--radius-soft`
-- Elevation: `--shadow-sm`, `--shadow-md`, `--shadow-lg`
-
-### Motion
-Use `--motion-fast`, `--motion-base`, and `--motion-slow` with `--motion-ease`. The global `prefers-reduced-motion` rule disables transitions/animations.
-
-## Component usage
-- **Buttons**: `.primary`, `.ghost` share the same radius, focus ring, and shadow scale.
-- **Inputs/Selects**: unified padding, border, and focus ring via base `input`, `select`, and `textarea` styles.
-- **Cards/Alerts**: reduced borders and shadows for calmer hierarchy.
-- **Progress header**: `.progress-header` with `.progress-summary` provides sticky guidance, dot indicators, and “Edit” affordances.
-- **Product cards**: `.prod` uses a name/area/price hierarchy, chip-style validity metadata, and a visible selection icon.
-- **Totals**: `.total-panel` wraps the estimated total with a subtle crossfade animation (`.total-amount`).
-- **Hero band + texture**: `.hero-band` frames the title and guidance; the body background includes a low-opacity topographic texture for depth.
-- **Chips/Badges**: `.badge`, `.step-pill`, `.stats li`, `.doc-links a` use the chip radius and muted backgrounds.
-
-## Accessibility notes
-- Focus rings use `--color-focus` and meet WCAG AA contrast on light surfaces.
-- Body text color (`#0f1c1f`) on the light background meets AA contrast for normal text.
-- Accent backgrounds (`--color-accent-soft`) are only used for helper text and never for body copy that needs high contrast.
-
-If a new token introduces a contrast risk, prefer adjusting the color role (not the component) so the fix cascades consistently.
+Motion respects `prefers-reduced-motion`. Real screen-reader and contrast audits remain part of manual accessibility verification; these notes do not claim a completed accessibility certification.

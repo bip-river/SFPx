@@ -1,30 +1,49 @@
 # Online Forest Product Permits — Prototype
 
-This repo is a static, front-end-only prototype for buying a forest product permit. It demonstrates a three-step flow where a user selects what they are collecting, chooses a state and office, picks a permit and quantity, and then provides acknowledgements and purchaser details before reviewing a summary.
+A static, front-end-only prototype for selecting a forest product permit, reviewing its rules, entering purchaser information, and previewing checkout.
 
-## What it does
-- Loads demo catalog data from `products.json` (states, offices, products, limits, attachments, and eligibility rules).
-- Provides a typeahead office selector, product cards, quantity validation, and a review panel.
-- Shows a demo Pay.gov handoff payload for paid permits.
-- For no-fee permits, generates a demo permit PDF for download and shows a demo issuance payload.
-- Saves non-PII selections and acknowledgements in `sessionStorage` so the flow can be resumed.
-
-## What it does not do
-- No backend, payments, or real permit issuance.
-- No real Pay.gov integration.
-- Demo content only (copy, logos, and data are placeholders).
-
-## Project layout
-- `index.html` — markup and content
-- `styles.css` — UI styles
-- `app.js` — client-side behavior
-- `products.json` — demo catalog data
+- Paid permits display a demo Pay.gov handoff payload.
+- No-fee permits generate a downloadable demo PDF.
+- No payments are processed, email is sent, or real permits are issued. Use fictional purchaser information.
+- Only selections and acknowledgements are saved in `sessionStorage`. Purchaser details and transaction snapshots stay in memory; Reset clears the entire form.
 
 ## Run locally
-Because the catalog is loaded with `fetch()` from `products.json`, serve the folder with a local static server:
+
+Serve the repository with a static server, then open <http://localhost:8000>:
 
 ```bash
 python -m http.server 8000
 ```
 
-Then open `http://localhost:8000`.
+The application uses native JavaScript modules and fetches `products.json`, so opening `index.html` directly from the filesystem is unsupported. There is no production build step or runtime package dependency.
+
+## Development checks
+
+Use Node.js 22 or newer (CI uses Node.js 24):
+
+```bash
+npm ci
+npm run check
+npm test
+npx playwright install chromium
+npm run test:browser
+```
+
+The browser test starts its own temporary local server. On Linux, Playwright may require `npx playwright install --with-deps chromium`. You can also open `tests/smoke.html` on the local server for eight structural checks.
+
+## Project layout
+
+| File | Responsibility |
+| --- | --- |
+| `index.html`, `styles.css` | Page structure, styling, and design tokens |
+| `app.js` | Form events, step transitions, and application coordination |
+| `js/catalog.js` | Product identity, catalog validation, sale windows, and validity dates |
+| `js/validation.js` | Quantity increments and purchaser field rules |
+| `js/eligibility.js` | Explicit eligibility-rule lookup and certification copy |
+| `js/state.js` | Optional saved-selection storage |
+| `js/checkout.js`, `js/permit-pdf.js` | Checkout identity, payloads, and demo PDF generation |
+| `js/ui.js`, `js/links.js` | Reusable rendering helpers and URL validation |
+| `products.json` | Demo catalog; see [catalog maintenance](docs/catalog.md) |
+| `tests/` | Logic, DOM integration, and Chromium regression checks |
+
+See [testing notes](docs/testing.md), [design notes](docs/design-system-notes.md), and [performance notes](docs/performance-notes.md).

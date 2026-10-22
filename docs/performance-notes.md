@@ -1,15 +1,18 @@
-# Performance Notes (Phase 3)
+# Performance notes
 
-## What changed
-- Added a subtle topographic background texture using an inline SVG data URI in `styles.css` to avoid extra network requests.
-- Introduced a hero band container to keep the title area calm and readable without introducing large imagery.
-- Animations use existing motion tokens and are disabled under `prefers-reduced-motion`.
+The five PNGs loaded by the main page were resized for their existing display sizes, retaining roughly 3x pixel density. File paths are unchanged.
 
-## Quick checks
-- Texture is embedded in CSS, so there are **no additional HTTP requests**.
-- New transitions are opacity/transform only to avoid layout thrash.
-- The sticky progress header uses `position: sticky` and does not trigger reflows during scroll.
+| Asset | Before (bytes) | After (bytes) |
+| --- | ---: | ---: |
+| `images/firewood.png` | 339,653 | 35,755 |
+| `images/mushrooms.png` | 350,707 | 34,552 |
+| `images/xmas.png` | 222,784 | 21,775 |
+| `logos/BWL_logo.png` | 1,047,923 | 35,275 |
+| `logos/URE_flag.png` | 2,723,375 | 4,303 |
+| **Total** | **4,684,442** | **131,660** |
 
-## Manual verification (optional)
-- Run a simple smoke check by opening `tests/smoke.html` in a browser.
-- For deeper audit, run Lighthouse on `index.html` and focus on Performance + Accessibility scores.
+This reduces these image bytes by 97.2%. The unused MOT logo was also removed. The favicon is unchanged. These are file-size measurements, not Lighthouse or network-timing results.
+
+The application remains static with no runtime package dependencies or bundling step. Native modules add small JavaScript requests. Total animations run only when the displayed amount changes. Collapsible panels animate grid rows and opacity; reduced-motion preferences disable animations/transitions.
+
+Run `npm run test:browser` for desktop/mobile functional checks. Use browser network tooling or Lighthouse for deployment-specific performance measurements.

@@ -9,20 +9,25 @@ function addResult(name, ok, details = '') {
 }
 
 frame.addEventListener('load', () => {
+  results.replaceChildren();
   const doc = frame.contentDocument;
   if (!doc) {
     addResult('Document loaded', false, 'Unable to access iframe document.');
     return;
   }
-
-  const checks = [
-    ['Hero band present', !!doc.querySelector('.hero-band')],
-    ['Progress header present', !!doc.querySelector('.progress-header')],
-    ['Progress dot labels', doc.querySelectorAll('.progress-dot-labels span').length === 3],
-    ['Products list has radiogroup', doc.getElementById('productList')?.getAttribute('role') === 'radiogroup'],
-    ['Quantity input describes hints', (doc.getElementById('qty')?.getAttribute('aria-describedby') || '').includes('qtyHint')],
-    ['Help stack present', !!doc.querySelector('.help-stack')]
-  ];
-
-  checks.forEach(([label, ok]) => addResult(label, ok));
+  const check = () => {
+    const checks = [
+      ['Catalog loaded', doc.getElementById('state').options.length > 1],
+      ['Hero band present', !!doc.querySelector('.hero-band')],
+      ['Three form steps present', doc.querySelectorAll('.flow-step').length === 3],
+      ['Step controls reference their panels', [...doc.querySelectorAll('.step-toggle')].every(button => doc.getElementById(button.getAttribute('aria-controls')))],
+      ['Locked panels are inert', [...doc.querySelectorAll('.flow-step.collapsed .step-body')].every(body => body.hasAttribute('inert'))],
+      ['Products list has radiogroup', doc.getElementById('productList')?.getAttribute('role') === 'radiogroup'],
+      ['Quantity input describes hints', (doc.getElementById('qty')?.getAttribute('aria-describedby') || '').includes('qtyHint')],
+      ['Help stack present', !!doc.querySelector('.help-stack')]
+    ];
+    checks.forEach(([label, ok]) => addResult(label, ok));
+  };
+  if (doc.documentElement.dataset.appReady === 'true') check();
+  else doc.addEventListener('sfpx:ready', check, { once: true });
 });

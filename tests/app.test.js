@@ -2,10 +2,10 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { JSDOM } from 'jsdom';
+import { SourceTextModule } from 'node:vm';
 
 const root = new URL('../', import.meta.url);
 const html = await readFile(new URL('index.html', root), 'utf8');
-const script = await readFile(new URL('app.js', root), 'utf8');
 const catalog = JSON.parse(await readFile(new URL('products.json', root), 'utf8'));
 
 async function app(t, { data = structuredClone(catalog), saved, storageBlocked = false, loadFails = false } = {}) {
@@ -30,9 +30,18 @@ async function app(t, { data = structuredClone(catalog), saved, storageBlocked =
   w.console.warn = () => {};
   if (saved) w.sessionStorage.setItem('sfp-demo-state', typeof saved === 'string' ? saved : JSON.stringify(saved));
   if (storageBlocked) Object.defineProperty(w, 'sessionStorage', { get() { throw new Error('storage blocked'); } });
-  const ready = new Promise(resolve => w.document.addEventListener('sfpx:ready', resolve, { once: true }));
-  w.eval(script);
-  await ready;
+  const modules = new Map();
+  async function loadModule(url) {
+    if (!modules.has(url.href)) {
+      const source = await readFile(url, 'utf8');
+      modules.set(url.href, new SourceTextModule(source, { context: dom.getInternalVMContext(), identifier: url.href }));
+    }
+    return modules.get(url.href);
+  }
+  const entry = await loadModule(new URL('app.js', root));
+  await entry.link((specifier, referencing) => loadModule(new URL(specifier, referencing.identifier)));
+  await entry.evaluate();
+  await entry.namespace.ready;
   const $ = selector => w.document.querySelector(selector);
   const input = (selector, value) => { const el = $(selector); el.value = value; el.dispatchEvent(new w.Event('input', { bubbles: true })); };
   const change = (selector, value) => { const el = $(selector); if (value !== undefined) el.value = value; el.dispatchEvent(new w.Event('change', { bubbles: true })); };
@@ -51,7 +60,7 @@ async function app(t, { data = structuredClone(catalog), saved, storageBlocked =
     for (const [id, value] of Object.entries({ FirstName: 'Test', MiddleName: '', LastName: 'Purchaser', AddressLine1: '123 Test Street', City: 'Test City', AddrState: 'UT', Zip: '84037', DeliveryEmail: 'test@example.com', ConfirmEmail: 'test@example.com' })) input(`#${id}`, value);
     assert.equal($('#confirmPaygov').disabled, false, 'checkout enabled');
   };
-  const payload = () => JSON.parse($('#handoff .v').textContent);
+  const payload = () => JSON.parse($('#handoff .payload-content').textContent);
   return { w, $, input, change, check, choose, holder, payload, urls, revoked, setNow(value) { now = value; } };
 }
 
@@ -139,7 +148,7 @@ test('repeated upstream edits and quantity relocking leave step controls usable'
 
 test('whole-tree quantities and min/max limits are enforced', async t => {
   const a = await app(t); a.choose('christmas');
-  for (const invalid of ['', '0', '1.5', '-1']) {
+  for (const invalid of ['', '0', '1.5', '-1', '100']) {
     a.input('#qty', invalid); a.$('#qty').dispatchEvent(new a.w.Event('blur'));
     assert.equal(a.$('#status3').textContent, 'Locked', invalid);
   }

@@ -132,20 +132,7 @@ body{
     .layout{display:grid; gap:18px; align-items:start}
     @media(min-width: 980px){ .layout{grid-template-columns: minmax(0, 1.25fr) 340px; gap:26px; align-items:start} }
 .card{background:var(--card); border:1px solid var(--border); border-radius:var(--radius-card); box-shadow:var(--shadow-md); padding:16px; position:relative; overflow:visible;}
-    /* Stepper */
-    .stepper{display:flex; flex-wrap:wrap; gap:10px; padding:12px; border-radius:var(--radius-card); border:1px solid var(--color-border); background:rgba(255,255,255,.7); box-shadow:var(--shadow-sm);}
-    .step{display:flex; align-items:center; gap:10px; padding:12px 14px; border-radius:var(--radius-input); border:1px solid var(--color-border); background:var(--color-surface); min-width: 210px; cursor:pointer; text-align:left; transition: border-color var(--motion-fast) var(--motion-ease), box-shadow var(--motion-fast) var(--motion-ease), transform var(--motion-fast) var(--motion-ease); box-shadow:var(--shadow-sm);}
-    .step:hover{border-color: rgba(29,107,66,.32); box-shadow:var(--shadow-md); transform:translateY(-1px);}
-    .step:disabled{cursor:not-allowed; opacity:.65; box-shadow:none; transform:none; background:#f5f5f5;}
-    .step:focus-visible{outline:3px solid var(--color-focus); outline-offset:3px;}
-    .step .n{width:28px; height:28px; border-radius:10px; display:grid; place-items:center; font-weight:900; background:rgba(29,107,66,.12); color:var(--brand); flex:0 0 auto; box-shadow:var(--shadow-sm);}
-    .step.active{border-color: rgba(29,107,66,.46); box-shadow:0 8px 18px rgba(29,107,66,.2);}
-    .step.active .n{background: var(--brand); color:#fff}
-    .step.just-unlocked{border-color: rgba(208,164,60,.85); box-shadow: 0 0 0 3px rgba(208,164,60,.2), var(--shadow-md);}
-    .step.done .n{background: rgba(15,108,58,.16); color: var(--ok)}
-    .step .t{font-size:var(--font-size-small); color:var(--muted)}
-    .step .k{font-weight:850; font-size:14px}
-    .step-pill{margin-left:auto; padding:4px 9px; border-radius:var(--radius-chip); border:1px solid var(--color-border); font-size:12px; color:var(--muted); background:rgba(15,28,31,.05);}
+    /* Form steps */
     .flow-step{border:1px solid var(--color-border); border-radius:var(--radius-card); padding:12px; margin-top:12px; background:#fff; box-shadow:var(--shadow-sm);}
     .flow-step .step-head{display:flex; align-items:center; gap:10px; padding:10px; border-radius:var(--radius-input); background:rgba(29,107,66,.06); border:1px solid rgba(29,107,66,.12); scroll-margin-top: 100px;}
     @media(min-width: 980px){.flow-step .step-head{display:grid; grid-template-columns: 1fr auto; gap:8px 14px;}}
@@ -200,7 +187,6 @@ body{
     .agreements-copy,
     .agreements-list{grid-column:1 / -1;}
     .agreements .title{font-weight:900; font-size:17px; margin-top:4px;}
-    .agreements .eyebrow{display:inline-block; padding:4px 8px; border-radius:var(--radius-chip); background:rgba(29,107,66,.12); color:var(--brand); font-size:12px; font-weight:800;}
     .agreements-list{display:grid; gap:10px;}
     .agreement-item details{margin-top:6px;}
     .checkline{display:flex; gap:10px; font-weight:750; align-items:flex-start;}
@@ -361,7 +347,6 @@ body{
     .side p{margin:8px 0 0; color:var(--muted); font-size:13.5px}
     .side ul{margin:10px 0 0 18px; color:var(--muted); font-size:13.5px}
     .side li{margin:6px 0}
-    .eyebrow{display:inline-block; padding:3px 8px; border-radius:var(--radius-chip); background:rgba(11,15,25,.06); color:var(--muted); font-size:12px; font-weight:800; letter-spacing:.01em;}
     .help-stack{display:grid; gap:12px; margin-top:10px;}
     .help-card{border:1px solid rgba(29,107,66,.14); border-radius:var(--radius-card); padding:12px; background:#fff; box-shadow:var(--shadow-sm);}
     .help-card .help-title{font-weight:900; margin-top:2px;}
@@ -378,3 +363,13 @@ body{
     *, *::before, *::after { transition: none !important; animation: none !important; }
     html { scroll-behavior: auto; }
     }
+
+/* Shared layout and generated summaries */
+.layout-offset{margin-top:8px;}
+.form-grid{margin-top:14px;}
+.full-width{grid-column:1 / -1;}
+.required-marker{color:var(--danger);}
+.summary-line + .summary-line{margin-top:2px;}
+.summary-group{margin-top:10px;}
+.payload-content{margin-top:6px; font:13px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; white-space:pre-wrap; overflow-wrap:anywhere;}
+.payload-note{margin-top:10px;}

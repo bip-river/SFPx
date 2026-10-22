@@ -1,0 +1,63 @@
+export const MAX_PAYLOAD_BYTES = 4096;
+
+// Identity is scoped to one immutable checkout snapshot and lives only in memory.
+export function createCheckoutIdentity(makeId = () => crypto.randomUUID()) {
+  let current = null;
+  return {
+    referenceFor(snapshot, prefix) {
+      const fingerprint = JSON.stringify(snapshot);
+      if (!current || current.fingerprint !== fingerprint || current.prefix !== prefix) {
+        current = { fingerprint, prefix, reference: `${prefix}-${makeId()}` };
+      }
+      return current.reference;
+    },
+    clear() { current = null; }
+  };
+}
+
+export function readPermitHolder(fields) {
+  return {
+    firstName: fields.FirstName.value.trim(),
+    middleName: fields.MiddleName.value.trim(),
+    lastName: fields.LastName.value.trim(),
+    addressLine1: fields.AddressLine1.value.trim(),
+    addressLine2: fields.AddressLine2.value.trim(),
+    city: fields.City.value.trim(),
+    state: fields.AddrState.value,
+    zip: fields.Zip.value.trim(),
+    deliveryEmail: fields.DeliveryEmail.value.trim()
+  };
+}
+
+export function buildCheckoutPayload({ model, holder, reference, eligibility = null }) {
+  const unitPrice = model.product.price;
+  const total = unitPrice * model.qty;
+  const noFee = unitPrice === 0;
+  return {
+    idempotencyKey: reference,
+    ...(noFee ? { permitReference: reference } : { transactionReference: reference }),
+    state: model.state,
+    officeId: model.officeId,
+    officeName: model.officeName,
+    productType: model.productType,
+    productId: model.product.id,
+    productName: model.product.name,
+    unit: model.product.unit,
+    unitPrice,
+    quantity: model.qty,
+    total,
+    permitHolder: holder,
+    ...(noFee ? { eligibility: eligibility || { certified: false, basis: 'Not required' } } : {}),
+    nextStep: noFee
+      ? 'Issue permit (no fee) server-side, then present a confirmation page with a download link for the permit PDF.'
+      : 'Redirect to Pay.gov, verify payment status server-side, then return to download the permit with this reference.',
+    deliveryPlan: noFee
+      ? 'Permit is available immediately after confirmation (demo download only; no email is sent).'
+      : 'After Pay.gov returns, use the transaction reference to fetch verified payment status. Retries reuse the same checkout identity.',
+    serverChecks: { verifyEmailMatch: true, enforcePayloadLimitBytes: MAX_PAYLOAD_BYTES }
+  };
+}
+
+export function payloadSizeBytes(payload) {
+  return new TextEncoder().encode(JSON.stringify(payload)).length;
+}
