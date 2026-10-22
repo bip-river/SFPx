@@ -248,3 +248,17 @@ test('back-forward cache return clears browser-retained purchaser information', 
   assert.equal(a.$('#FirstName').value, '');
   assert.equal(a.$('#confirmPaygov').disabled, true);
 });
+
+
+test('holder blur and unchanged change events preserve checkout result and button text nodes', async t => {
+  const a = await app(t); a.choose(); a.holder(); a.$('#confirmPaygov').click();
+  const reference = a.payload().idempotencyKey;
+  const labelNode = a.$('#confirmPaygov').firstChild;
+  a.$('#FirstName').dispatchEvent(new a.w.Event('blur'));
+  a.$('#FirstName').dispatchEvent(new a.w.Event('change'));
+  assert.equal(a.$('#confirmPaygov').firstChild, labelNode);
+  assert.equal(a.$('#handoff').style.display, 'block');
+  assert.equal(a.payload().idempotencyKey, reference);
+  a.input('#qty', '2');
+  assert.equal(a.$('#confirmPaygov').disabled, false, 'quantity edit reevaluates existing purchaser information');
+});

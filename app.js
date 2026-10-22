@@ -119,6 +119,8 @@ const permitHolder = {
   ConfirmEmail: document.getElementById('ConfirmEmail'),
 };
 
+const holderValues = new WeakMap(Object.values(permitHolder).map(el => [el, el.value]));
+
 // Model
 const model = {
   step: 0,
@@ -950,7 +952,8 @@ function configureCheckoutCopy() {
   const total = unitPrice * (model.qty || 0);
   const noFee = unitPrice === 0 && total === 0;
 
-  if (confirmPaygovBtn) confirmPaygovBtn.textContent = noFee ? 'Confirm and get permit' : 'Continue to Pay.gov';
+  const label = noFee ? 'Confirm and get permit' : 'Continue to Pay.gov';
+  if (confirmPaygovBtn && confirmPaygovBtn.textContent !== label) confirmPaygovBtn.textContent = label;
 
   if (nextStepsList) {
     nextStepsList.innerHTML = '';
@@ -1474,7 +1477,7 @@ qtyEl.addEventListener('input', () => {
   updateLockNotes();
   updateStepUI(model.step);
   persistState();
-  updateReviewPanels();
+  evaluateFinalStep();
 });
 
 qtyEl.addEventListener('keydown', (e) => {
@@ -1498,12 +1501,19 @@ ackPrivacy.addEventListener('change', onAckChange);
 ackTerms.addEventListener('change', onAckChange);
 if (ackEligibility) ackEligibility.addEventListener('change', onAckChange);
 
-Object.values(permitHolder).forEach((el) => {
-  el.addEventListener('input', () => { invalidateCheckout(); validateField(el); evaluateFinalStep(); });
-  el.addEventListener('blur', () => { validateField(el); evaluateFinalStep(); });
-  if (el.tagName === 'SELECT') {
-    el.addEventListener('change', () => { invalidateCheckout(); validateField(el); evaluateFinalStep(); });
-  }
+function onPermitHolderEdit(el) {
+  validateField(el);
+  if (holderValues.get(el) === el.value) return;
+  holderValues.set(el, el.value);
+  invalidateCheckout();
+  evaluateFinalStep();
+}
+
+Object.values(permitHolder).forEach(el => {
+  el.addEventListener('input', () => onPermitHolderEdit(el));
+  el.addEventListener('change', () => onPermitHolderEdit(el));
+  // Rebuilding checkout on blur can cancel the pending pointer click in WebKit.
+  el.addEventListener('blur', () => validateField(el));
 });
 
 if (permitDownloadBtn) {
@@ -1653,7 +1663,7 @@ resetAllBtn.addEventListener('click', () => {
 });
 
 function clearPermitHolder() {
-  Object.values(permitHolder).forEach(el => { el.value = ''; });
+  Object.values(permitHolder).forEach(el => { el.value = ''; holderValues.set(el, ''); });
 }
 
 // Firefox may restore native form values independently of sessionStorage.
