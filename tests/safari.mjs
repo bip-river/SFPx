@@ -27,7 +27,9 @@ try {
     `);
     assert.deepEqual(result, [], stage);
   };
-  await driver.get(server.url); await ready(); await accessibility('Safari initial form');
+  await driver.get(server.url); await ready();
+  await driver.executeScript(`window.__testErrors = []; window.addEventListener('error', e => window.__testErrors.push(e.message)); window.addEventListener('unhandledrejection', e => window.__testErrors.push(String(e.reason)));`);
+  await accessibility('Safari initial form');
   await driver.findElement(By.css('.ptype-card')).click();
   await new Select(await element('state')).selectByValue('AK');
   await (await element('officeInput')).click();
@@ -46,7 +48,11 @@ try {
   if (!checkoutEnabled) console.log('Safari readiness diagnostics:', await driver.executeScript(`return [...document.querySelectorAll('#permitHolderFieldset input, #permitHolderFieldset select')].map(el => ({ id: el.id, value: el.value, disabled: el.disabled, invalid: el.getAttribute('aria-invalid') }));`));
   assert.equal(checkoutEnabled, true, 'Safari address-state change enables checkout');
   await (await element('confirmPaygov')).click();
-  await driver.wait(until.elementLocated(By.css('#handoff .payload-content')), 10000);
+  try { await driver.wait(until.elementLocated(By.css('#handoff .payload-content')), 10000); }
+  catch (error) {
+    console.log('Safari checkout diagnostics:', await driver.executeScript(`return { errors: window.__testErrors, secure: isSecureContext, uuid: typeof crypto.randomUUID, error: document.getElementById('errorList').textContent, holder: [...document.querySelectorAll('#permitHolderFieldset input, #permitHolderFieldset select')].map(el => ({ id: el.id, value: el.value, disabled: el.disabled })), quantity: document.getElementById('qty').value, product: document.querySelector('input[name=product]:checked')?.id, button: document.getElementById('confirmPaygov').outerHTML };`));
+    throw error;
+  }
   assert.equal(await driver.executeScript("return JSON.parse(document.querySelector('#handoff .payload-content').textContent).total"), 10);
   await driver.navigate().refresh(); await ready();
   assert.equal(await (await element('FirstName')).getAttribute('value'), '');

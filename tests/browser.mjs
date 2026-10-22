@@ -54,7 +54,13 @@ try {
     await checkAccessibility(page, 'completed purchaser fields');
     await page.locator('#confirmPaygov').click();
     const payload = () => page.locator('#handoff .payload-content').textContent().then(JSON.parse);
-    const first = await payload(); assert.equal(first.total, 10);
+    let first;
+    try { first = await payload(); }
+    catch (error) {
+      console.log('Browser checkout diagnostics:', engineName, errors, await page.evaluate(() => ({ secure: isSecureContext, uuid: typeof crypto.randomUUID, error: document.getElementById('errorList').textContent, button: document.getElementById('confirmPaygov').outerHTML, focus: document.activeElement.id })));
+      throw error;
+    }
+    assert.equal(first.total, 10);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, 'no horizontal overflow with checkout payload');
     await page.locator('#confirmPaygov').click(); assert.equal((await payload()).idempotencyKey, first.idempotencyKey);
     await page.reload(); await page.waitForFunction(() => document.documentElement.dataset.appReady === 'true');
