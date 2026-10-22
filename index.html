@@ -69,13 +69,13 @@
             <div class="icon" aria-hidden="true">i</div>
             <div class="txt">
               <strong>Notice</strong>
-              Pay.gov maintenance scheduled today from 4 PM to 8 PM mountain time can interrupt checkout. If Pay.gov is down, try again later.
+              This is a demonstration. No payments are collected and no email is sent. Use fictional purchaser information when testing.
             </div>
           </div>
         </section>
       </div>
 
-      <section class="layout" style="margin-top: 8px;">
+      <section class="layout layout-offset">
         <div class="card" role="region" aria-label="Form content">
 
           <div class="error" id="errorBox" role="alert" aria-live="assertive" aria-hidden="true" tabindex="-1">
@@ -88,7 +88,7 @@
           <!-- Step 1 -->
           <section id="step1" class="flow-step" aria-label="Step 1: Choose location">
             <div class="step-head">
-              <button class="step-toggle" type="button" aria-expanded="true">
+              <button class="step-toggle" type="button" aria-controls="step1Body" aria-expanded="true">
                 <span class="step-toggle-text">Step 1 · Find available products</span>
                 <svg class="chev" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd"/>
@@ -96,25 +96,25 @@
               </button>
               <div class="step-status" id="status1">In progress</div>
             </div>
-            <div class="step-body">
+            <div class="step-body" id="step1Body">
               <div class="step-body-inner">
-              <div class="grid2" style="margin-top:14px;">
-                <div class="row" style="grid-column: 1 / -1;">
+              <div class="grid2 form-grid">
+                <div class="row full-width">
                   <fieldset id="ptypeGroup" aria-required="true">
-                    <legend>What are you collecting? <span aria-hidden="true" style="color:var(--danger)">*</span></legend>
+                    <legend>What are you collecting? <span aria-hidden="true" class="required-marker">*</span></legend>
                     <div class="ptype-grid" id="ptypeOptions"></div>
                   </fieldset>
                 </div>
 
                 <div class="row" id="stateRow">
-                  <label for="state">State <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+                  <label for="state">State <span aria-hidden="true" class="required-marker">*</span></label>
                   <select id="state" required disabled>
                     <option value="">Select a state</option>
                   </select>
                 </div>
 
                 <div class="row" id="officeRow">
-                  <label for="officeInput">BWL office / district <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+                  <label for="officeInput">BWL office / district <span aria-hidden="true" class="required-marker">*</span></label>
                   <div class="hint" id="officeHint">Start typing to filter. Use ↑/↓ to navigate; Enter to select.</div>
                   <div class="combo" id="officeCombo">
                     <input id="officeInput" type="text" autocomplete="off" placeholder="Type to search offices"
@@ -139,7 +139,7 @@
           <!-- Step 2 -->
           <section id="step2" class="flow-step collapsed" aria-label="Step 2: Select product">
             <div class="step-head">
-              <button class="step-toggle" type="button" aria-expanded="false">
+              <button class="step-toggle" type="button" aria-controls="step2Body" aria-expanded="false">
                 <span class="step-toggle-text">Step 2 · Select a product and quantity</span>
                 <svg class="chev" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd"/>
@@ -148,7 +148,7 @@
               <div class="step-status" id="status2">Locked</div>
             </div>
             <div class="lock-note" id="step2LockNote" aria-live="polite" aria-atomic="true"></div>
-            <div class="step-body">
+            <div class="step-body" id="step2Body">
               <div class="step-body-inner">
               <div id="locationNotice" class="location-note" style="display:none;" aria-live="polite"></div>
               <div id="comingSoonSection" class="coming-soon" style="display:none;" aria-live="polite">
@@ -157,12 +157,12 @@
               <div class="products" id="productList" role="radiogroup" aria-label="Available permits"></div>
 
               <div id="qtySection" style="display:none;">
-                <div class="grid2" style="margin-top:14px;">
+                <div class="grid2 form-grid">
                   <div class="row">
-                    <label for="qty">Quantity <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+                    <label for="qty">Quantity <span aria-hidden="true" class="required-marker">*</span></label>
                     <div class="hint" id="qtyHint"></div>
                     <div class="hint subtle" id="qtyGuard"></div>
-                    <input id="qty" type="number" min="1" step="1" inputmode="numeric" aria-describedby="qtyHint qtyGuard" />
+                    <input id="qty" type="number" min="1" step="1" inputmode="numeric" aria-describedby="qtyHint qtyGuard" required />
                   </div>
                   <div class="row">
                     <label>Total</label>
@@ -182,7 +182,7 @@
           <!-- Step 3 -->
           <section id="step3" class="flow-step collapsed" aria-label="Step 3: Agreements and permit holder info">
             <div class="step-head">
-              <button class="step-toggle" type="button" aria-expanded="false">
+              <button class="step-toggle" type="button" aria-controls="step3Body" aria-expanded="false">
                 <span class="step-toggle-text">Step 3 · Agreements and permit holder information</span>
                 <svg class="chev" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd"/>
@@ -191,7 +191,7 @@
               <div class="step-status" id="status3">Locked</div>
             </div>
             <div class="lock-note" id="step3LockNote" aria-live="polite" aria-atomic="true"></div>
-            <div class="step-body">
+            <div class="step-body" id="step3Body">
               <div class="step-body-inner">
               <fieldset class="agreements">
                 <legend class="sr-only">Policy acknowledgements</legend>
@@ -250,50 +250,50 @@ Replace this demo text with the authoritative terms and conditions used by your 
               <div class="hint" id="permitHolderBlockedHint" style="display:none;">Check all acknowledgement boxes above to enter permit holder information.</div>
 
               <fieldset id="permitHolderFieldset" class="permit-holder-block locked" aria-describedby="permitHolderBlockedHint" disabled>
-              <div class="grid2" style="margin-top:14px;">
+              <div class="grid2 form-grid">
                 <div class="row">
-                  <label for="FirstName">First name <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                  <input id="FirstName" type="text" autocomplete="given-name" maxlength="50" />
+                  <label for="FirstName">First name <span aria-hidden="true" class="required-marker">*</span></label>
+                  <input id="FirstName" type="text" autocomplete="given-name" maxlength="50" required />
                 </div>
                 <div class="row">
                   <label for="MiddleName">Middle name</label>
                   <input id="MiddleName" type="text" autocomplete="additional-name" maxlength="50" />
                 </div>
                 <div class="row">
-                  <label for="LastName">Last name <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                  <input id="LastName" type="text" autocomplete="family-name" maxlength="50" />
+                  <label for="LastName">Last name <span aria-hidden="true" class="required-marker">*</span></label>
+                  <input id="LastName" type="text" autocomplete="family-name" maxlength="50" required />
                 </div>
 
-                <div class="row" style="grid-column: 1 / -1;">
-                  <label for="AddressLine1">Street address line 1 <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                  <input id="AddressLine1" type="text" autocomplete="address-line1" maxlength="120" />
+                <div class="row full-width">
+                  <label for="AddressLine1">Street address line 1 <span aria-hidden="true" class="required-marker">*</span></label>
+                  <input id="AddressLine1" type="text" autocomplete="address-line1" maxlength="120" required />
                 </div>
-                <div class="row" style="grid-column: 1 / -1;">
+                <div class="row full-width">
                   <label for="AddressLine2">Street address line 2</label>
                   <input id="AddressLine2" type="text" autocomplete="address-line2" maxlength="120" />
                 </div>
 
                 <div class="row">
-                  <label for="City">City <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                  <input id="City" type="text" autocomplete="address-level2" maxlength="80" />
+                  <label for="City">City <span aria-hidden="true" class="required-marker">*</span></label>
+                  <input id="City" type="text" autocomplete="address-level2" maxlength="80" required />
                 </div>
                 <div class="row">
-                  <label for="AddrState">State <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                  <select id="AddrState"></select>
+                  <label for="AddrState">State <span aria-hidden="true" class="required-marker">*</span></label>
+                  <select id="AddrState" required></select>
                 </div>
                 <div class="row">
-                  <label for="Zip">ZIP <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                  <input id="Zip" type="text" inputmode="numeric" autocomplete="postal-code" maxlength="10" />
+                  <label for="Zip">ZIP <span aria-hidden="true" class="required-marker">*</span></label>
+                  <input id="Zip" type="text" inputmode="numeric" autocomplete="postal-code" maxlength="10" required />
                 </div>
                 <div class="row"></div>
 
-                <div class="row" style="grid-column: 1 / -1;">
-                  <label for="DeliveryEmail">Email address (for delivery) <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                  <input id="DeliveryEmail" type="email" autocomplete="email" maxlength="120" />
+                <div class="row full-width">
+                  <label for="DeliveryEmail">Email address (for delivery) <span aria-hidden="true" class="required-marker">*</span></label>
+                  <input id="DeliveryEmail" type="email" autocomplete="email" maxlength="120" required />
                 </div>
-                <div class="row" style="grid-column: 1 / -1;">
-                  <label for="ConfirmEmail">Confirm email address <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-                  <input id="ConfirmEmail" type="email" autocomplete="email" maxlength="120" />
+                <div class="row full-width">
+                  <label for="ConfirmEmail">Confirm email address <span aria-hidden="true" class="required-marker">*</span></label>
+                  <input id="ConfirmEmail" type="email" autocomplete="email" maxlength="120" required />
                 </div>
               </div>
               </fieldset>
@@ -321,13 +321,13 @@ Replace this demo text with the authoritative terms and conditions used by your 
             <div class="alert" id="confirmation" style="display:none; margin-top:12px;">
               <div class="icon" aria-hidden="true">i</div>
               <div class="txt">
-                <strong>Permit issued</strong>
+                <strong>Demo permit generated</strong>
                 <div class="small" style="margin-top:4px;">Reference: <span id="permitRef">—</span></div>
                 <div style="margin-top:10px;">
                   <button class="primary" type="button" id="permitDownloadBtn">Download permit (PDF)</button>
                 </div>
                 <div class="hint" style="margin-top:8px;">
-                  Save the permit for your records. A copy is also sent to the email address you provided (demo behavior).
+                  Save the permit for your records. This demo provides a download only; no email is sent.
                 </div>
               </div>
             </div>
@@ -423,6 +423,6 @@ Replace this demo text with the authoritative terms and conditions used by your 
       <div class="smallprint">Data shown is representative demo content.</div>
     </div>
   </footer>
-  <script src="app.js" defer></script>
+  <script src="app.js" type="module"></script>
 </body>
 </html>
