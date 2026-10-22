@@ -3,6 +3,7 @@
 
     let catalogData = {};
     let catalogReady = false;
+    let restoring = false;
     const STORAGE_KEY = 'sfp-demo-state';
     const CATALOG_SOURCE = 'products.json';
 
@@ -100,6 +101,23 @@
     const lockNotes = [null, document.getElementById('step2LockNote'), document.getElementById('step3LockNote')];
 
     const transactionRefKey = 'sfp-demo-transaction-ref';
+    let checkoutIdentity = null;
+
+    function invalidateCheckout() {
+      clearConfirmation();
+      handoff.replaceChildren();
+      handoff.style.display = 'none';
+      checkoutIdentity = null;
+      try { sessionStorage.removeItem(transactionRefKey); } catch { /* storage is optional */ }
+    }
+
+    function checkoutReference(snapshot, prefix) {
+      const fingerprint = JSON.stringify(snapshot);
+      if (!checkoutIdentity || checkoutIdentity.fingerprint !== fingerprint) {
+        checkoutIdentity = { fingerprint, reference: `${prefix}-${crypto.randomUUID()}` };
+      }
+      return checkoutIdentity.reference;
+    }
 
     const resetAllBtn = document.getElementById('resetAll');
 
@@ -149,29 +167,13 @@
 
     function setControlEnabled(el, enabled) {
       if (!el) return;
-      if (enabled) {
-        delete el.dataset.persistDisabled;
-        if (Object.prototype.hasOwnProperty.call(el.dataset, 'persistPrevTab')) {
-          const prev = el.dataset.persistPrevTab;
-          if (prev) el.setAttribute('tabindex', prev); else el.removeAttribute('tabindex');
-          delete el.dataset.persistPrevTab;
-        } else if (el.tabIndex === -1) {
-          el.removeAttribute('tabindex');
-        }
-        el.disabled = false;
-        el.removeAttribute('aria-disabled');
-      } else {
-        el.dataset.persistDisabled = 'true';
-        if (!Object.prototype.hasOwnProperty.call(el.dataset, 'persistPrevTab')) {
-          el.dataset.persistPrevTab = el.getAttribute('tabindex') || '';
-        }
-        el.disabled = true;
-        el.setAttribute('aria-disabled', 'true');
-        el.setAttribute('tabindex', '-1');
-      }
+      el.disabled = !enabled;
+      if (enabled) el.removeAttribute('aria-disabled');
+      else el.setAttribute('aria-disabled', 'true');
     }
 
     function persistState() {
+      if (restoring) return;
       const payload = {
         model: {
           state: model.state,
@@ -179,7 +181,6 @@
           officeName: model.officeName,
           officeInput: officeInput.value,
           productType: model.productType,
-          productIndex: model.productIndex,
           productKey: model.productKey,
           qty: model.qty,
         },
@@ -231,7 +232,7 @@
           officeIdEl.value = match.id;
           model.officeId = match.id;
           model.officeName = match.name;
-          officeInput.value = savedModel.officeInput || match.name;
+          officeInput.value = match.name;
         }
       } else if (savedModel.officeInput) {
         officeInput.value = savedModel.officeInput;
@@ -240,12 +241,13 @@
       syncSelectionAvailability();
       attemptAdvanceFromStep1();
 
-      const products = getProductsForSelection({ includeInactive: true });
+      const products = getProductsForSelection();
       const savedKey = savedModel.productKey || '';
       const matchedIndex = savedKey
         ? products.findIndex(p => getProductKey(p) === savedKey)
         : -1;
-      const resolvedIndex = matchedIndex >= 0 ? matchedIndex : savedModel.productIndex;
+      // Old index-only selections cannot be restored safely after catalog changes.
+      const resolvedIndex = matchedIndex;
       if (products.length && Number.isInteger(resolvedIndex) && products[resolvedIndex]) {
         const p = products[resolvedIndex];
         model.productIndex = resolvedIndex;
@@ -259,7 +261,8 @@
         const minQty = Number.isFinite(p.minQty) ? p.minQty : 1;
         qtyHint.textContent = `Enter ${minQty}–${p.maxQty} ${p.unit}(s). Price: ${feeLabelForUnit(p.price, p.unit)}.`;
         qtyEl.min = minQty;
-        qtyEl.max = p.maxQty || '';
+        qtyEl.max = p.maxQty;
+        qtyEl.step = p.quantityStep;
         setControlEnabled(qtyEl, true);
         qtySection.style.display = 'block';
         if (savedModel.qty) {
@@ -268,9 +271,9 @@
         commitQuantity({ showErrors: false });
       }
 
-      ackPrivacy.checked = Boolean(savedAcknowledgements.privacy);
-      ackTerms.checked = Boolean(savedAcknowledgements.terms);
-      if (ackEligibility) ackEligibility.checked = Boolean(savedAcknowledgements.eligibility);
+      ackPrivacy.checked = Boolean(model.product && savedAcknowledgements.privacy);
+      ackTerms.checked = Boolean(model.product && savedAcknowledgements.terms);
+      if (ackEligibility) ackEligibility.checked = Boolean(model.product && savedAcknowledgements.eligibility);
 
       renderEligibilityAgreement();
 
@@ -346,6 +349,7 @@
     }
 
     function resetProductSelection() {
+      invalidateCheckout();
       model.productIndex = null;
       model.productKey = '';
       model.product = null;
@@ -416,6 +420,38 @@
       }
     }
 
+    function validateCatalog(catalog) {
+      if (!catalog || typeof catalog !== 'object' || Array.isArray(catalog) || !Object.keys(catalog).length) throw new Error('Catalog must contain states.');
+      const ids = new Set();
+      const checkDocs = (docs = []) => {
+        if (!Array.isArray(docs) || docs.some(doc => !doc || typeof doc.label !== 'string' || typeof doc.url !== 'string')) throw new Error('Invalid catalog attachments.');
+      };
+      for (const [state, data] of Object.entries(catalog)) {
+        if (!data || typeof data.name !== 'string' || !Array.isArray(data.offices)) throw new Error(`Invalid state: ${state}`);
+        checkDocs(data.attachments);
+        const officeIds = new Set();
+        for (const office of data.offices) {
+          if (!office || typeof office.id !== 'string' || !office.id || officeIds.has(office.id) || typeof office.name !== 'string' || !office.products || typeof office.products !== 'object' || Array.isArray(office.products)) throw new Error(`Invalid office in ${state}`);
+          officeIds.add(office.id);
+          checkDocs(office.attachments);
+          for (const [type, products] of Object.entries(office.products)) {
+            if (!PRODUCT_TYPE_OPTIONS.some(option => option.id === type) || !Array.isArray(products)) throw new Error(`Invalid product type: ${office.id}/${type}`);
+            for (const product of products) {
+              if (!product || typeof product.id !== 'string' || !product.id || ids.has(product.id)) throw new Error(`Missing or duplicate product ID in ${office.id}`);
+              ids.add(product.id);
+              if (typeof product.name !== 'string' || !product.name.trim() || typeof product.unit !== 'string' || !product.unit.trim()) throw new Error(`Invalid product labels: ${product.id}`);
+              if (!Number.isFinite(product.price) || product.price < 0 || !Number.isFinite(product.minQty) || product.minQty <= 0 || !Number.isFinite(product.maxQty) || product.maxQty < product.minQty || !Number.isFinite(product.quantityStep) || product.quantityStep <= 0 || !Number.isInteger(product.validForDays) || product.validForDays <= 0) throw new Error(`Invalid price, quantity or validity: ${product.id}`);
+              const start = parseDate(product.saleStartDate), end = parseDate(product.saleEndDate);
+              if (!start || !end || start > end) throw new Error(`Invalid sale dates: ${product.id}`);
+              if (product.eligibilityRule !== null && product.eligibilityRule !== 'anilca-subsistence') throw new Error(`Unknown eligibility rule: ${product.id}`);
+              checkDocs(product.requiredDocs);
+            }
+          }
+        }
+      }
+      return catalog;
+    }
+
     async function loadProductData() {
       setControlEnabled(stateEl, false);
       setControlEnabled(officeInput, false);
@@ -425,7 +461,7 @@
         if (!res.ok) throw new Error('Unable to load product catalog.');
         const json = await res.json();
     
-        catalogData = json || {};
+        catalogData = validateCatalog(json);
         catalogReady = true;
         populateStates();
         hideErrors();
@@ -579,9 +615,11 @@
     }
 
     function parseDate(iso) {
-      if (!iso) return null;
+      if (typeof iso !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return null;
       const d = new Date(iso + 'T00:00:00');
-      return Number.isNaN(d.getTime()) ? null : d;
+      if (Number.isNaN(d.getTime())) return null;
+      const [year, month, day] = iso.split('-').map(Number);
+      return d.getFullYear() === year && d.getMonth() === month - 1 && d.getDate() === day ? d : null;
     }
 
     function getTodayStart() {
@@ -593,7 +631,7 @@
     function isSaleActive(product, today = getTodayStart()) {
       const start = parseDate(product?.saleStartDate);
       const end = parseDate(product?.saleEndDate);
-      if (!start || !end) return true;
+      if (!start || !end || start > end) return false;
       return start <= today && end >= today;
     }
 
@@ -654,15 +692,16 @@
       christmas: [{ label: 'Planning Your Trip', url: '#' }],
       mushrooms: [{ label: 'Foraging Guidelines', url: '#' }]
     };
-    const SAFE_URL_PATTERN = /^(https?:|mailto:|tel:)/i;
-    const HAS_URL_SCHEME = /^[a-zA-Z][a-zA-Z0-9+.-]*:/;
 
     function sanitizeUrl(url) {
-      const trimmed = (url || '').trim();
-      if (!trimmed) return '#';
-      if (!HAS_URL_SCHEME.test(trimmed)) return trimmed;
-      if (SAFE_URL_PATTERN.test(trimmed)) return trimmed;
-      return '#';
+      if (typeof url !== 'string' || !url.trim()) return '#';
+      const value = url.trim();
+      try {
+        const parsed = new URL(value, document.baseURI);
+        return ['http:', 'https:', 'mailto:', 'tel:'].includes(parsed.protocol) ? value : '#';
+      } catch {
+        return '#';
+      }
     }
 
     function getLocationAttachments() {
@@ -1056,6 +1095,7 @@
       card.appendChild(body);
 
       card.querySelector('input').addEventListener('change', () => {
+        invalidateCheckout();
         updateProductCardSelection();
         model.productIndex = idx;
         model.productKey = getProductKey(p);
@@ -1065,7 +1105,8 @@
         const maxLine = p.maxQty ? `Maximum allowed per permit: ${p.maxQty} ${p.unit}${p.maxQty === 1 ? '' : 's'}` : '';
         qtyGuard.textContent = maxLine || '';
         qtyEl.min = minQty;
-        qtyEl.max = p.maxQty || '';
+        qtyEl.max = p.maxQty;
+        qtyEl.step = p.quantityStep;
         qtyEl.value = '';
         totalEl.value = '';
         if (totalAmount) totalAmount.textContent = '—';
@@ -1091,16 +1132,7 @@
     }
 
     function getProductKey(product) {
-      if (!product) return '';
-      return [
-        product.name || '',
-        product.unit || '',
-        Number(product.price || 0),
-        Number.isFinite(product.minQty) ? product.minQty : '',
-        Number.isFinite(product.maxQty) ? product.maxQty : '',
-        product.saleStartDate || '',
-        product.saleEndDate || ''
-      ].join('|');
+      return product?.id || '';
     }
 
     function announce(message) {
@@ -1130,49 +1162,18 @@
     function applyLockState() {
       stepSections.forEach((sec, i) => {
         const available = stepState.available[i];
-        const lockNote = lockNotes[i];
-        if (lockNote) lockNote.style.display = available ? 'none' : 'block';
-        const focusables = sec.querySelectorAll('.step-body input, .step-body select, .step-body textarea, .step-body button');
-        focusables.forEach(el => {
-          const persistDisabled = el.dataset.persistDisabled === 'true';
-          if (!available) {
-            el.dataset.lockPrevTab = el.getAttribute('tabindex') || '';
-            el.dataset.lockPrevDisabled = el.hasAttribute('disabled') ? 'true' : 'false';
-            el.setAttribute('tabindex', '-1');
-            el.disabled = true;
-            el.setAttribute('aria-disabled', 'true');
-          } else {
-            if (Object.prototype.hasOwnProperty.call(el.dataset, 'lockPrevTab')) {
-              if (el.dataset.lockPrevTab) el.setAttribute('tabindex', el.dataset.lockPrevTab); else el.removeAttribute('tabindex');
-              delete el.dataset.lockPrevTab;
-            } else {
-              el.removeAttribute('tabindex');
-            }
-            const wasDisabled = el.dataset.lockPrevDisabled === 'true';
-            if (wasDisabled) {
-              el.disabled = true;
-            } else {
-              el.removeAttribute('disabled');
-            }
-            if (persistDisabled) {
-              el.disabled = true;
-              el.setAttribute('aria-disabled', 'true');
-              if (!Object.prototype.hasOwnProperty.call(el.dataset, 'persistPrevTab')) {
-                el.dataset.persistPrevTab = el.getAttribute('tabindex') || '';
-              }
-              el.setAttribute('tabindex', '-1');
-            } else {
-              el.removeAttribute('aria-disabled');
-              if (Object.prototype.hasOwnProperty.call(el.dataset, 'persistPrevTab')) {
-                const prev = el.dataset.persistPrevTab;
-                if (prev) el.setAttribute('tabindex', prev); else el.removeAttribute('tabindex');
-                delete el.dataset.persistPrevTab;
-              }
-            }
-            delete el.dataset.lockPrevDisabled;
-          }
+        if (lockNotes[i]) lockNotes[i].style.display = available ? 'none' : 'block';
+        sec.querySelectorAll('.step-body input, .step-body select, .step-body textarea, .step-body button').forEach(el => {
+          let enabled = available;
+          if (el === stateEl) enabled = catalogReady && Boolean(model.productType);
+          else if (el === officeInput) enabled = catalogReady && Boolean(model.productType && model.state);
+          else if (el === qtyEl) enabled = available && Boolean(model.product);
+          else if (el.closest('#permitHolderFieldset')) enabled = available && ackRequirementsMet();
+          else if (el === ackEligibility) enabled = available && productRequiresEligibility(model.product);
+          setControlEnabled(el, enabled);
         });
       });
+      syncPermitHolderAccess();
     }
 
     function updateStepUI(activeIdx = model.step) {
@@ -1246,12 +1247,7 @@
     };
 
     function getProductEligibility(product) {
-      if (!product) return null;
-      const name = (product.name || '').toLowerCase();
-      if (name.includes('subsistence') && name.includes('anilca')) {
-        return ANILCA_ELIGIBILITY;
-      }
-      return null;
+      return product?.eligibilityRule === 'anilca-subsistence' ? ANILCA_ELIGIBILITY : null;
     }
 
     function productRequiresEligibility(product) {
@@ -1268,6 +1264,7 @@
 
     function clearConfirmation() {
       if (confirmation) confirmation.style.display = 'none';
+      if (permitDownloadBtn) permitDownloadBtn.disabled = true;
       if (permitRefEl) permitRefEl.textContent = '—';
       if (permitDownloadUrl) {
         try { URL.revokeObjectURL(permitDownloadUrl); } catch (err) { /* no-op */ }
@@ -1521,6 +1518,18 @@
       errorList.innerHTML = '';
     }
 
+    function quantityError(product, value) {
+      if (!product) return 'Choose a product first.';
+      if (String(value).trim() === '') return 'Enter a quantity to continue.';
+      const quantity = Number(value);
+      if (!Number.isFinite(quantity)) return 'Enter a quantity using numbers only.';
+      if (quantity < product.minQty) return `Enter ${product.minQty} or more ${product.unit}(s).`;
+      if (quantity > product.maxQty) return `Enter ${product.maxQty} or fewer ${product.unit}(s).`;
+      const steps = (quantity - product.minQty) / product.quantityStep;
+      if (Math.abs(steps - Math.round(steps)) > 1e-8) return `Enter a quantity in increments of ${product.quantityStep} ${product.unit}(s).`;
+      return '';
+    }
+
     const FIELD_VALIDATORS = {
       ptypeGroup: () => (model.productType ? '' : 'Select what you are collecting to view available permits.'),
       state: (el) => ((el.value || '').trim() ? '' : 'Choose a state to see offices in that area.'),
@@ -1529,18 +1538,7 @@
         if (!model.officeId) return 'Select a BWL office from the list to continue.';
         return '';
       },
-      qty: (el) => {
-        const val = (el.value || '').trim();
-        const p = model.product;
-        if (!p) return '';
-        if (!val) return 'Enter a quantity to continue.';
-        const v = Number(val);
-        if (!Number.isFinite(v)) return 'Enter a quantity using numbers only.';
-        const minQty = Number.isFinite(p.minQty) ? p.minQty : 1;
-        if (v < minQty) return `Enter ${minQty} or more ${p.unit}(s).`;
-        if (p.maxQty && v > p.maxQty) return `Enter ${p.maxQty} or fewer ${p.unit}(s).`;
-        return '';
-      },
+      qty: (el) => quantityError(model.product, el.value),
       FirstName: (el) => {
         const val = (el.value || '').trim();
         if (!val) return 'Enter a first name.';
@@ -1604,7 +1602,7 @@
     };
 
     function getFieldErrorMessage(el) {
-      if (!el || el.disabled) return '';
+      if (!el) return '';
       const validator = FIELD_VALIDATORS[el.id];
       return validator ? validator(el) : '';
     }
@@ -1627,7 +1625,7 @@
       const v = Number(qtyEl.value);
       const max = p?.maxQty;
       const min = Number.isFinite(p?.minQty) ? p.minQty : 1;
-      const invalid = !p || !Number.isFinite(v) || v < min || (max && v > max);
+      const invalid = Boolean(quantityError(p, qtyEl.value));
       if (invalid) {
         // Keep model/UI consistent so downstream logic does not rely on stale quantities/totals.
         model.qty = 0;
@@ -1702,7 +1700,7 @@
 
     function validatePermitHolder({ touchFields = false } = {}) {
       const msgs = [];
-      const required = ['FirstName','LastName','AddressLine1','City','AddrState','Zip','DeliveryEmail','ConfirmEmail'];
+      const required = Object.keys(permitHolder);
       for (const k of required) {
         const el = permitHolder[k];
         const msg = getFieldErrorMessage(el);
@@ -1825,12 +1823,13 @@
 
     function evaluateFinalStep({ showErrorsOnFail = false } = {}) {
       const ackOk = ackRequirementsMet();
-      const permitHolderErrors = validatePermitHolder({ touchFields: showErrorsOnFail });
+      const selectionOk = validateStep1() && Boolean(model.product && isSaleActive(model.product)) && validateQty();
+      const permitHolderErrors = ackOk ? validatePermitHolder({ touchFields: showErrorsOnFail }) : [];
       const permitHolderValid = permitHolderErrors.length === 0;
 
       syncPermitHolderAccess();
 
-      if (!ackOk || !permitHolderValid) {
+      if (!selectionOk || !ackOk || !permitHolderValid) {
         stepState.completed[2] = false;
         handoff.style.display = 'none';
         confirmPaygovBtn.disabled = true;
@@ -1931,6 +1930,8 @@
 
       // Rendering products can be expensive; only re-evaluate step gating when selection state changes.
       if (priorOfficeId !== model.officeId) {
+        resetProductSelection();
+        resetFollowingSteps(0);
         attemptAdvanceFromStep1();
       }
     });
@@ -1983,6 +1984,7 @@
     });
 
     qtyEl.addEventListener('input', () => {
+      invalidateCheckout();
       const wasCompleted = stepState.completed[1];
       setFieldError(qtyEl, '');
       const max = Number(qtyEl.max || '');
@@ -2023,13 +2025,13 @@
       commitQuantity({ showErrors: true });
     });
 
-    function onAckChange() { syncPermitHolderAccess(); evaluateFinalStep(); }
+    function onAckChange() { invalidateCheckout(); syncPermitHolderAccess(); evaluateFinalStep(); }
     ackPrivacy.addEventListener('change', onAckChange);
     ackTerms.addEventListener('change', onAckChange);
     if (ackEligibility) ackEligibility.addEventListener('change', onAckChange);
 
     Object.values(permitHolder).forEach((el) => {
-      el.addEventListener('input', () => { validateField(el); evaluateFinalStep(); });
+      el.addEventListener('input', () => { invalidateCheckout(); validateField(el); evaluateFinalStep(); });
       el.addEventListener('blur', () => { validateField(el); evaluateFinalStep(); });
     });
 
@@ -2046,7 +2048,25 @@
       });
     }
 
+    function checkoutSnapshot() {
+      return {
+        state: model.state, officeId: model.officeId, productId: model.product?.id,
+        quantity: model.qty, unitPrice: model.product?.price,
+        permitHolder: Object.fromEntries(Object.entries(permitHolder).map(([key, el]) => [key, el.value.trim()])),
+        privacy: ackPrivacy.checked, terms: ackTerms.checked, eligibility: Boolean(ackEligibility?.checked)
+      };
+    }
+
     confirmPaygovBtn.addEventListener('click', () => {
+      const current = getProductsForSelection().find(product => product.id === model.product?.id);
+      if (!validateStep1() || !current || current !== model.product || !validateQty()) {
+        resetProductSelection();
+        resetFollowingSteps(0);
+        attemptAdvanceFromStep1();
+        hideReview();
+        showErrors(['This selection is no longer available. Choose an available product and quantity.']);
+        return;
+      }
       const ok = evaluateFinalStep({ showErrorsOnFail: true });
       if (!ok) return;
       clearConfirmation();
@@ -2058,7 +2078,7 @@
       const permitHolderEmail = permitHolder.DeliveryEmail.value.trim();
 
       if (unitPrice === 0 && total === 0) {
-        const permitReference = `PERMIT-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+        const permitReference = checkoutReference(checkoutSnapshot(), 'PERMIT');
 
         const payload = {
           idempotencyKey: permitReference,
@@ -2067,6 +2087,7 @@
           officeId: model.officeId,
           officeName: model.officeName,
           productType: model.productType,
+          productId: model.product?.id,
           productName: model.product?.name,
           unit: model.product?.unit,
           unitPrice,
@@ -2144,19 +2165,7 @@
         return;
       }
 
-      const transactionReference = (() => {
-        let ref = '';
-        try {
-          ref = sessionStorage.getItem(transactionRefKey) || '';
-        } catch (err) {
-          ref = '';
-        }
-        if (!ref) {
-          ref = `TX-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
-          try { sessionStorage.setItem(transactionRefKey, ref); } catch (err) { /* no-op */ }
-        }
-        return ref;
-      })();
+      const transactionReference = checkoutReference(checkoutSnapshot(), 'TX');
 
       const payload = {
         idempotencyKey: transactionReference,
@@ -2165,6 +2174,7 @@
         officeId: model.officeId,
         officeName: model.officeName,
         productType: model.productType,
+        productId: model.product?.id,
         productName: model.product?.name,
         unit: model.product?.unit,
         unitPrice,
@@ -2217,6 +2227,7 @@
     });
 
     resetAllBtn.addEventListener('click', () => {
+      Object.values(permitHolder).forEach(el => { el.value = ''; });
       resetStateSelection();
       setProductType('');
       resetProductSelection();
@@ -2240,11 +2251,14 @@
       syncSelectionAvailability();
       await loadProductData();
       populateUSStates(permitHolder.AddrState);
-      restoreState();
+      restoring = true;
+      try { restoreState(); } finally { restoring = false; }
       syncPermitHolderAccess();
       updateReviewActions();
       syncSelectionAvailability();
       updateStepUI(0);
+      document.documentElement.dataset.appReady = 'true';
+      document.dispatchEvent(new CustomEvent('sfpx:ready'));
     }
 
     boot();
