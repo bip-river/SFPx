@@ -35,6 +35,14 @@ try {
     assert.equal(await page.evaluate(() => !!document.activeElement.closest('[inert]')), false, 'locked controls are skipped');
     await page.locator('.ptype-card').first().click();
     await page.locator('#state').selectOption('AK');
+    // A pointer press held longer than a quick tap must still choose the option.
+    await page.locator('#officeInput').click();
+    const slowOption = page.locator('#officeOption_1'); await slowOption.scrollIntoViewIfNeeded();
+    const optionBox = await slowOption.boundingBox();
+    await page.mouse.move(optionBox.x + optionBox.width / 2, optionBox.y + optionBox.height / 2);
+    await page.mouse.down(); await page.waitForTimeout(250); await page.mouse.up();
+    assert.equal(await page.locator('#officeInput').inputValue(), 'Juneau Harbor Outpost', 'slow pointer click selects an office');
+    await page.locator('#officeInput').fill(''); await page.locator('#state').focus();
     await page.locator('#officeInput').focus();
     await page.keyboard.press('ArrowDown'); await page.keyboard.press('ArrowUp'); await page.keyboard.press('Enter');
     assert.equal(await page.locator('#officeInput').inputValue(), 'Anchorage Aurora Outpost');

@@ -1452,6 +1452,9 @@ document.addEventListener('click', (e) => {
   if (!officeCombo.contains(e.target)) setOfficeExpanded(false);
 });
 
+// Keep focus in the input while pressing an option; otherwise blur closes the list before a slow click lands.
+officeList.addEventListener('mousedown', (e) => e.preventDefault());
+
 stepToggles.forEach((btn, idx) => {
   btn.addEventListener('click', () => {
     if (!stepState.available[idx]) return;
