@@ -269,6 +269,14 @@ test('checkout works without crypto.randomUUID and reports unexpected failures',
   assert.equal(a.$('#FirstName').value, 'Changed');
 });
 
+test('assistive descriptions include product price and drop the purchaser lock hint once unlocked', async t => {
+  const a = await app(t); a.choose();
+  const description = el => (el.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean).map(id => a.w.document.getElementById(id)?.textContent || '').join(' ');
+  assert.match(description(a.$('#prod_0')), /\$10\.00 per cord/);
+  a.holder();
+  assert.doesNotMatch(description(a.$('#permitHolderFieldset')), /Check all acknowledgement boxes/);
+});
+
 test('back-forward cache return clears browser-retained purchaser information', async t => {
   const a = await app(t); a.choose(); a.holder();
   a.w.dispatchEvent(new a.w.PageTransitionEvent('pageshow', { persisted: true }));

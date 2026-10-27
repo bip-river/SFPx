@@ -14,7 +14,7 @@ Use fictional purchaser data. Test VoiceOver with Safari on a Mac and NVDA with 
 
 1. Navigate by headings: find the page title, three named steps, and help. Use the skip link to reach the main content.
 2. Select a collection type and state. In the office combobox, use arrow keys, Enter, and Escape. Confirm the active option and expanded/collapsed state are spoken; focus stays in the input until selection/navigation.
-3. Reach product radios. Confirm each name is concise and its validity/availability can be read. Expand maps/rules and follow their links without changing the selected radio.
+3. Reach product radios. Confirm each name is concise and its price, validity, and availability can be read. Expand maps/rules and follow their links without changing the selected radio.
 4. Enter an invalid quantity and Tab away. Confirm the error is associated with the quantity, navigation is not trapped, and Step 3 stays unavailable. Correct it and confirm the step can be reached.
 5. Read and accept agreements. Confirm required purchaser fields have understandable names and required states. Navigate into and out of all fields and details controls with the keyboard.
 6. Generate a no-fee demo permit. Confirm busy status is understandable, completion focuses the named confirmation, and Download is reachable. Edit the name and confirm the old download is unavailable. Reset and confirm old purchaser data is cleared.
