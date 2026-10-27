@@ -5,7 +5,7 @@ import { getProductEligibility, productRequiresEligibility } from './js/eligibil
 import { createSelectionStorage } from './js/state.js';
 import { MAX_PAYLOAD_BYTES, createCheckoutIdentity, readPermitHolder, buildCheckoutPayload, payloadSizeBytes } from './js/checkout.js';
 import { buildDemoPermitPdf } from './js/permit-pdf.js';
-import { renderProductTypes, money, feeLabelForUnit, totalLabelFor, formatDate, getValidityLabels, buildRequiredDocs, buildDocLinks, buildProductAlert, buildProductCard, renderPayload } from './js/ui.js';
+import { renderProductTypes, money, feeLabelForUnit, totalLabelFor, formatDate, getValidityLabels, buildRequiredDocs, buildProductAlert, buildProductCard, renderPayload } from './js/ui.js';
 
 let catalogData = {};
 let catalogReady = false;
@@ -39,7 +39,6 @@ const productListEl = document.getElementById('productList');
 const qtyEl = document.getElementById('qty');
 const qtyHint = document.getElementById('qtyHint');
 const qtyGuard = document.getElementById('qtyGuard');
-const totalEl = document.getElementById('total');
 const totalAmount = document.getElementById('totalAmount');
 const totalCalc = document.getElementById('totalCalc');
 
@@ -124,7 +123,6 @@ const holderValues = new WeakMap(Object.values(permitHolder).map(el => [el, el.v
 
 // Model
 const model = {
-  step: 0,
   state: '',
   officeId: '',
   officeName: '',
@@ -277,7 +275,6 @@ function resetProductSelection() {
   model.productKey = '';
   model.product = null;
   qtyEl.value = '';
-  totalEl.value = '';
   if (totalAmount) totalAmount.textContent = '—';
   totalCalc.textContent = '';
   qtyGuard.textContent = '';
@@ -727,7 +724,7 @@ function renderProducts() {
   products.forEach((p, idx) => {
     productListEl.appendChild(buildProductCard(p, idx, {
       docs: buildRequiredDocs(p, model.productType, getLocationAttachments()),
-      onSelect: () => selectProduct(p, idx)
+      onSelect: () => selectProduct(p)
     }));
   });
   updateProductCardSelection();
@@ -745,7 +742,7 @@ function showQuantityFor(p) {
   qtySection.style.display = 'block';
 }
 
-function selectProduct(p, idx) {
+function selectProduct(p) {
   invalidateCheckout();
   updateProductCardSelection();
 
@@ -753,7 +750,6 @@ function selectProduct(p, idx) {
   model.product = p;
   showQuantityFor(p);
   qtyEl.value = '';
-  totalEl.value = '';
   if (totalAmount) totalAmount.textContent = '—';
   totalCalc.textContent = '';
   model.qty = 0;
@@ -827,8 +823,7 @@ function applyLockState() {
   syncPermitHolderAccess();
 }
 
-function updateStepUI(activeIdx = model.step) {
-  model.step = activeIdx;
+function updateStepUI() {
   stepState.open = stepState.open.map((open, i) => (stepState.available[i] ? open : false));
   const activeStepIndex = stepState.open.findIndex(Boolean);
 
@@ -870,7 +865,8 @@ function updateStepUI(activeIdx = model.step) {
   prevAvailability = [...stepState.available];
 
   if (activeStepIndex !== -1 && activeStepIndex !== lastAnnouncedStep) {
-    announce(`Now viewing Step ${activeStepIndex + 1}. ${stepSections[activeStepIndex]?.getAttribute('aria-label') || ''}`.trim());
+    const stepTitle = stepSections[activeStepIndex]?.querySelector('.step-toggle-text')?.textContent || `Step ${activeStepIndex + 1}`;
+    announce(`Now viewing ${stepTitle}.`);
     lastAnnouncedStep = activeStepIndex;
   }
 }
@@ -939,7 +935,7 @@ function renderEligibilityAgreement() {
     elig.citations.forEach((c) => {
       const li = document.createElement('li');
       const a = document.createElement('a');
-      a.href = c.url || '#';
+      a.href = sanitizeUrl(c.url);
       a.textContent = c.label || 'Legal reference';
       a.target = '_blank';
       a.rel = 'noopener';
@@ -985,7 +981,6 @@ function syncPermitHolderAccess() {
   const unlocked = ackRequirementsMet();
   if (permitHolderFieldset) {
     permitHolderFieldset.disabled = !unlocked;
-    permitHolderFieldset.classList.toggle('locked', !unlocked);
     permitHolderFieldset.style.display = unlocked ? 'block' : 'none';
   }
   if (permitHolderBlockedHint) {
@@ -1116,7 +1111,6 @@ function validateQty() {
   if (invalid) {
     // Keep model/UI consistent so downstream logic does not rely on stale quantities/totals.
     model.qty = 0;
-    totalEl.value = '';
     if (totalAmount) totalAmount.textContent = '—';
     totalCalc.textContent = '';
     return false;
@@ -1126,14 +1120,13 @@ function validateQty() {
   const unitPrice = p.price || 0;
   const total = v * unitPrice;
 
-  totalEl.value = unitPrice === 0 ? 'No fee' : money(total);
   const amountLabel = totalLabelFor(unitPrice, total);
   const amountChanged = totalAmount && totalAmount.textContent !== amountLabel;
   if (totalAmount) totalAmount.textContent = amountLabel;
 
   totalCalc.textContent = unitPrice === 0
     ? 'No-fee permit'
-    : `${money(unitPrice)} × ${v} ${p.unit}${v === 1 ? '' : 's'} = ${totalEl.value}`;
+    : `${money(unitPrice)} × ${v} ${p.unit}${v === 1 ? '' : 's'} = ${amountLabel}`;
   if (amountChanged) animateTotalUpdate();
   return true;
 }
@@ -1148,7 +1141,6 @@ function animateTotalUpdate() {
 
 function resetQuantityState() {
   model.qty = 0;
-  totalEl.value = '';
   if (totalAmount) totalAmount.textContent = '—';
   totalCalc.textContent = '';
   stepState.completed[1] = false;
@@ -1156,7 +1148,7 @@ function resetQuantityState() {
   stepState.completed[2] = false;
   stepState.open[2] = false;
   hideReview();
-  updateStepUI(model.step);
+  updateStepUI();
   updateReviewPanels();
 }
 
@@ -1181,7 +1173,7 @@ function commitQuantity({ showErrors = true } = {}) {
   if (ok && !wasCompleted) {
     stepState.open[2] = true;
   }
-  updateStepUI(model.step);
+  updateStepUI();
   updateReviewPanels();
   persistState();
   return ok;
@@ -1208,7 +1200,7 @@ function setStepOpenState(idx, open, { collapseOthers = false, scroll = false, s
     stepState.open[idx] = open;
   }
 
-  updateStepUI(idx);
+  updateStepUI();
   hideErrors();
 
   if (open && (scroll || scrollIfNeeded)) {
@@ -1226,7 +1218,7 @@ function resetFollowingSteps(startIdx) {
   if (startIdx <= 1) {
     resetAcknowledgements();
   }
-  updateStepUI(startIdx);
+  updateStepUI();
 }
 
 function attemptAdvanceFromStep1() {
@@ -1250,7 +1242,7 @@ function attemptAdvanceFromStep1() {
   }
   renderProducts();
 
-  updateStepUI(model.step);
+  updateStepUI();
 
   updateReviewPanels();
   persistState();
@@ -1326,7 +1318,7 @@ function evaluateFinalStep({ showErrorsOnFail = false } = {}) {
       }
       showErrors(errs.concat(permitHolderErrors));
     }
-    updateStepUI(model.step);
+    updateStepUI();
     updateReviewPanels();
     persistState();
     return false;
@@ -1334,7 +1326,7 @@ function evaluateFinalStep({ showErrorsOnFail = false } = {}) {
 
   hideErrors();
   stepState.completed[2] = true;
-  updateStepUI(2);
+  updateStepUI();
   updateReviewPanels();
   persistState();
   return true;
@@ -1372,7 +1364,7 @@ stateEl.addEventListener('change', () => {
   hideReview();
   hideLocationNotice();
   syncSelectionAvailability();
-  updateStepUI(0);
+  updateStepUI();
   updateReviewPanels();
   persistState();
 });
@@ -1489,7 +1481,7 @@ qtyEl.addEventListener('input', () => {
   clearConfirmation();
   hideReview();
   updateLockNotes();
-  updateStepUI(model.step);
+  updateStepUI();
   persistState();
   evaluateFinalStep();
 });
@@ -1681,7 +1673,7 @@ resetAllBtn.addEventListener('click', () => {
   hideLocationNotice();
   clearAllFieldErrors();
   syncSelectionAvailability();
-  updateStepUI(0);
+  updateStepUI();
   updateReviewPanels();
   selectionStorage.clear();
 });
@@ -1710,7 +1702,7 @@ async function boot() {
   syncPermitHolderAccess();
   updateReviewPanels();
   syncSelectionAvailability();
-  updateStepUI(0);
+  updateStepUI();
   document.documentElement.dataset.appReady = 'true';
   document.dispatchEvent(new CustomEvent('sfpx:ready'));
 }

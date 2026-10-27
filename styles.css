@@ -48,16 +48,11 @@
       --bg: var(--color-bg);
       --card: var(--color-surface);
       --border: var(--color-border);
-      --shadow: var(--shadow-md);
       --brand: var(--color-primary);
-      --brand2: var(--color-primary-strong);
-      --accent: var(--color-accent);
       --accent-soft: var(--color-accent-soft);
       --field: var(--color-surface-muted);
       --danger: var(--color-danger);
-      --ok: var(--color-success);
       --link: var(--color-link);
-      --radius: var(--radius-card);
       --max:1160px;
       --font: var(--font-family-base);
     }
@@ -148,7 +143,7 @@ body{
     .flow-step.collapsed .step-body{grid-template-rows:0fr; opacity:0; margin-top:0; pointer-events:none;}
     .lock-note{display:none; margin-top:8px; font-size:var(--font-size-small); color:#2f4f4d; background:rgba(247,251,245,.85); border:1px dashed rgba(29,107,66,.35); padding:12px 13px; border-radius:var(--radius-input);}
     /* Forms */
-    label{font-weight:700; font-size:14px; color:#0d3b25}
+    label, .field-label{font-weight:700; font-size:14px; color:#0d3b25}
     .hint{font-size:var(--font-size-small); color:var(--muted); margin-top:4px; background:var(--accent-soft); border-radius:var(--radius-soft); padding:6px 8px; border:1px solid rgba(208,164,60,.25);}
     .hint.subtle{background:#fff; border:1px solid var(--color-border); color:var(--muted);}
     fieldset{border:0; padding:0; margin:0; min-width:0;}
@@ -181,7 +176,6 @@ body{
     .primary:disabled{background:rgba(29,107,66,.45); cursor:not-allowed; box-shadow:none}
     .ghost{background:rgba(247,251,245,.9); border:1px solid rgba(29,107,66,.28); color:#0d3b25; box-shadow:var(--shadow-sm)}
     .ghost:hover{background:#fff; transform:translateY(-1px);}
-    .permit-holder-block.locked{opacity:.6;}
     .agreements{border:1px solid rgba(29,107,66,.14); border-radius:var(--radius-card); padding:14px; background:rgba(29,107,66,.05); display:grid; grid-template-columns:minmax(0, 1fr); align-items:start; gap:12px; margin-top:12px; box-shadow:var(--shadow-sm);}
     @media(min-width: 860px){.agreements{gap:16px;}}
     .agreements-copy,
@@ -336,7 +330,6 @@ body{
     .total-panel{border:1px solid var(--color-border); border-radius:var(--radius-input); padding:12px; background:#fff; box-shadow:var(--shadow-sm);}
     .total-amount{font-weight:800; font-size:20px; color:var(--ink); transition:opacity var(--motion-fast) var(--motion-ease);}
     .total-amount.is-updating{opacity:.45;}
-    #total{opacity:0; height:0; padding:0; border:0; margin:0;}
     /* Accordions */
     details{border:1px solid rgba(29,107,66,.18); border-radius:var(--radius-card); background:#fff; padding:10px 12px; margin-top:10px; box-shadow:var(--shadow-sm);}
     summary{cursor:pointer; font-weight:900}

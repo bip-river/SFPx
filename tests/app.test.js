@@ -339,6 +339,20 @@ test('coming-soon products are shown in their own section and are not selectable
   assert.equal(a.w.document.querySelectorAll('input[name=product]').length, 4);
 });
 
+test('static notices are not live regions, steps are named by their headings, and every label has a control', async t => {
+  const a = await app(t); a.choose();
+  const doc = a.w.document;
+  for (const selector of ['.prototype-banner', '.pagehead .alert', '.help-alert']) assert.ok(!a.$(selector).hasAttribute('role') && !a.$(selector).hasAttribute('aria-live'), selector);
+  assert.equal(a.$('#totalCalc').hasAttribute('aria-live'), false, 'no live region nested inside the total panel');
+  for (const step of doc.querySelectorAll('.flow-step')) assert.equal(doc.getElementById(step.getAttribute('aria-labelledby'))?.closest('.step-toggle'), step.querySelector('.step-toggle'), step.id);
+  for (const label of doc.querySelectorAll('label')) assert.ok(label.control, label.outerHTML.slice(0, 80));
+  assert.ok(a.$('footer nav[aria-label="Footer"]'));
+  assert.equal(a.$('.agency-title').hasAttribute('aria-label'), false, 'no aria-label on a role-less element');
+  const docNames = [...doc.querySelectorAll('.prod .docs summary')].map(summary => summary.textContent.trim());
+  assert.equal(new Set(docNames).size, docNames.length, 'each maps-and-rules control names its product');
+  assert.equal(a.$('#prod_0').value, catalog.AK.offices[0].products.fuelwood[0].id);
+});
+
 test('back-forward cache return clears browser-retained purchaser information', async t => {
   const a = await app(t); a.choose(); a.holder();
   a.w.dispatchEvent(new a.w.PageTransitionEvent('pageshow', { persisted: true }));

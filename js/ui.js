@@ -22,7 +22,7 @@ export function totalLabelFor(unitPrice, total) {
 export function formatDate(isoOrDate) {
   if (!isoOrDate) return '';
   const d = (isoOrDate instanceof Date) ? isoOrDate : new Date(isoOrDate + 'T00:00:00');
-  return d.toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' });
+  return d.toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' });
 }
 
 export function getAvailableUntilLabel(product) {
@@ -76,15 +76,21 @@ export function buildProductAlert(message) {
   return alert;
 }
 
-export function buildDocLinks(docs = []) {
+export function buildDocLinks(docs = [], productName = '') {
   const details = document.createElement('details');
   details.className = 'docs';
   const summary = document.createElement('summary');
   summary.className = 'docs-action';
-  summary.setAttribute('aria-label', 'Maps and permit rules');
   const summaryTitle = document.createElement('span');
   summaryTitle.className = 'docs-title';
   summaryTitle.textContent = 'Maps & permit rules';
+  // Every card has this control, so screen reader users need to hear which permit it belongs to.
+  if (productName) {
+    const context = document.createElement('span');
+    context.className = 'sr-only';
+    context.textContent = ` for ${productName}`;
+    summaryTitle.appendChild(context);
+  }
   const summaryText = document.createElement('span');
   summaryText.className = 'docs-text';
   summaryText.appendChild(summaryTitle);
@@ -104,7 +110,6 @@ export function buildDocLinks(docs = []) {
       const link = document.createElement('a');
       link.href = sanitizeUrl(doc.url);
       link.textContent = doc.label;
-      link.addEventListener('click', (event) => event.stopPropagation());
       docsWrap.appendChild(link);
     });
   }
@@ -184,7 +189,7 @@ export function buildProductCard(p, idx, { docs, onSelect }) {
   input.type = 'radio';
   input.name = 'product';
   input.id = id;
-  input.value = String(idx);
+  input.value = p.id;
   input.className = 'prod-radio';
 
   const body = document.createElement('div');
@@ -222,7 +227,7 @@ export function buildProductCard(p, idx, { docs, onSelect }) {
   availability.id = `${id}_availability`;
   availability.textContent = availableUntil;
 
-  const docsDiv = buildDocLinks(docs);
+  const docsDiv = buildDocLinks(docs, p.name);
 
   [header, validity, availability, docsDiv].forEach((node) => body.appendChild(node));
   card.appendChild(body);

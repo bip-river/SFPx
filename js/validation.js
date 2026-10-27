@@ -7,7 +7,6 @@ const LENGTH_LIMITS = {
   AddressLine1: 120,
   AddressLine2: 120,
   City: 80,
-  Zip: 10,
   DeliveryEmail: 120,
   ConfirmEmail: 120,
 };
@@ -75,7 +74,6 @@ export function createFieldValidators({ model, permitHolder }) {
       const val = (el.value || '').trim();
       if (!val) return 'Enter a ZIP code.';
       if (!/^\d{5}(-\d{4})?$/.test(val)) return 'Enter a ZIP in 5-digit or ZIP+4 format (##### or #####-####).';
-      if (val.length > LENGTH_LIMITS.Zip) return `ZIP must be ${LENGTH_LIMITS.Zip} characters or fewer.`;
       return '';
     },
     DeliveryEmail: (el) => {
