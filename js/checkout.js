@@ -10,9 +10,21 @@ export function randomId(source = globalThis.crypto) {
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
 }
 
+export function randomDigits(length, source = globalThis.crypto) {
+  // A 32-bit value's bias across ten digits is too small to matter for a demo number.
+  return Array.from(source.getRandomValues(new Uint32Array(length)), value => value % 10).join('');
+}
+
+// Office, two-digit year, then six digits: AK-ANCH-26-048213. In production the permitting system would issue
+// these from a sequence; a random demo number can repeat, about once in a million per office and year.
+export function createPermitNumber(officeId, date, makeDigits = randomDigits) {
+  return `${officeId}-${String(date.getFullYear()).slice(-2)}-${makeDigits(6)}`;
+}
+
 // Identity is scoped to one immutable checkout snapshot and lives only in memory.
-export function createCheckoutIdentity(makeId = randomId) {
+export function createCheckoutIdentity(makeId = randomId, makeDigits = randomDigits) {
   let current = null;
+  let permit = null;
   return {
     referenceFor(snapshot, prefix) {
       const fingerprint = JSON.stringify(snapshot);
@@ -21,7 +33,13 @@ export function createCheckoutIdentity(makeId = randomId) {
       }
       return current.reference;
     },
-    clear() { current = null; }
+    // A retry of the same checkout keeps its permit number, like its reference.
+    permitNumberFor(snapshot, officeId, date) {
+      const fingerprint = JSON.stringify(snapshot);
+      if (!permit || permit.fingerprint !== fingerprint) permit = { fingerprint, number: createPermitNumber(officeId, date, makeDigits) };
+      return permit.number;
+    },
+    clear() { current = null; permit = null; }
   };
 }
 
@@ -38,13 +56,14 @@ export function readPermitHolder(fields) {
   };
 }
 
-export function buildCheckoutPayload({ model, holder, reference, eligibility = null }) {
+export function buildCheckoutPayload({ model, holder, reference, permitNumber, haulTags = 0, eligibility = null }) {
   const unitPrice = model.product.price;
   const total = unitPrice * model.qty;
   const noFee = unitPrice === 0;
   return {
     idempotencyKey: reference,
-    ...(noFee ? { permitReference: reference } : { transactionReference: reference }),
+    permitNumber,
+    ...(noFee ? {} : { transactionReference: reference }),
     state: model.state,
     officeId: model.officeId,
     officeName: model.officeName,
@@ -54,6 +73,8 @@ export function buildCheckoutPayload({ model, holder, reference, eligibility = n
     unit: model.product.unit,
     unitPrice,
     quantity: model.qty,
+    haulTags,
+    validForDays: model.product.validForDays,
     total,
     permitHolder: holder,
     // A certification belongs with any product whose rule requires it, paid or not.

@@ -5,6 +5,25 @@ export const PRODUCT_TYPE_OPTIONS = [
   { id: 'mushrooms', label: 'Mushrooms', noun: 'mushroom', description: 'Gather morels, chanterelles and more.' }
 ];
 
+// Only these collection types can use haul tags; a state, office or listing can still decide they are not required.
+// Each tag covers this much of the permit's unit: half a cord of firewood, or one tree.
+export const HAUL_TAG_UNITS = { fuelwood: 0.5, christmas: 1 };
+export const HAUL_TAG_TYPES = Object.keys(HAUL_TAG_UNITS);
+
+// The most specific rule wins: listing, then office, then state. Without a rule, tagged types require tags.
+export function haulTagsRequired(type, product, office, state) {
+  if (!HAUL_TAG_TYPES.includes(type)) return false;
+  for (const rule of [product?.haulTags, office?.haulTags?.[type], state?.haulTags?.[type]]) {
+    if (typeof rule === 'boolean') return rule;
+  }
+  return true;
+}
+
+// A quantity that does not divide evenly still needs a tag for its last part.
+export function haulTagCount(type, product, office, state, quantity) {
+  return haulTagsRequired(type, product, office, state) ? Math.ceil(quantity / HAUL_TAG_UNITS[type] - 1e-9) : 0;
+}
+
 export function parseDate(iso) {
   if (typeof iso !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return null;
   const d = new Date(iso + 'T00:00:00');
@@ -83,14 +102,22 @@ export function validateCatalog(catalog) {
   const checkDocs = (docs = []) => {
     if (!Array.isArray(docs) || docs.some(doc => !doc || typeof doc.label !== 'string' || typeof doc.url !== 'string')) throw new Error('Invalid catalog attachments.');
   };
+  const checkTagRules = (rules, where) => {
+    if (rules === undefined) return;
+    if (!rules || typeof rules !== 'object' || Array.isArray(rules) || Object.entries(rules).some(([type, value]) => !HAUL_TAG_TYPES.includes(type) || typeof value !== 'boolean')) throw new Error(`Invalid haul tag rules: ${where}`);
+  };
   for (const [state, data] of Object.entries(catalog)) {
     if (!data || typeof data.name !== 'string' || !Array.isArray(data.offices)) throw new Error(`Invalid state: ${state}`);
     checkDocs(data.attachments);
+    checkTagRules(data.haulTags, state);
     const officeIds = new Set();
     for (const office of data.offices) {
       if (!office || typeof office.id !== 'string' || !office.id || officeIds.has(office.id) || typeof office.name !== 'string' || !office.products || typeof office.products !== 'object' || Array.isArray(office.products)) throw new Error(`Invalid office in ${state}`);
+      // Office IDs start permit numbers (AK-ANCH-26-048213), so they need the state prefix.
+      if (!new RegExp(`^${state}-[A-Z0-9]{2,8}$`).test(office.id)) throw new Error(`Office ID must look like ${state}-CODE: ${office.id}`);
       officeIds.add(office.id);
       checkDocs(office.attachments);
+      checkTagRules(office.haulTags, office.id);
       for (const [type, products] of Object.entries(office.products)) {
         if (!PRODUCT_TYPE_OPTIONS.some(option => option.id === type) || !Array.isArray(products)) throw new Error(`Invalid product type: ${office.id}/${type}`);
         for (const product of products) {
@@ -101,6 +128,7 @@ export function validateCatalog(catalog) {
           const start = parseDate(product.saleStartDate), end = parseDate(product.saleEndDate);
           if (!start || !end || start > end) throw new Error(`Invalid sale dates: ${product.id}`);
           if (product.eligibilityRule !== null && product.eligibilityRule !== 'anilca-subsistence') throw new Error(`Unknown eligibility rule: ${product.id}`);
+          if (product.haulTags !== undefined && (typeof product.haulTags !== 'boolean' || (product.haulTags && !HAUL_TAG_TYPES.includes(type)))) throw new Error(`Invalid haul tag rule: ${product.id}`);
           checkDocs(product.requiredDocs);
         }
       }

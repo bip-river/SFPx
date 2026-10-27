@@ -147,14 +147,20 @@ test('paid checkout validates holder data, preserves retry identity, and replace
   assert.equal(first.total, 10);
   assert.equal(first.productId, catalog.AK.offices[0].products.fuelwood[0].id);
   assert.equal(first.permitHolder.middleName, undefined);
+  assert.match(first.permitNumber, /^AK-ANCH-26-\d{6}$/);
+  assert.equal(first.haulTags, 2, 'one tag for each half cord');
+  assert.match(a.$('#permitCard').textContent, new RegExp(`Permit number ${first.permitNumber}`));
+  assert.match(a.$('#packageHint').textContent, /^PDF, \d+ pages\. Print every page single-sided\.$/);
   await a.goBack(); assert.equal(a.screen(), 'review');
   await a.generate(); assert.equal(a.payload().idempotencyKey, first.idempotencyKey);
+  assert.equal(a.payload().permitNumber, first.permitNumber, 'a retry keeps its permit number');
   await a.goBack();
   a.$('#reviewSummary a[href="#details"]').click(); assert.equal(a.screen(), 'details');
   a.input('#FirstName', 'Changed');
   assert.equal(a.$('#handoff').textContent, '');
   a.cont(); assert.equal(a.screen(), 'review', 'Continue returns to the check screen after a change');
   await a.generate(); assert.notEqual(a.payload().idempotencyKey, first.idempotencyKey);
+  assert.notEqual(a.payload().permitNumber, first.permitNumber, 'a changed checkout gets a new permit number');
   assert.equal(a.payload().permitHolder.firstName, 'Changed');
   assert.match(a.$('#permitCard').textContent, /Issued to Changed Purchaser/);
   const stored = a.w.sessionStorage.getItem('sfp-demo-state');
@@ -169,10 +175,13 @@ test('no-fee checkout retries reuse identity and edits revoke stale PDFs', async
   assert.equal(first.total, 0);
   assert.equal(a.$('#permitDownloadBtn').disabled, false);
   const pdfText = (await readPdf(a.urls.get(originalUrl))).text;
-  assert.match(pdfText, /Issued to: Test Purchaser/);
-  assert.match(pdfText, /Mailing address: 123 Test Street, Test City, UT 84037/);
-  assert.ok(pdfText.includes('Valid for 30 days, until Nov 20, 2026'), 'PDF states the validity shown on screen');
+  assert.match(pdfText, /Printed name: Test Purchaser/);
+  assert.match(pdfText, /123 Test Street, Test City, UT 84037/);
+  assert.match(pdfText, new RegExp(first.permitNumber));
+  assert.ok(pdfText.includes('Oct 21, 2026 until Nov 20, 2026 (30 days)'), 'PDF states the validity shown on screen');
+  assert.doesNotMatch(pdfText, /HAUL TAG/, 'this listing does not use haul tags');
   assert.match(a.$('#permitCard').textContent, /Valid for 30 days, until Nov 20, 2026/);
+  assert.match(a.$('#permitCard').textContent, /No haul tags needed for this permit/);
   await a.goBack(); await a.generate(); assert.equal(a.payload().idempotencyKey, first.idempotencyKey);
   await a.goBack();
   a.$('#reviewSummary a[href="#details"]').click();
@@ -181,7 +190,7 @@ test('no-fee checkout retries reuse identity and edits revoke stale PDFs', async
   assert.ok(a.revoked.includes([...a.urls.keys()].at(-1)));
   a.cont(); await a.generate();
   assert.notEqual(a.payload().idempotencyKey, first.idempotencyKey);
-  assert.match((await readPdf([...a.urls.values()].at(-1))).text, /Issued to: Changed Purchaser/);
+  assert.match((await readPdf([...a.urls.values()].at(-1))).text, /Printed name: Changed Purchaser/);
   await a.goBack(); a.$('#agree').click();
   assert.equal(a.$('#permitDownloadBtn').disabled, true);
   a.w.dispatchEvent(new a.w.PopStateEvent('popstate', { state: { screen: 'done' } }));
@@ -344,7 +353,7 @@ test('PDF failure keeps purchaser entries and allows a corrected retry', async t
   assert.equal(a.$('#permitDownloadBtn').disabled, true);
   a.$('#reviewSummary a[href="#details"]').click();
   a.input('#FirstName', 'José'); a.cont(); await a.generate();
-  assert.match((await readPdf([...a.urls.values()].at(-1))).text, /Issued to: José Purchaser/);
+  assert.match((await readPdf([...a.urls.values()].at(-1))).text, /Printed name: José Purchaser/);
 });
 
 test('address-state change alone updates checkout readiness', async t => {
@@ -445,7 +454,7 @@ test('permit options are named briefly and described by price and limits', async
 
 test('production-only email promises are labelled as such', async t => {
   const a = await app(t); a.choose(); a.holder(); a.agree(); await a.generate();
-  const promise = /email your permit|email a copy|sent to your email/i;
+  const promise = /email your permit|email a copy|email the package|sent to your email/i;
   const leaves = [...a.w.document.body.querySelectorAll('*')].filter(el => promise.test(el.textContent) && ![...el.children].some(child => promise.test(child.textContent)));
   assert.ok(leaves.length >= 3);
   for (const el of leaves) assert.ok(el.querySelector('.production-label'), el.textContent.trim());
@@ -496,6 +505,46 @@ test('paid products with an eligibility rule carry the certification in checkout
   assert.equal(a.payload().total, 10);
   assert.equal(a.payload().eligibility.certified, true);
   assert.match(a.payload().eligibility.basis, /ANILCA/);
+});
+
+test('haul tags follow the listing, office and state rules, one per half cord of firewood or per tree', async t => {
+  const tagLine = a => [...a.w.document.querySelectorAll('#reviewSummary .summary-line')].map(line => line.textContent).find(text => /haul tag/i.test(text)) || '';
+  const reach = async (data, type, office, index, quantity) => {
+    const a = await app(t, { data });
+    a.start(); a.$(`#ptype_${type}`).click(); a.cont();
+    a.change('#state', office.slice(0, 2)); a.$(`input[name=office][value="${office}"]`).click(); a.cont();
+    a.$(`#prod_${index}`).click(); if (quantity) a.input('#qty', String(quantity)); a.cont(); a.holder();
+    assert.equal(a.screen(), 'review');
+    return a;
+  };
+  const firewood = await reach(structuredClone(catalog), 'fuelwood', 'AK-ANCH', 0, 3);
+  assert.equal(tagLine(firewood), 'Includes 6 haul tags, one for each half cord');
+  firewood.agree(); await firewood.generate();
+  const text = (await readPdf([...firewood.urls.values()].at(-1))).text;
+  assert.match(text, /Tag 6 of 6/);
+  assert.doesNotMatch(text, /Tag 7 of/);
+  assert.equal(firewood.payload().haulTags, 6);
+  assert.equal(tagLine(await reach(structuredClone(catalog), 'christmas', 'AK-ANCH', 0, 2)), 'Includes 2 haul tags, one for each tree');
+  assert.equal(tagLine(await reach(structuredClone(catalog), 'fuelwood', 'AK-ANCH', 3)), 'No haul tags needed for this permit', 'a listing can opt out');
+  assert.equal(tagLine(await reach(structuredClone(catalog), 'fuelwood', 'AK-JUN', 0)), 'No haul tags needed for this permit', 'an office can opt out');
+  assert.equal(tagLine(await reach(structuredClone(catalog), 'mushrooms', 'AK-ANCH', 0)), '', 'mushroom permits never mention tags');
+  const stateOff = structuredClone(catalog); stateOff.AK.haulTags = { fuelwood: false };
+  assert.equal(tagLine(await reach(stateOff, 'fuelwood', 'AK-ANCH', 0)), 'No haul tags needed for this permit', 'a state can opt out');
+  stateOff.AK.offices[0].haulTags = { fuelwood: true };
+  assert.match(tagLine(await reach(stateOff, 'fuelwood', 'AK-ANCH', 0)), /^Includes 2 haul tags/, 'an office rule overrides its state');
+});
+
+test('document links open the sample PDFs in a new tab', async t => {
+  const a = await app(t); a.pickPermit();
+  const links = [...a.w.document.querySelectorAll('#qtyDocs a')];
+  assert.deepEqual(links.map(link => link.getAttribute('href')), ['documents/firewood-map.pdf', 'documents/firewood-stipulations.pdf', 'documents/firewood-measuring.pdf']);
+  for (const link of links) {
+    assert.equal(link.target, '_blank');
+    assert.equal(link.rel, 'noopener');
+    assert.match(link.textContent, /\(PDF\) \(opens in a new tab\)$/);
+  }
+  assert.ok([...a.w.document.querySelectorAll('#locationNotice a')].some(link => link.getAttribute('href') === 'documents/ak-anch-access-map.pdf'));
+  assert.equal(a.$('#qtyValidity').textContent, 'Valid for 90 days, until Jan 19, 2027', 'durations vary by permit');
 });
 
 test('coming-soon products are listed separately and are not selectable', async t => {
