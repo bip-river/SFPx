@@ -353,6 +353,15 @@ test('static notices are not live regions, steps are named by their headings, an
   assert.equal(a.$('#prod_0').value, catalog.AK.offices[0].products.fuelwood[0].id);
 });
 
+test('the demo PDF generates for visitors whose locale writes dates outside the embedded font', async t => {
+  const a = await app(t);
+  // Simulate a browser whose default locale formats dates as 2026年11月20日.
+  const nativeFormat = a.w.Date.prototype.toLocaleDateString;
+  a.w.Date.prototype.toLocaleDateString = function (locale, options) { return nativeFormat.call(this, locale ?? 'ja-JP', options); };
+  a.choose('fuelwood', 3); a.holder(); await a.generate();
+  assert.match((await readPdf([...a.urls.values()].at(-1))).text, /Expires Nov 20, 2026/);
+});
+
 test('back-forward cache return clears browser-retained purchaser information', async t => {
   const a = await app(t); a.choose(); a.holder();
   a.w.dispatchEvent(new a.w.PageTransitionEvent('pageshow', { persisted: true }));
