@@ -14,6 +14,7 @@ How the one-question-per-screen flow is built for assistive technology:
 - The quantity stepper's buttons use `aria-disabled` at the limits rather than `disabled`, so focus is not dropped. A polite live region reads the new total ("Total for 3 cords $36.00").
 - Errors sit above their field and are attached with `aria-describedby`; text fields also get `aria-invalid`. A group of radios is described by its error, because `aria-invalid` is not allowed on a group. Pressing Continue with problems shows a focused error summary whose links move to each field, or to the first option of a group.
 - The Pay button announces busy status while the PDF is prepared and keeps focus. Failures keep every entry.
+- Document links open the sample PDFs in a new tab, so unsaved answers stay on the page. Their text says "(PDF)" and, for screen readers, "(opens in a new tab)".
 - Tap targets are at least 44px. Text fields are 52px tall, and body text is 17px in Atkinson Hyperlegible Next.
 
 Automated accessibility-tree and DOM checks are not a listening test with VoiceOver, NVDA, or JAWS. Human screen-reader testing has not been completed by this automation.
@@ -31,4 +32,4 @@ Use fictional purchaser data. Test VoiceOver with Safari on a Mac and NVDA with 
 7. Get a no-fee permit. Confirm busy status is understandable, "Your permit is ready" receives focus, and Download is reachable. Use the browser Back button, change your name, and confirm the old permit can no longer be reached.
 8. Reload during the flow. Confirm selections restore, the screen returns to "Your details" at most, and purchaser information must be reentered.
 
-Record OS/browser/screen-reader versions, whether browse or focus mode was used, unexpected speech/focus behavior, and the exact action that caused it. Screen-reader verification of the downloaded PDF is a separate task: the PDF has an embedded font and extractable text but is not certified PDF/UA.
+Record OS/browser/screen-reader versions, whether browse or focus mode was used, unexpected speech/focus behavior, and the exact action that caused it. Screen-reader verification of the downloaded PDF is a separate task: the permit package and sample documents have an embedded font and extractable text but are not tagged or certified PDF/UA. The maps are drawings without text alternatives; their legends and the stipulations carry the same information as text. The package is meant to be printed and signed, which assumes the holder can print and sign; the help section points to libraries, copy shops and BWL offices for printing.

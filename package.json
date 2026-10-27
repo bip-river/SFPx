@@ -8,6 +8,7 @@
     "test:browser": "node tests/browser.mjs",
     "build:pdf-vendor": "node scripts/build-pdf-vendor.mjs",
     "build:font-vendor": "node scripts/build-font-vendor.mjs",
+    "build:documents": "node scripts/build-documents.mjs",
     "test:safari": "node tests/safari.mjs"
   },
   "repository": {

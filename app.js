@@ -1,11 +1,12 @@
-import { PRODUCT_TYPE_OPTIONS, validateCatalog, resolveCatalogDates, getProductKey, isSaleActive, isSaleComingSoon, parseDate } from './js/catalog.js';
+import { PRODUCT_TYPE_OPTIONS, validateCatalog, resolveCatalogDates, getProductKey, isSaleActive, isSaleComingSoon, parseDate, getTodayStart, calculatePermitValidity, haulTagCount, HAUL_TAG_UNITS } from './js/catalog.js';
 import { sanitizeUrl } from './js/links.js';
 import { createFieldValidators, quantityError } from './js/validation.js';
 import { getProductEligibility, productRequiresEligibility } from './js/eligibility.js';
 import { createSelectionStorage } from './js/state.js';
 import { MAX_PAYLOAD_BYTES, createCheckoutIdentity, readPermitHolder, buildCheckoutPayload, payloadSizeBytes } from './js/checkout.js';
-import { buildDemoPermitPdf } from './js/permit-pdf.js';
-import { renderProductTypes, buildOption, syncSelectedOptions, money, feeLabelForUnit, totalLabelFor, unitLabel, quantityLabel, quantityRangeLabel, shortProductName, formatDate, validityText, buildDocLinks, buildRequiredDocs, renderPayload } from './js/ui.js';
+import { buildPermitPackagePdf } from './js/permit-pdf.js';
+import { TYPE_DOCUMENTS, AREA_DOCUMENTS, documentIdFromUrl } from './js/permit-documents.js';
+import { renderProductTypes, buildOption, syncSelectedOptions, money, feeLabelForUnit, totalLabelFor, unitLabel, quantityLabel, quantityRangeLabel, shortProductName, formatDate, validityText, buildDocLinks, buildRequiredDocs, buildDocumentLink, renderPayload } from './js/ui.js';
 
 // A start page, then one question per screen. "done" follows the five numbered steps once a permit has been prepared.
 const SCREENS = ['start', 'what', 'where', 'permit', 'details', 'review', 'done'];
@@ -81,10 +82,11 @@ const confirmPaygovBtn = byId('confirmPaygov');
 const payNote = byId('payNote');
 const resetAllBtn = byId('resetAll');
 
-const doneLede = byId('doneLede');
+const doneNote = byId('doneNote');
 const permitCard = byId('permitCard');
 const permitDownloadBtn = byId('permitDownloadBtn');
-const nextStepNotices = byId('nextStepNotices');
+const packageHint = byId('packageHint');
+const nextStepsList = byId('nextStepsList');
 const handoff = byId('handoff');
 const startAnotherBtn = byId('startAnother');
 
@@ -122,7 +124,7 @@ let returnToReview = false;
 const checkoutIdentity = createCheckoutIdentity();
 let checkoutRevision = 0;
 let checkoutPending = false;
-// The permit prepared for the current entries: { reference, url, payload, noFee }.
+// The permit package prepared for the current entries: { reference, permitNumber, url, payload, noFee, pageCount, tagCount }.
 let issued = null;
 
 function clearIssued() {
@@ -295,13 +297,23 @@ function buildLinkList(docs) {
   list.className = 'link-list';
   docs.forEach((doc) => {
     const li = document.createElement('li');
-    const a = document.createElement('a');
-    a.href = sanitizeUrl(doc.url);
-    a.textContent = doc.label;
-    li.appendChild(a);
+    li.appendChild(buildDocumentLink(doc));
     list.appendChild(li);
   });
   return list;
+}
+
+// Firewood tags each cover half a cord; Christmas tree tags one tree.
+const TAG_EACH = { fuelwood: 'half cord', christmas: 'tree' };
+const TAG_QUANTITY = { fuelwood: '½ cord', christmas: '1 tree' };
+
+function currentTagCount() {
+  return haulTagCount(model.productType, model.product, getSelectedOffice(), catalogData[model.state], model.qty);
+}
+
+function tagSummary(count) {
+  if (count) return `Includes ${count} haul tag${count === 1 ? '' : 's'}, one for each ${TAG_EACH[model.productType]}`;
+  return HAUL_TAG_UNITS[model.productType] ? 'No haul tags needed for this permit' : '';
 }
 
 function noAreasMessage() {
@@ -565,7 +577,7 @@ function renderReview() {
   const noFee = p.price === 0;
   reviewTitle.textContent = noFee ? 'Check and confirm' : 'Check and pay';
   reviewSummary.replaceChildren(
-    summaryRow({ key: 'Permit', lines: [`${typeOption()?.label}: ${shortProductName(p)}`, quantityLabel(p, model.qty), validityText(p)], change: 'permit', changeLabel: 'permit' }),
+    summaryRow({ key: 'Permit', lines: [`${typeOption()?.label}: ${shortProductName(p)}`, quantityLabel(p, model.qty), validityText(p), tagSummary(currentTagCount())].filter(Boolean), change: 'permit', changeLabel: 'permit' }),
     summaryRow({ key: 'Where', lines: [model.officeName, stateName()], change: 'where', changeLabel: 'area' }),
     summaryRow({ key: 'Permit holder', lines: [holderName(), ...holderAddressLines(), permitHolder.DeliveryEmail.value.trim()], change: 'details', changeLabel: 'your details' }),
     summaryRow({ key: 'Total', lines: [totalLabelFor(p.price, total)] })
@@ -577,15 +589,15 @@ function renderReview() {
   // Rewriting identical text would replace the node a pending click or screen reader is using.
   if (confirmPaygovBtn.textContent !== label) confirmPaygovBtn.textContent = label;
   payNote.replaceChildren();
-  if (noFee) payNote.textContent = 'No payment is needed. You can download your permit right away.';
+  if (noFee) payNote.textContent = 'No payment is needed. You can download your permit package right away.';
   else appendProductionNote(payNote, 'you’ll pay on Pay.gov, then come back here for your permit. This demo skips payment.');
 }
 
 function renderDone() {
   if (!issued) return;
   const p = model.product;
-  doneLede.replaceChildren(issued.noFee ? 'No payment was needed. ' : 'This demo skipped payment, so nothing was charged. ');
-  appendProductionNote(doneLede, `we’d also email a copy to ${permitHolder.DeliveryEmail.value.trim()}.`);
+  doneNote.replaceChildren(issued.noFee ? 'No payment was needed. ' : 'This demo skipped payment, so nothing was charged. ');
+  appendProductionNote(doneNote, `we’d also email the package to ${permitHolder.DeliveryEmail.value.trim()}.`);
 
   const line = (className, text) => {
     const el = document.createElement(className === 'permit-card-title' ? 'strong' : 'span');
@@ -599,13 +611,28 @@ function renderDone() {
     line('permit-card-line', `${model.officeName}, ${stateName()}`),
     line('permit-card-line', validityText(p)),
     line('permit-card-line', `Issued to ${holderName()}`),
-    line('permit-card-ref', `Reference ${issued.reference}`)
+    ...(tagSummary(issued.tagCount) ? [line('permit-card-line', tagSummary(issued.tagCount))] : []),
+    line('permit-card-ref', `Permit number ${issued.permitNumber}`)
   );
   permitDownloadBtn.disabled = false;
+  packageHint.textContent = `PDF, ${issued.pageCount} pages.`;
 
-  nextStepNotices.querySelector('.link-list')?.remove();
-  const docs = getLocationAttachments();
-  if (docs.length) nextStepNotices.appendChild(buildLinkList(docs));
+  const steps = [
+    'Print every page.',
+    'Sign and date the permit on page 1. It isn’t valid until you sign it.',
+    ...(issued.tagCount ? [`Before you load, cut or tear out the month, day and AM or PM on one haul tag for each ${TAG_EACH[model.productType]}, and attach it where it can be seen.`] : []),
+    'Check the area notices and maps before your trip.',
+    'Carry the signed permit while collecting.'
+  ];
+  nextStepsList.replaceChildren(...steps.map((text) => {
+    const li = document.createElement('li');
+    li.textContent = text;
+    if (text.startsWith('Check the area')) {
+      const docs = getLocationAttachments();
+      if (docs.length) li.appendChild(buildLinkList(docs));
+    }
+    return li;
+  }));
 
   renderPayload(handoff, issued.payload, {
     note: issued.noFee
@@ -953,7 +980,7 @@ permitDownloadBtn.addEventListener('click', () => {
   if (!issued?.url) return;
   const a = document.createElement('a');
   a.href = issued.url;
-  a.download = `${issued.reference}.pdf`;
+  a.download = `${issued.permitNumber}.pdf`;
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -968,24 +995,51 @@ function checkoutSnapshot() {
   };
 }
 
-function permitLines({ reference, noFee, total }) {
+// Everything the permit package shows. Area documents come from the catalog's state and office attachments.
+function packageSpec({ permitNumber, noFee, total, tagCount }) {
   const p = model.product;
-  return [
-    'Bureau of Wandering Lands — Forest Product Permit (DEMO)',
-    '',
-    `Permit reference: ${reference}`,
-    `Issued to: ${holderName() || '—'}`,
-    `Mailing address: ${holderAddressLines().join(', ')}`,
-    `Delivery email: ${permitHolder.DeliveryEmail.value.trim() || '—'}`,
-    '',
-    `Area: ${model.officeName || '—'} (${model.officeId || '—'}), ${stateName()}`,
-    `Permit: ${p.name}`,
-    `Quantity: ${quantityLabel(p, model.qty)}`,
-    noFee ? 'Fee: No fee' : `Fee: ${money(total)} (demo: no payment was taken)`,
-    validityText(p),
-    '',
-    'This is a prototype-generated demo permit. Do not use for actual harvesting.'
-  ];
+  const office = getSelectedOffice();
+  const stateData = catalogData[model.state];
+  const { startDate, expirationDate, validForDays, actualDays, shortened } = calculatePermitValidity(p);
+  const eligibility = productRequiresEligibility(p) ? getProductEligibility(p) : null;
+  const attachments = scope => (scope?.attachments || []).map(doc => ({ ...doc, id: documentIdFromUrl(doc.url) }));
+  const stateDocs = attachments(stateData);
+  const officeDocs = attachments(office);
+  const areaDocs = [...stateDocs, ...officeDocs].filter(doc => AREA_DOCUMENTS[doc.id]);
+  const hasNotice = docs => docs.some(doc => AREA_DOCUMENTS[doc.id]?.kind === 'notice');
+  return {
+    permitNumber,
+    typeId: model.productType,
+    typeLabel: typeOption().label,
+    productName: p.name,
+    quantityLabel: quantityLabel(p, model.qty),
+    areaName: office.name,
+    officeId: office.id,
+    stateName: stateName(),
+    validFrom: formatDate(startDate),
+    validUntil: formatDate(expirationDate),
+    validDays: shortened ? actualDays : validForDays,
+    fee: noFee ? 'No fee' : `${money(total)} (demo: no payment was taken)`,
+    tagCount,
+    tagLine: tagCount ? `${tagCount} included, one for each ${TAG_EACH[model.productType]}` : 'Not required for this permit',
+    tagEach: TAG_EACH[model.productType],
+    tagQuantity: TAG_QUANTITY[model.productType],
+    holder: { name: holderName(), addressLines: holderAddressLines(), email: permitHolder.DeliveryEmail.value.trim() },
+    issued: formatDate(getTodayStart()),
+    eligibility: eligibility?.label || null,
+    eligibilityBasis: eligibility?.basis || '',
+    documents: Object.fromEntries(TYPE_DOCUMENTS[model.productType].map(doc => [doc.kind, doc.id])),
+    area: {
+      // A notice document repeats its state's or office's description, so only uncovered ones are listed.
+      descriptions: [
+        stateData?.description && !hasNotice(stateDocs) ? { scope: stateData.name, text: stateData.description } : null,
+        office?.description && !hasNotice(officeDocs) ? { scope: office.name, text: office.description } : null
+      ].filter(Boolean),
+      maps: areaDocs.filter(doc => AREA_DOCUMENTS[doc.id].kind === 'map').map(doc => doc.id),
+      notices: areaDocs.filter(doc => AREA_DOCUMENTS[doc.id].kind === 'notice').map(doc => doc.id),
+      links: [...stateDocs, ...officeDocs].filter(doc => !AREA_DOCUMENTS[doc.id]).map(({ label, url }) => ({ label, url }))
+    }
+  };
 }
 
 function setCheckoutPending(pending) {
@@ -1016,10 +1070,12 @@ async function confirmCheckout() {
   const total = unitPrice * model.qty;
   const noFee = unitPrice === 0;
   const reference = checkoutIdentity.referenceFor(checkoutSnapshot(), noFee ? 'PERMIT' : 'TX');
+  const permitNumber = checkoutIdentity.permitNumberFor(checkoutSnapshot(), model.officeId, getTodayStart());
+  const tagCount = currentTagCount();
   const eligibility = productRequiresEligibility(model.product)
     ? { certified: ackEligibility.checked, basis: getProductEligibility(model.product).basis }
     : null;
-  const payload = buildCheckoutPayload({ model, holder: readPermitHolder(permitHolder), reference, eligibility });
+  const payload = buildCheckoutPayload({ model, holder: readPermitHolder(permitHolder), reference, permitNumber, haulTags: tagCount, eligibility });
   const payloadSize = payloadSizeBytes(payload);
   if (payloadSize > MAX_PAYLOAD_BYTES) {
     showErrors([`Form data is too large (${payloadSize} bytes). Shorten text entries and try again.`]);
@@ -1029,10 +1085,10 @@ async function confirmCheckout() {
   const revision = checkoutRevision;
   const snapshot = JSON.stringify(checkoutSnapshot());
   setCheckoutPending(true);
-  announce('Preparing your permit. Please wait.');
-  let blob;
+  announce('Preparing your permit package. Please wait.');
+  let blob, pageCount;
   try {
-    blob = await buildDemoPermitPdf(permitLines({ reference, noFee, total }));
+    ({ blob, pageCount } = await buildPermitPackagePdf(packageSpec({ permitNumber, noFee, total, tagCount })));
     if (revision !== checkoutRevision || snapshot !== JSON.stringify(checkoutSnapshot())) return;
   } catch (error) {
     if (revision === checkoutRevision) showErrors([`We could not create your permit. Your entries are still here. ${error.message}`]);
@@ -1042,7 +1098,7 @@ async function confirmCheckout() {
   }
 
   clearIssued();
-  issued = { reference, url: URL.createObjectURL(blob), payload, noFee };
+  issued = { reference, permitNumber, url: URL.createObjectURL(blob), payload, noFee, pageCount, tagCount };
   showScreen('done');
   document.dispatchEvent(new CustomEvent('sfpx:pdf-ready'));
 }

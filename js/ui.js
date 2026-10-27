@@ -1,11 +1,6 @@
 import { PRODUCT_TYPE_OPTIONS, calculatePermitValidity } from './catalog.js';
 import { sanitizeUrl } from './links.js';
-
-const DOCS_BY_PRODUCT_TYPE = {
-  fuelwood: [{ label: 'How to Measure Fuelwood', url: '#' }],
-  christmas: [{ label: 'Planning Your Trip', url: '#' }],
-  mushrooms: [{ label: 'Foraging Guidelines', url: '#' }]
-};
+import { TYPE_DOCUMENTS, documentUrl } from './permit-documents.js';
 
 // Constant markup only; nothing from the catalog or the visitor is inserted here.
 const TYPE_ICONS = {
@@ -155,29 +150,40 @@ export function buildDocLinks(docs = [], productName = '') {
   list.className = 'link-list';
   docs.forEach((doc) => {
     const li = document.createElement('li');
-    const link = document.createElement('a');
-    link.href = sanitizeUrl(doc.url);
-    link.textContent = doc.label;
-    li.appendChild(link);
+    li.appendChild(buildDocumentLink(doc));
     list.appendChild(li);
   });
   details.appendChild(list);
   return details;
 }
 
+// Documents open in a new tab so the visitor's unsaved answers stay on this page.
+export function buildDocumentLink(doc) {
+  const link = document.createElement('a');
+  link.href = sanitizeUrl(doc.url);
+  const isPdf = /\.pdf$/i.test(doc.url || '');
+  link.textContent = isPdf && !/\bPDF\b/.test(doc.label) ? `${doc.label} (PDF)` : doc.label;
+  if (link.getAttribute('href') !== '#') {
+    link.target = '_blank';
+    link.rel = 'noopener';
+    const note = document.createElement('span');
+    note.className = 'sr-only';
+    note.textContent = ' (opens in a new tab)';
+    link.appendChild(note);
+  }
+  return link;
+}
+
+// Every listing gets its type's stipulations, map and reference document, even when the catalog omits one.
 export function buildRequiredDocs(product, productType, locationDocs = []) {
-  const base = [
-    { label: 'Map', url: '#' },
-    { label: 'Stipulations', url: '#' }
-  ];
-  const typed = DOCS_BY_PRODUCT_TYPE[productType] || [];
-  const all = [...(product.requiredDocs || []), ...locationDocs, ...base, ...typed];
-  // De-dupe by a stable key. Label-only de-duping can drop distinct docs that share a name.
+  const typed = (TYPE_DOCUMENTS[productType] || []).map(doc => ({ label: doc.label, url: documentUrl(doc.id) }));
+  const all = [...(product.requiredDocs || []), ...locationDocs, ...typed];
+  // One link per document: the same file under two labels would be listed twice.
   const seen = new Set();
   return all.filter((doc) => {
-    const label = (doc.label || '').trim().toLowerCase();
+    const label = (doc.label || '').trim();
     const url = (doc.url || '').trim();
-    const key = `${label}|${url}`;
+    const key = url && url !== '#' ? url : `${label.toLowerCase()}|${url}`;
     if (!label) return false;
     if (seen.has(key)) return false;
     seen.add(key);

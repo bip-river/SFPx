@@ -1,6 +1,8 @@
 # Catalog maintenance
 
-`products.json` maps state codes to state names, descriptions, optional attachments, and an `offices` array. Each office has an `id`, `name`, optional description/attachments, and product arrays keyed by `fuelwood`, `christmas`, or `mushrooms`.
+`products.json` maps state codes to state names, descriptions, optional attachments, optional `haulTags` rules, and an `offices` array. Each office has an `id`, `name`, optional description/attachments/`haulTags` rules, and product arrays keyed by `fuelwood`, `christmas`, or `mushrooms`.
+
+Office IDs must be the state code, a hyphen and 2–8 capital letters or digits (`AK-ANCH`), because they start each permit number (`AK-ANCH-26-048213`: office, two-digit year, six digits). The Carson City office's former ID `33` became `NV-CARS`; its product IDs did not change.
 
 Visitors see offices as **areas** on the "Where will you collect?" screen, listed only when they have a permit of the chosen type on sale or opening within 15 days. State and office descriptions and attachments appear under "Area notices and maps" there, and again on the finished-permit screen. The `fuelwood` type is shown as "Firewood". Permit options drop the repeated prefix of the catalog name ("Fuelwood Permit — Anchorage North" is shown as "Anchorage North", and a trailing "(No fee)" is dropped beside the No fee price); the payload and the PDF keep the full catalog name.
 
@@ -13,12 +15,25 @@ Each product requires these fields:
 | `price` | Finite nonnegative number; zero means no fee. |
 | `minQty`, `maxQty` | Finite positive minimum and maximum, with maximum at least minimum. |
 | `quantityStep` | Positive increment measured from `minQty`. All current demo products use 1; fractional increments require an explicit catalog change. |
-| `validForDays` | Positive integer; the existing demo behavior uses 30 days, shortened when the sale ends sooner. |
+| `validForDays` | Positive integer, shortened when the sale ends sooner. The demo varies it by type: firewood 30, 60, 90 or 180 days; Christmas trees 14 or 30; mushrooms 7, 14 or 30. |
 | `saleStartDate`, `saleEndDate` | `today`, `today+N`, or `today-N` (whole days from the visitor's local date), or a fixed `YYYY-MM-DD` date. Start must be no later than end once resolved. Both dates are included in the sale window. |
 | `eligibilityRule` | `null`, or `anilca-subsistence` to require the existing demo certification. |
-| `requiredDocs` | Optional array of `{ "label": "…", "url": "…" }`. |
+| `requiredDocs` | Optional array of `{ "label": "…", "url": "…" }`. Every listing also links its type's stipulations, map and reference document, so a listing missing one still shows it. |
+| `haulTags` | Optional `true` or `false` for a firewood or Christmas tree listing; overrides its office and state. Not allowed as `true` on mushrooms. |
 
-The start page states that permits last 30 days, which every shipped product's `validForDays` matches. Update that sentence in `index.html` if a product changes it.
+The start page says permits last "from 7 days to 6 months". `npm test` checks the durations against that range; update the sentence in `index.html` if it changes.
+
+## Haul tags
+
+Firewood and Christmas tree permits can include haul tags; mushroom permits never do. The most specific rule wins: a listing's `haulTags`, then its office's `haulTags.<type>`, then its state's `haulTags.<type>`. Without any rule, tags are required. For example, `"haulTags": { "fuelwood": false }` on a state turns off firewood tags there, and `"haulTags": { "fuelwood": true }` on one of its offices turns them back on. The demo turns firewood tags off for all of Montana, back on for the Billings office (`MT-BILL`), and off for one Anchorage listing (Free Use).
+
+A firewood tag covers half a cord and a Christmas tree tag one tree, so the package holds `quantity ÷ 0.5` or `quantity` tags, rounded up.
+
+Each tag sheet is followed by a sheet with one load record per tag, placed so that, printed double-sided, a record lands behind every tag whether the printer turns the sheet on its long edge or its short edge. That fixes where tags can go: four fill a sheet, two sit on a diagonal, and one sits in the centre. No arrangement of three works for both turns, so a remainder of three prints as a diagonal pair and a centred tag. Firewood tags come in pairs, so this only affects Christmas trees.
+
+## Sample documents
+
+Document links in `requiredDocs` and attachments point to `documents/<id>.pdf`. `js/permit-documents.js` defines their content: a stipulations, map and reference document per collection type, and the six state and office notices and maps. `npm run build:documents` writes the files, `npm run check` fails if a linked file is missing, and `npm test` fails if a file no longer matches its content. A new attachment needs an entry in `AREA_DOCUMENTS` to be printed in the permit package; otherwise the package lists its link on the area notices page.
 
 Run `npm run check` after editing. Invalid catalog data prevents catalog use and shows a load error; technical diagnostics go to the console. Links are restricted to HTTP(S), mail, telephone, and relative URLs. `#` remains a demo placeholder.
 

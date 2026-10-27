@@ -82,12 +82,14 @@
             <li>Your mailing address. The law requires it on every permit.</li>
             <li>An email address.</li>
             <li>A debit or credit card if your permit has a fee. You’ll pay on Pay.gov. Some permits are free.</li>
+            <li>A printer. Your permit isn’t valid until you print it and sign it.</li>
           </ul>
         </section>
         <section class="start-section" aria-labelledby="knowTitle">
           <h2 id="knowTitle">Good to know</h2>
           <ul class="dot-list">
-            <li>Permits last 30 days from the day you buy them, or until the season ends if that’s sooner.</li>
+            <li>Permits last from 7 days to 6 months, depending on the permit, or until the season ends if that’s sooner.</li>
+            <li>Firewood and Christmas tree permits usually include haul tags to attach to each load.</li>
             <li>Permits are for personal use. All sales are final.</li>
             <li>Some permits are sold only in person at a local BWL office.</li>
           </ul>
@@ -215,7 +217,7 @@
         <section class="rules" aria-labelledby="rulesTitle">
           <h2 id="rulesTitle">Before you go</h2>
           <ul class="check-list">
-            <li>Carry your permit while collecting, printed or on your phone.</li>
+            <li>Print your permit package and sign the permit. It isn’t valid until you sign it.</li>
             <li>Stay inside your permit area and follow posted closures.</li>
             <li>Personal use only. All sales are final.</li>
           </ul>
@@ -242,7 +244,7 @@
                 <li>All purchases are final; no refunds.</li>
                 <li>Permit is for personal use unless stated otherwise and may be non-transferable.</li>
                 <li>You must comply with all permit stipulations, seasonal restrictions, closures, and area boundaries.</li>
-                <li>You must carry the permit (paper or digital, as allowed) while harvesting/collecting.</li>
+                <li>The permit is valid only when printed and signed by the permit holder, who must carry it while harvesting/collecting.</li>
                 <li>Violations may result in penalties and/or revocation of privileges.</li>
               </ul>
               <p>These are demo terms. Replace them with the authoritative terms and conditions used by your production system.</p>
@@ -267,18 +269,16 @@
       <section class="screen" id="screen-done" aria-labelledby="doneTitle" hidden>
         <span class="done-mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
         <h1 id="doneTitle" tabindex="-1">Your permit is ready</h1>
-        <p class="lede" id="doneLede"></p>
+        <p class="lede">Print it and sign it. Your permit isn’t valid until you sign it.</p>
         <div class="permit-card" id="permitCard"></div>
         <button class="primary" type="button" id="permitDownloadBtn" disabled>
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="M7 10.5l5 5 5-5"/><path d="M5 20h14"/></svg>Download permit (PDF)
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="M7 10.5l5 5 5-5"/><path d="M5 20h14"/></svg><span>Download permit package</span>
         </button>
+        <p class="hint" id="packageHint">PDF</p>
+        <p class="hint" id="doneNote"></p>
         <section class="next-steps" aria-labelledby="nextStepsTitle">
           <h2 id="nextStepsTitle">What to do next</h2>
-          <ol>
-            <li>Save your permit to your phone or print it.</li>
-            <li id="nextStepNotices">Check the area notices and maps before your trip.</li>
-            <li>Carry it with you while collecting.</li>
-          </ol>
+          <ol id="nextStepsList"></ol>
         </section>
         <details class="disclosure" id="handoffDetail">
           <summary>Demo checkout data</summary>
@@ -317,6 +317,10 @@
             </ul>
             <p>Still stuck? Contact your local BWL office.</p>
           </div>
+        </details>
+        <details class="disclosure">
+          <summary>I don’t have a printer</summary>
+          <div class="disclosure-body">Download the package and print it at a library, a copy shop or a local BWL office. The permit must be printed and signed to be valid, and haul tags must be printed to cut out.</div>
         </details>
         <details class="disclosure">
           <summary>I closed the page or lost my permit</summary>

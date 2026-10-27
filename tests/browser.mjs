@@ -83,6 +83,11 @@ try {
     await page.locator('#qtyInc').click();
     assert.equal(await page.locator('#totalAmount').textContent(), '$20.00');
     await checkAccessibility(page, 'permit with quantity');
+    const mapLink = page.locator('#qtyDocs a').first();
+    assert.equal(await mapLink.getAttribute('target'), '_blank');
+    const mapResponse = await page.request.get(new URL(await mapLink.getAttribute('href'), page.url()).href);
+    assert.equal(mapResponse.status(), 200);
+    assert.match((await readPdf(new Blob([await mapResponse.body()]))).text, /Firewood cutting areas/, 'sample documents are served');
     await page.locator('#qty').fill('0'); await page.locator('#qty').press('Tab');
     assert.equal(await page.locator('#qty').getAttribute('aria-invalid'), 'true');
     assert.ok((await page.locator('#qty').getAttribute('aria-describedby')).includes('qty-error'));
@@ -115,8 +120,9 @@ try {
     assert.equal(await noOverflow(), true, 'no horizontal overflow with checkout payload');
     await checkAccessibility(page, 'done');
     const paidPdf = await pdfText();
-    assert.match(paidPdf.name, /^TX-.+\.pdf$/);
-    assert.match(paidPdf.text, /Áłtsé José Muñoz Żółć/);
+    assert.match(paidPdf.name, /^AK-ANCH-26-\d{6}\.pdf$/, 'the package is named by its permit number');
+    assert.match(paidPdf.text, /Printed name: Áłtsé José Muñoz Żółć/);
+    assert.match(paidPdf.text, /Tag 2 of 2/, 'one cord of firewood comes with two haul tags');
 
     // The browser's Back button returns to the check screen; paying again keeps the same reference.
     await page.goBack();
@@ -142,8 +148,9 @@ try {
     assert.equal(await focused(), 'doneTitle');
     assert.equal(await page.getByRole('heading', { level: 1, name: 'Your permit is ready' }).count(), 1);
     const freePdf = await pdfText();
-    assert.match(freePdf.name, /^PERMIT-.+\.pdf$/);
-    assert.match(freePdf.text, /Issued to: Áłtsé José Muñoz Żółć/);
+    assert.match(freePdf.name, /^AK-ANCH-26-\d{6}\.pdf$/);
+    assert.match(freePdf.text, /Printed name: Áłtsé José Muñoz Żółć/);
+    assert.doesNotMatch(freePdf.text, /HAUL TAG/, 'this listing does not use haul tags');
 
     await page.locator('#startAnother').click();
     assert.equal(await screen(), 'what');

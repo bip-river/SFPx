@@ -12,7 +12,8 @@ A sixth screen shows the finished permit with a download button. Continue, the B
 
 - Paid permits skip payment in the demo, then show the finished permit with the Pay.gov handoff payload under "Demo checkout data".
 - No-fee permits show the finished permit with the issuance payload.
-- Both generate a downloadable demo PDF. No payments are processed, no email is sent, and no real permits are issued. Use fictional purchaser information.
+- Both generate a downloadable permit package as one PDF: the permit to sign, its stipulations, haul tags when the permit uses them (each tag sheet followed by a sheet of load records), maps, area notices, and a reference guide. The permit is valid only when printed and signed. No payments are processed, no email is sent, and no real permits are issued. Use fictional purchaser information.
+- The sample documents in the package are also linked from the site as standalone PDFs in `documents/`.
 - Agency names are fictional. The page does not link to real agency websites and asks search engines not to index it. Pay.gov and the cited U.S. laws are kept because they describe the system this prototype targets.
 - Only selections are saved in `sessionStorage`. Purchaser details, agreements and transaction snapshots stay in memory, so a reload returns to the details screen at most. "Start over" clears everything.
 
@@ -52,7 +53,9 @@ The browser test starts its own temporary local server and includes automated ac
 | `js/validation.js` | Quantity increments and purchaser field rules |
 | `js/eligibility.js` | Explicit eligibility-rule lookup and certification copy |
 | `js/state.js` | Optional saved-selection storage |
-| `js/checkout.js`, `js/permit-pdf.js` | Checkout identity, payloads, and demo PDF generation |
+| `js/checkout.js` | Checkout identity, permit numbers, and payloads |
+| `js/permit-documents.js`, `js/permit-pdf.js` | Permit package and sample document content; PDF rendering in page order |
+| `documents/` | Sample documents linked from the site, written by `npm run build:documents` |
 | `js/ui.js`, `js/links.js` | Option cards, labels, and other rendering helpers; URL validation |
 | `vendor/` | Self-hosted page font, PDF engine and PDF font; see [vendor notes](vendor/README.md) |
 | `products.json` | Demo catalog; see [catalog maintenance](docs/catalog.md) |

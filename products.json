@@ -5,11 +5,11 @@
     "attachments": [
       {
         "label": "Alaska travel advisory (PDF)",
-        "url": "#"
+        "url": "documents/ak-travel-advisory.pdf"
       },
       {
         "label": "Statewide fire restrictions",
-        "url": "#"
+        "url": "documents/ak-fire-restrictions.pdf"
       }
     ],
     "offices": [
@@ -20,32 +20,32 @@
         "attachments": [
           {
             "label": "Anchorage access map",
-            "url": "#"
+            "url": "documents/ak-anch-access-map.pdf"
           },
           {
             "label": "Anchorage seasonal bulletin",
-            "url": "#"
+            "url": "documents/ak-anch-seasonal-bulletin.pdf"
           }
         ],
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Anchorage North",
+              "name": "Fuelwood Permit — Anchorage North",
               "unit": "cord",
               "price": 10,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 },
                 {
                   "label": "How to Measure Fuelwood",
-                  "url": "#"
+                  "url": "documents/firewood-measuring.pdf"
                 }
               ],
               "minQty": 1,
@@ -53,22 +53,22 @@
               "saleEndDate": "today+439",
               "id": "ak-anch-fuelwood-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 90,
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Anchorage South",
+              "name": "Fuelwood Permit — Anchorage South",
               "unit": "cord",
               "price": 12,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -76,22 +76,22 @@
               "saleEndDate": "today+449",
               "id": "ak-anch-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 60,
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Subsistence (ANILCA, No fee)",
+              "name": "Fuelwood Permit — Subsistence (ANILCA, No fee)",
               "unit": "cord",
               "price": 0,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -103,18 +103,18 @@
               "eligibilityRule": "anilca-subsistence"
             },
             {
-              "name": "Fuelwood Permit \u2014 Free Use (No fee)",
+              "name": "Fuelwood Permit — Free Use (No fee)",
               "unit": "cord",
               "price": 0,
               "maxQty": 2,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -123,21 +123,22 @@
               "id": "ak-anch-fuelwood-04",
               "quantityStep": 1,
               "validForDays": 30,
-              "eligibilityRule": null
+              "eligibilityRule": null,
+              "haulTags": false
             },
             {
-              "name": "Fuelwood Permit \u2014 Anchorage Late Season",
+              "name": "Fuelwood Permit — Anchorage Late Season",
               "unit": "cord",
               "price": 10,
               "maxQty": 4,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -151,22 +152,22 @@
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Chugach Access",
+              "name": "Christmas Tree Permit — Chugach Access",
               "unit": "tree",
               "price": 5,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 },
                 {
                   "label": "Planning Your Trip",
-                  "url": "#"
+                  "url": "documents/christmas-tree-trip-planning.pdf"
                 }
               ],
               "minQty": 2,
@@ -174,22 +175,22 @@
               "saleEndDate": "today+439",
               "id": "ak-anch-christmas-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Turnagain Arm",
+              "name": "Christmas Tree Permit — Turnagain Arm",
               "unit": "tree",
               "price": 5,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -201,18 +202,18 @@
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Free Use (No fee)",
+              "name": "Christmas Tree Permit — Free Use (No fee)",
               "unit": "tree",
               "price": 0,
               "maxQty": 1,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -220,22 +221,22 @@
               "saleEndDate": "today+459",
               "id": "ak-anch-christmas-03",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Eagle River Holiday Lots",
+              "name": "Christmas Tree Permit — Eagle River Holiday Lots",
               "unit": "tree",
               "price": 5,
               "maxQty": 2,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -256,11 +257,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -268,7 +269,7 @@
               "saleEndDate": "today+439",
               "id": "ak-anch-mushrooms-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 7,
               "eligibilityRule": null
             },
             {
@@ -279,7 +280,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -287,22 +288,22 @@
               "saleEndDate": "today+449",
               "id": "ak-anch-mushrooms-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             },
             {
-              "name": "Morel Mushroom Permit \u2014 Burn Area (Personal Use)",
+              "name": "Morel Mushroom Permit — Burn Area (Personal Use)",
               "unit": "pound",
               "price": 3,
               "maxQty": 10,
               "requiredDocs": [
                 {
-                  "label": "Map",
-                  "url": "#"
+                  "label": "Collection Areas",
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -328,18 +329,18 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Juneau Coastal",
+              "name": "Fuelwood Permit — Juneau Coastal",
               "unit": "cord",
               "price": 10,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -347,22 +348,22 @@
               "saleEndDate": "today+439",
               "id": "ak-jun-fuelwood-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 90,
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Juneau Interior",
+              "name": "Fuelwood Permit — Juneau Interior",
               "unit": "cord",
               "price": 12,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -370,22 +371,22 @@
               "saleEndDate": "today+449",
               "id": "ak-jun-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 180,
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Subsistence (ANILCA, No fee)",
+              "name": "Fuelwood Permit — Subsistence (ANILCA, No fee)",
               "unit": "cord",
               "price": 0,
               "maxQty": 4,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -397,18 +398,18 @@
               "eligibilityRule": "anilca-subsistence"
             },
             {
-              "name": "Fuelwood Permit \u2014 Free Use (No fee)",
+              "name": "Fuelwood Permit — Free Use (No fee)",
               "unit": "cord",
               "price": 0,
               "maxQty": 2,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -416,24 +417,24 @@
               "saleEndDate": "today+469",
               "id": "ak-jun-fuelwood-04",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 60,
               "eligibilityRule": null
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Juneau Limited",
+              "name": "Christmas Tree Permit — Juneau Limited",
               "unit": "tree",
               "price": 5,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -441,22 +442,22 @@
               "saleEndDate": "today+439",
               "id": "ak-jun-christmas-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Juneau Standard",
+              "name": "Christmas Tree Permit — Juneau Standard",
               "unit": "tree",
               "price": 5,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -468,18 +469,18 @@
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Free Use (No fee)",
+              "name": "Christmas Tree Permit — Free Use (No fee)",
               "unit": "tree",
               "price": 0,
               "maxQty": 1,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -487,7 +488,7 @@
               "saleEndDate": "today+459",
               "id": "ak-jun-christmas-03",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             }
           ],
@@ -500,7 +501,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -519,11 +520,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -531,7 +532,7 @@
               "saleEndDate": "today+449",
               "id": "ak-jun-mushrooms-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 7,
               "eligibilityRule": null
             }
           ]
@@ -548,18 +549,18 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Parashant",
+              "name": "Fuelwood Permit — Parashant",
               "unit": "cord",
               "price": 15,
               "maxQty": 8,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -567,22 +568,22 @@
               "saleEndDate": "today+439",
               "id": "az-strip-fuelwood-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 180,
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Scenic Byways",
+              "name": "Fuelwood Permit — Scenic Byways",
               "unit": "cord",
               "price": 17,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -594,18 +595,18 @@
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Free Use (No fee)",
+              "name": "Fuelwood Permit — Free Use (No fee)",
               "unit": "cord",
               "price": 0,
               "maxQty": 1,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -613,28 +614,28 @@
               "saleEndDate": "today+441",
               "id": "az-strip-fuelwood-03",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 60,
               "eligibilityRule": null
             }
           ],
           "christmas": [
             {
-              "name": "Christmas/Holiday Tree Permit \u2014 Designated Areas",
+              "name": "Christmas/Holiday Tree Permit — Designated Areas",
               "unit": "tree",
               "price": 10,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 },
                 {
                   "label": "Planning Your Trip",
-                  "url": "#"
+                  "url": "documents/christmas-tree-trip-planning.pdf"
                 }
               ],
               "minQty": 1,
@@ -646,18 +647,18 @@
               "eligibilityRule": null
             },
             {
-              "name": "Christmas/Holiday Tree Permit \u2014 Limited",
+              "name": "Christmas/Holiday Tree Permit — Limited",
               "unit": "tree",
               "price": 10,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -665,22 +666,22 @@
               "saleEndDate": "today+443",
               "id": "az-strip-christmas-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Free Use (No fee)",
+              "name": "Christmas Tree Permit — Free Use (No fee)",
               "unit": "tree",
               "price": 0,
               "maxQty": 1,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -701,7 +702,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -709,7 +710,7 @@
               "saleEndDate": "today+445",
               "id": "az-strip-mushrooms-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 7,
               "eligibilityRule": null
             },
             {
@@ -720,11 +721,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -732,7 +733,7 @@
               "saleEndDate": "today+446",
               "id": "az-strip-mushrooms-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             }
           ]
@@ -744,14 +745,14 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Gila Standard",
+              "name": "Fuelwood Permit — Gila Standard",
               "unit": "cord",
               "price": 12,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -763,18 +764,18 @@
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Gila Roadside",
+              "name": "Fuelwood Permit — Gila Roadside",
               "unit": "cord",
               "price": 14,
               "maxQty": 8,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -782,22 +783,22 @@
               "saleEndDate": "today+440",
               "id": "az-gila-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 60,
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Free Use (No fee)",
+              "name": "Fuelwood Permit — Free Use (No fee)",
               "unit": "cord",
               "price": 0,
               "maxQty": 2,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -805,20 +806,20 @@
               "saleEndDate": "today+441",
               "id": "az-gila-fuelwood-03",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 90,
               "eligibilityRule": null
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Gila North",
+              "name": "Christmas Tree Permit — Gila North",
               "unit": "tree",
               "price": 10,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 }
               ],
               "minQty": 3,
@@ -826,22 +827,22 @@
               "saleEndDate": "today+442",
               "id": "az-gila-christmas-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Gila South",
+              "name": "Christmas Tree Permit — Gila South",
               "unit": "tree",
               "price": 10,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -853,18 +854,18 @@
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Free Use (No fee)",
+              "name": "Christmas Tree Permit — Free Use (No fee)",
               "unit": "tree",
               "price": 0,
               "maxQty": 1,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -872,7 +873,7 @@
               "saleEndDate": "today+444",
               "id": "az-gila-christmas-03",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             }
           ],
@@ -885,7 +886,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -893,22 +894,22 @@
               "saleEndDate": "today+445",
               "id": "az-gila-mushrooms-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             },
             {
-              "name": "Mushroom Permit (Personal Use) \u2014 Mixed Species",
+              "name": "Mushroom Permit (Personal Use) — Mixed Species",
               "unit": "pound",
               "price": 3.5,
               "maxQty": 20,
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -928,14 +929,14 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Desert Standard",
+              "name": "Fuelwood Permit — Desert Standard",
               "unit": "cord",
               "price": 0,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -943,22 +944,22 @@
               "saleEndDate": "today+106",
               "id": "az-yuma-fuelwood-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 60,
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Desert Limited",
+              "name": "Fuelwood Permit — Desert Limited",
               "unit": "cord",
               "price": 12,
               "maxQty": 4,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -966,20 +967,20 @@
               "saleEndDate": "today+440",
               "id": "az-yuma-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 90,
               "eligibilityRule": null
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Yuma (Special)",
+              "name": "Christmas Tree Permit — Yuma (Special)",
               "unit": "tree",
               "price": 10,
               "maxQty": 2,
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -991,14 +992,14 @@
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Yuma (Standard)",
+              "name": "Christmas Tree Permit — Yuma (Standard)",
               "unit": "tree",
               "price": 10,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -1006,20 +1007,20 @@
               "saleEndDate": "today+442",
               "id": "az-yuma-christmas-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             }
           ],
           "mushrooms": [
             {
-              "name": "Mushroom Permit (Personal Use) \u2014 Spring",
+              "name": "Mushroom Permit (Personal Use) — Spring",
               "unit": "pound",
               "price": 3,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -1031,14 +1032,14 @@
               "eligibilityRule": null
             },
             {
-              "name": "Mushroom Permit (Personal Use) \u2014 Fall",
+              "name": "Mushroom Permit (Personal Use) — Fall",
               "unit": "pound",
               "price": 3,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -1046,7 +1047,7 @@
               "saleEndDate": "today+444",
               "id": "az-yuma-mushrooms-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 7,
               "eligibilityRule": null
             }
           ]
@@ -1063,22 +1064,22 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Standard",
+              "name": "Fuelwood Permit — Standard",
               "unit": "cord",
               "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 },
                 {
                   "label": "How to Measure Fuelwood",
-                  "url": "#"
+                  "url": "documents/firewood-measuring.pdf"
                 }
               ],
               "minQty": 2,
@@ -1086,22 +1087,22 @@
               "saleEndDate": "today+78",
               "id": "ca-bish-fuelwood-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 90,
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Limited Areas",
+              "name": "Fuelwood Permit — Limited Areas",
               "unit": "cord",
               "price": 22,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -1109,28 +1110,28 @@
               "saleEndDate": "today+440",
               "id": "ca-bish-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 180,
               "eligibilityRule": null
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Designated Areas",
+              "name": "Christmas Tree Permit — Designated Areas",
               "unit": "tree",
               "price": 10,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 },
                 {
                   "label": "Planning Your Trip",
-                  "url": "#"
+                  "url": "documents/christmas-tree-trip-planning.pdf"
                 }
               ],
               "minQty": 1,
@@ -1138,22 +1139,22 @@
               "saleEndDate": "today+441",
               "id": "ca-bish-christmas-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Limited",
+              "name": "Christmas Tree Permit — Limited",
               "unit": "tree",
               "price": 10,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -1174,11 +1175,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -1186,7 +1187,7 @@
               "saleEndDate": "today+443",
               "id": "ca-bish-mushrooms-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 7,
               "eligibilityRule": null
             },
             {
@@ -1197,7 +1198,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -1205,7 +1206,7 @@
               "saleEndDate": "today+444",
               "id": "ca-bish-mushrooms-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             }
           ]
@@ -1217,22 +1218,22 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Standard",
+              "name": "Fuelwood Permit — Standard",
               "unit": "cord",
               "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 },
                 {
                   "label": "How to Measure Fuelwood",
-                  "url": "#"
+                  "url": "documents/firewood-measuring.pdf"
                 }
               ],
               "minQty": 2,
@@ -1240,22 +1241,22 @@
               "saleEndDate": "today+108",
               "id": "ca-arc-fuelwood-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 180,
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Limited Areas",
+              "name": "Fuelwood Permit — Limited Areas",
               "unit": "cord",
               "price": 20,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -1269,22 +1270,22 @@
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Designated Areas",
+              "name": "Christmas Tree Permit — Designated Areas",
               "unit": "tree",
               "price": 10,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 },
                 {
                   "label": "Planning Your Trip",
-                  "url": "#"
+                  "url": "documents/christmas-tree-trip-planning.pdf"
                 }
               ],
               "minQty": 1,
@@ -1296,18 +1297,18 @@
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Limited",
+              "name": "Christmas Tree Permit — Limited",
               "unit": "tree",
               "price": 10,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -1315,7 +1316,7 @@
               "saleEndDate": "today+442",
               "id": "ca-arc-christmas-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             }
           ],
@@ -1328,11 +1329,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -1340,7 +1341,7 @@
               "saleEndDate": "today+443",
               "id": "ca-arc-mushrooms-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             },
             {
@@ -1351,7 +1352,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -1381,22 +1382,22 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Standard",
+              "name": "Fuelwood Permit — Standard",
               "unit": "cord",
               "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 },
                 {
                   "label": "How to Measure Fuelwood",
-                  "url": "#"
+                  "url": "documents/firewood-measuring.pdf"
                 }
               ],
               "minQty": 2,
@@ -1404,22 +1405,22 @@
               "saleEndDate": "today+81",
               "id": "co-krem-fuelwood-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 60,
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Limited Areas",
+              "name": "Fuelwood Permit — Limited Areas",
               "unit": "cord",
               "price": 12,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -1427,28 +1428,28 @@
               "saleEndDate": "today+440",
               "id": "co-krem-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 90,
               "eligibilityRule": null
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Designated Areas",
+              "name": "Christmas Tree Permit — Designated Areas",
               "unit": "tree",
               "price": 10,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 },
                 {
                   "label": "Planning Your Trip",
-                  "url": "#"
+                  "url": "documents/christmas-tree-trip-planning.pdf"
                 }
               ],
               "minQty": 1,
@@ -1460,18 +1461,18 @@
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Limited",
+              "name": "Christmas Tree Permit — Limited",
               "unit": "tree",
               "price": 10,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -1479,7 +1480,7 @@
               "saleEndDate": "today+442",
               "id": "co-krem-christmas-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             }
           ],
@@ -1492,11 +1493,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -1504,7 +1505,7 @@
               "saleEndDate": "today+443",
               "id": "co-krem-mushrooms-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 7,
               "eligibilityRule": null
             },
             {
@@ -1515,7 +1516,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -1523,7 +1524,7 @@
               "saleEndDate": "today+444",
               "id": "co-krem-mushrooms-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             }
           ]
@@ -1535,22 +1536,22 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Standard",
+              "name": "Fuelwood Permit — Standard",
               "unit": "cord",
               "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 },
                 {
                   "label": "How to Measure Fuelwood",
-                  "url": "#"
+                  "url": "documents/firewood-measuring.pdf"
                 }
               ],
               "minQty": 2,
@@ -1558,22 +1559,22 @@
               "saleEndDate": "today+111",
               "id": "co-gunn-fuelwood-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 90,
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Limited Areas",
+              "name": "Fuelwood Permit — Limited Areas",
               "unit": "cord",
               "price": 12,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -1581,28 +1582,28 @@
               "saleEndDate": "today+440",
               "id": "co-gunn-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 180,
               "eligibilityRule": null
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Designated Areas",
+              "name": "Christmas Tree Permit — Designated Areas",
               "unit": "tree",
               "price": 10,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 },
                 {
                   "label": "Planning Your Trip",
-                  "url": "#"
+                  "url": "documents/christmas-tree-trip-planning.pdf"
                 }
               ],
               "minQty": 1,
@@ -1610,22 +1611,22 @@
               "saleEndDate": "today+441",
               "id": "co-gunn-christmas-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Limited",
+              "name": "Christmas Tree Permit — Limited",
               "unit": "tree",
               "price": 10,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -1646,11 +1647,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -1658,7 +1659,7 @@
               "saleEndDate": "today+443",
               "id": "co-gunn-mushrooms-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             },
             {
@@ -1669,7 +1670,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -1689,22 +1690,22 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Standard",
+              "name": "Fuelwood Permit — Standard",
               "unit": "cord",
               "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 },
                 {
                   "label": "How to Measure Fuelwood",
-                  "url": "#"
+                  "url": "documents/firewood-measuring.pdf"
                 }
               ],
               "minQty": 2,
@@ -1712,22 +1713,22 @@
               "saleEndDate": "today+112",
               "id": "co-gj-fuelwood-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 180,
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Limited Areas",
+              "name": "Fuelwood Permit — Limited Areas",
               "unit": "cord",
               "price": 14,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -1741,22 +1742,22 @@
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Designated Areas",
+              "name": "Christmas Tree Permit — Designated Areas",
               "unit": "tree",
               "price": 10,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 },
                 {
                   "label": "Planning Your Trip",
-                  "url": "#"
+                  "url": "documents/christmas-tree-trip-planning.pdf"
                 }
               ],
               "minQty": 1,
@@ -1768,18 +1769,18 @@
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Limited",
+              "name": "Christmas Tree Permit — Limited",
               "unit": "tree",
               "price": 10,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -1787,7 +1788,7 @@
               "saleEndDate": "today+442",
               "id": "co-gj-christmas-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             }
           ],
@@ -1800,11 +1801,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -1823,7 +1824,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -1831,7 +1832,7 @@
               "saleEndDate": "today+444",
               "id": "co-gj-mushrooms-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 7,
               "eligibilityRule": null
             }
           ]
@@ -1848,22 +1849,22 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Standard",
+              "name": "Fuelwood Permit — Standard",
               "unit": "cord",
               "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 },
                 {
                   "label": "How to Measure Fuelwood",
-                  "url": "#"
+                  "url": "documents/firewood-measuring.pdf"
                 }
               ],
               "minQty": 2,
@@ -1875,18 +1876,18 @@
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Limited Areas",
+              "name": "Fuelwood Permit — Limited Areas",
               "unit": "cord",
               "price": 12,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -1894,28 +1895,28 @@
               "saleEndDate": "today+440",
               "id": "id-poca-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 60,
               "eligibilityRule": null
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Designated Areas",
+              "name": "Christmas Tree Permit — Designated Areas",
               "unit": "tree",
               "price": 5,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 },
                 {
                   "label": "Planning Your Trip",
-                  "url": "#"
+                  "url": "documents/christmas-tree-trip-planning.pdf"
                 }
               ],
               "minQty": 1,
@@ -1923,22 +1924,22 @@
               "saleEndDate": "today+441",
               "id": "id-poca-christmas-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Limited",
+              "name": "Christmas Tree Permit — Limited",
               "unit": "tree",
               "price": 5,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -1959,11 +1960,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -1971,7 +1972,7 @@
               "saleEndDate": "today+443",
               "id": "id-poca-mushrooms-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 7,
               "eligibilityRule": null
             },
             {
@@ -1982,7 +1983,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -1990,7 +1991,7 @@
               "saleEndDate": "today+444",
               "id": "id-poca-mushrooms-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             }
           ]
@@ -2002,22 +2003,22 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Standard",
+              "name": "Fuelwood Permit — Standard",
               "unit": "cord",
               "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 },
                 {
                   "label": "How to Measure Fuelwood",
-                  "url": "#"
+                  "url": "documents/firewood-measuring.pdf"
                 }
               ],
               "minQty": 2,
@@ -2025,22 +2026,22 @@
               "saleEndDate": "today+439",
               "id": "id-bois-fuelwood-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 60,
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Limited Areas",
+              "name": "Fuelwood Permit — Limited Areas",
               "unit": "cord",
               "price": 14,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -2048,28 +2049,28 @@
               "saleEndDate": "today+440",
               "id": "id-bois-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 90,
               "eligibilityRule": null
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Designated Areas",
+              "name": "Christmas Tree Permit — Designated Areas",
               "unit": "tree",
               "price": 5,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 },
                 {
                   "label": "Planning Your Trip",
-                  "url": "#"
+                  "url": "documents/christmas-tree-trip-planning.pdf"
                 }
               ],
               "minQty": 1,
@@ -2081,18 +2082,18 @@
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Limited",
+              "name": "Christmas Tree Permit — Limited",
               "unit": "tree",
               "price": 5,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -2100,7 +2101,7 @@
               "saleEndDate": "today+442",
               "id": "id-bois-christmas-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             }
           ],
@@ -2113,11 +2114,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -2125,7 +2126,7 @@
               "saleEndDate": "today+443",
               "id": "id-bois-mushrooms-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             },
             {
@@ -2136,7 +2137,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -2156,22 +2157,22 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Standard",
+              "name": "Fuelwood Permit — Standard",
               "unit": "cord",
               "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 },
                 {
                   "label": "How to Measure Fuelwood",
-                  "url": "#"
+                  "url": "documents/firewood-measuring.pdf"
                 }
               ],
               "minQty": 2,
@@ -2179,22 +2180,22 @@
               "saleEndDate": "today+115",
               "id": "id-twin-fuelwood-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 90,
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Limited Areas",
+              "name": "Fuelwood Permit — Limited Areas",
               "unit": "cord",
               "price": 12,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -2202,28 +2203,28 @@
               "saleEndDate": "today+440",
               "id": "id-twin-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 180,
               "eligibilityRule": null
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Designated Areas",
+              "name": "Christmas Tree Permit — Designated Areas",
               "unit": "tree",
               "price": 5,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 },
                 {
                   "label": "Planning Your Trip",
-                  "url": "#"
+                  "url": "documents/christmas-tree-trip-planning.pdf"
                 }
               ],
               "minQty": 1,
@@ -2231,22 +2232,22 @@
               "saleEndDate": "today+441",
               "id": "id-twin-christmas-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Limited",
+              "name": "Christmas Tree Permit — Limited",
               "unit": "tree",
               "price": 5,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -2267,11 +2268,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -2290,7 +2291,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -2298,7 +2299,7 @@
               "saleEndDate": "today+444",
               "id": "id-twin-mushrooms-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 7,
               "eligibilityRule": null
             }
           ]
@@ -2308,6 +2309,9 @@
   },
   "MT": {
     "name": "Montana",
+    "haulTags": {
+      "fuelwood": false
+    },
     "offices": [
       {
         "id": "MT-MILES",
@@ -2315,22 +2319,22 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Standard",
+              "name": "Fuelwood Permit — Standard",
               "unit": "cord",
               "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 },
                 {
                   "label": "How to Measure Fuelwood",
-                  "url": "#"
+                  "url": "documents/firewood-measuring.pdf"
                 }
               ],
               "minQty": 2,
@@ -2338,22 +2342,22 @@
               "saleEndDate": "today+87",
               "id": "mt-miles-fuelwood-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 180,
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Limited Areas",
+              "name": "Fuelwood Permit — Limited Areas",
               "unit": "cord",
               "price": 12,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -2367,22 +2371,22 @@
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Designated Areas",
+              "name": "Christmas Tree Permit — Designated Areas",
               "unit": "tree",
               "price": 5,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 },
                 {
                   "label": "Planning Your Trip",
-                  "url": "#"
+                  "url": "documents/christmas-tree-trip-planning.pdf"
                 }
               ],
               "minQty": 1,
@@ -2394,18 +2398,18 @@
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Limited",
+              "name": "Christmas Tree Permit — Limited",
               "unit": "tree",
               "price": 5,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -2413,7 +2417,7 @@
               "saleEndDate": "today+442",
               "id": "mt-miles-christmas-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             }
           ],
@@ -2426,11 +2430,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -2438,7 +2442,7 @@
               "saleEndDate": "today+443",
               "id": "mt-miles-mushrooms-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 7,
               "eligibilityRule": null
             },
             {
@@ -2449,7 +2453,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -2457,7 +2461,7 @@
               "saleEndDate": "today+444",
               "id": "mt-miles-mushrooms-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             }
           ]
@@ -2469,22 +2473,22 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Standard",
+              "name": "Fuelwood Permit — Standard",
               "unit": "cord",
               "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 },
                 {
                   "label": "How to Measure Fuelwood",
-                  "url": "#"
+                  "url": "documents/firewood-measuring.pdf"
                 }
               ],
               "minQty": 2,
@@ -2496,18 +2500,18 @@
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Limited Areas",
+              "name": "Fuelwood Permit — Limited Areas",
               "unit": "cord",
               "price": 14,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -2515,28 +2519,28 @@
               "saleEndDate": "today+440",
               "id": "mt-helena-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 60,
               "eligibilityRule": null
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Designated Areas",
+              "name": "Christmas Tree Permit — Designated Areas",
               "unit": "tree",
               "price": 5,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 },
                 {
                   "label": "Planning Your Trip",
-                  "url": "#"
+                  "url": "documents/christmas-tree-trip-planning.pdf"
                 }
               ],
               "minQty": 1,
@@ -2544,22 +2548,22 @@
               "saleEndDate": "today+441",
               "id": "mt-helena-christmas-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Limited",
+              "name": "Christmas Tree Permit — Limited",
               "unit": "tree",
               "price": 5,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -2580,11 +2584,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -2592,7 +2596,7 @@
               "saleEndDate": "today+443",
               "id": "mt-helena-mushrooms-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             },
             {
@@ -2603,7 +2607,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -2620,25 +2624,28 @@
       {
         "id": "MT-BILL",
         "name": "Billings Bison Outpost",
+        "haulTags": {
+          "fuelwood": true
+        },
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Standard",
+              "name": "Fuelwood Permit — Standard",
               "unit": "cord",
               "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 },
                 {
                   "label": "How to Measure Fuelwood",
-                  "url": "#"
+                  "url": "documents/firewood-measuring.pdf"
                 }
               ],
               "minQty": 2,
@@ -2646,22 +2653,22 @@
               "saleEndDate": "today+118",
               "id": "mt-bill-fuelwood-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 60,
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Limited Areas",
+              "name": "Fuelwood Permit — Limited Areas",
               "unit": "cord",
               "price": 12,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -2669,28 +2676,28 @@
               "saleEndDate": "today+440",
               "id": "mt-bill-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 90,
               "eligibilityRule": null
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Designated Areas",
+              "name": "Christmas Tree Permit — Designated Areas",
               "unit": "tree",
               "price": 5,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 },
                 {
                   "label": "Planning Your Trip",
-                  "url": "#"
+                  "url": "documents/christmas-tree-trip-planning.pdf"
                 }
               ],
               "minQty": 1,
@@ -2702,18 +2709,18 @@
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Limited",
+              "name": "Christmas Tree Permit — Limited",
               "unit": "tree",
               "price": 5,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -2721,7 +2728,7 @@
               "saleEndDate": "today+442",
               "id": "mt-bill-christmas-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             }
           ],
@@ -2734,11 +2741,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -2757,7 +2764,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -2765,7 +2772,7 @@
               "saleEndDate": "today+444",
               "id": "mt-bill-mushrooms-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 7,
               "eligibilityRule": null
             }
           ]
@@ -2777,27 +2784,27 @@
     "name": "Nevada",
     "offices": [
       {
-        "id": "33",
+        "id": "NV-CARS",
         "name": "Carson City Comet District",
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Standard",
+              "name": "Fuelwood Permit — Standard",
               "unit": "cord",
               "price": 10,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 },
                 {
                   "label": "How to Measure Fuelwood",
-                  "url": "#"
+                  "url": "documents/firewood-measuring.pdf"
                 }
               ],
               "minQty": 2,
@@ -2805,22 +2812,22 @@
               "saleEndDate": "today+439",
               "id": "33-fuelwood-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 90,
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Limited Areas",
+              "name": "Fuelwood Permit — Limited Areas",
               "unit": "cord",
               "price": 12,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -2828,28 +2835,28 @@
               "saleEndDate": "today+440",
               "id": "33-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 180,
               "eligibilityRule": null
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Designated Areas",
+              "name": "Christmas Tree Permit — Designated Areas",
               "unit": "tree",
               "price": 0,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 },
                 {
                   "label": "Planning Your Trip",
-                  "url": "#"
+                  "url": "documents/christmas-tree-trip-planning.pdf"
                 }
               ],
               "minQty": 1,
@@ -2857,22 +2864,22 @@
               "saleEndDate": "today+441",
               "id": "33-christmas-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Limited",
+              "name": "Christmas Tree Permit — Limited",
               "unit": "tree",
               "price": 0,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -2893,11 +2900,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -2905,7 +2912,7 @@
               "saleEndDate": "today+443",
               "id": "33-mushrooms-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 7,
               "eligibilityRule": null
             },
             {
@@ -2916,7 +2923,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -2924,7 +2931,7 @@
               "saleEndDate": "today+444",
               "id": "33-mushrooms-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             }
           ]
@@ -2936,22 +2943,22 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Standard",
+              "name": "Fuelwood Permit — Standard",
               "unit": "cord",
               "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 },
                 {
                   "label": "How to Measure Fuelwood",
-                  "url": "#"
+                  "url": "documents/firewood-measuring.pdf"
                 }
               ],
               "minQty": 2,
@@ -2959,22 +2966,22 @@
               "saleEndDate": "today+120",
               "id": "nv-ely-fuelwood-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 180,
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Limited Areas",
+              "name": "Fuelwood Permit — Limited Areas",
               "unit": "cord",
               "price": 12,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -2988,22 +2995,22 @@
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Designated Areas",
+              "name": "Christmas Tree Permit — Designated Areas",
               "unit": "tree",
               "price": 10,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 },
                 {
                   "label": "Planning Your Trip",
-                  "url": "#"
+                  "url": "documents/christmas-tree-trip-planning.pdf"
                 }
               ],
               "minQty": 1,
@@ -3015,18 +3022,18 @@
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Limited",
+              "name": "Christmas Tree Permit — Limited",
               "unit": "tree",
               "price": 10,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -3034,7 +3041,7 @@
               "saleEndDate": "today+442",
               "id": "nv-ely-christmas-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             }
           ],
@@ -3047,11 +3054,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -3059,7 +3066,7 @@
               "saleEndDate": "today+443",
               "id": "nv-ely-mushrooms-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             },
             {
@@ -3070,7 +3077,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -3090,22 +3097,22 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Standard",
+              "name": "Fuelwood Permit — Standard",
               "unit": "cord",
               "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 },
                 {
                   "label": "How to Measure Fuelwood",
-                  "url": "#"
+                  "url": "documents/firewood-measuring.pdf"
                 }
               ],
               "minQty": 2,
@@ -3117,18 +3124,18 @@
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Limited Areas",
+              "name": "Fuelwood Permit — Limited Areas",
               "unit": "cord",
               "price": 14,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -3136,28 +3143,28 @@
               "saleEndDate": "today+440",
               "id": "nv-lv-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 60,
               "eligibilityRule": null
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Designated Areas",
+              "name": "Christmas Tree Permit — Designated Areas",
               "unit": "tree",
               "price": 10,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 },
                 {
                   "label": "Planning Your Trip",
-                  "url": "#"
+                  "url": "documents/christmas-tree-trip-planning.pdf"
                 }
               ],
               "minQty": 1,
@@ -3165,22 +3172,22 @@
               "saleEndDate": "today+441",
               "id": "nv-lv-christmas-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Limited",
+              "name": "Christmas Tree Permit — Limited",
               "unit": "tree",
               "price": 10,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -3201,11 +3208,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -3224,7 +3231,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -3232,7 +3239,7 @@
               "saleEndDate": "today+444",
               "id": "nv-lv-mushrooms-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 7,
               "eligibilityRule": null
             }
           ]
@@ -3249,22 +3256,22 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Standard",
+              "name": "Fuelwood Permit — Standard",
               "unit": "cord",
               "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 },
                 {
                   "label": "How to Measure Fuelwood",
-                  "url": "#"
+                  "url": "documents/firewood-measuring.pdf"
                 }
               ],
               "minQty": 2,
@@ -3272,22 +3279,22 @@
               "saleEndDate": "today+78",
               "id": "nm-rosw-fuelwood-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 60,
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Limited Areas",
+              "name": "Fuelwood Permit — Limited Areas",
               "unit": "cord",
               "price": 17,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -3295,28 +3302,28 @@
               "saleEndDate": "today+440",
               "id": "nm-rosw-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 90,
               "eligibilityRule": null
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Designated Areas",
+              "name": "Christmas Tree Permit — Designated Areas",
               "unit": "tree",
               "price": 10,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 },
                 {
                   "label": "Planning Your Trip",
-                  "url": "#"
+                  "url": "documents/christmas-tree-trip-planning.pdf"
                 }
               ],
               "minQty": 1,
@@ -3328,18 +3335,18 @@
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Limited",
+              "name": "Christmas Tree Permit — Limited",
               "unit": "tree",
               "price": 10,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -3347,7 +3354,7 @@
               "saleEndDate": "today+442",
               "id": "nm-rosw-christmas-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             }
           ],
@@ -3360,11 +3367,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -3372,7 +3379,7 @@
               "saleEndDate": "today+443",
               "id": "nm-rosw-mushrooms-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 7,
               "eligibilityRule": null
             },
             {
@@ -3383,7 +3390,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -3391,7 +3398,7 @@
               "saleEndDate": "today+444",
               "id": "nm-rosw-mushrooms-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             }
           ]
@@ -3403,22 +3410,22 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Standard",
+              "name": "Fuelwood Permit — Standard",
               "unit": "cord",
               "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 },
                 {
                   "label": "How to Measure Fuelwood",
-                  "url": "#"
+                  "url": "documents/firewood-measuring.pdf"
                 }
               ],
               "minQty": 2,
@@ -3426,22 +3433,22 @@
               "saleEndDate": "today+123",
               "id": "nm-taos-fuelwood-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 90,
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Limited Areas",
+              "name": "Fuelwood Permit — Limited Areas",
               "unit": "cord",
               "price": 17,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -3449,28 +3456,28 @@
               "saleEndDate": "today+440",
               "id": "nm-taos-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 180,
               "eligibilityRule": null
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Designated Areas",
+              "name": "Christmas Tree Permit — Designated Areas",
               "unit": "tree",
               "price": 10,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 },
                 {
                   "label": "Planning Your Trip",
-                  "url": "#"
+                  "url": "documents/christmas-tree-trip-planning.pdf"
                 }
               ],
               "minQty": 1,
@@ -3478,22 +3485,22 @@
               "saleEndDate": "today+441",
               "id": "nm-taos-christmas-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Limited",
+              "name": "Christmas Tree Permit — Limited",
               "unit": "tree",
               "price": 10,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -3514,11 +3521,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -3526,7 +3533,7 @@
               "saleEndDate": "today+443",
               "id": "nm-taos-mushrooms-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             },
             {
@@ -3537,7 +3544,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -3557,22 +3564,22 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Standard",
+              "name": "Fuelwood Permit — Standard",
               "unit": "cord",
               "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 },
                 {
                   "label": "How to Measure Fuelwood",
-                  "url": "#"
+                  "url": "documents/firewood-measuring.pdf"
                 }
               ],
               "minQty": 2,
@@ -3580,22 +3587,22 @@
               "saleEndDate": "today+439",
               "id": "nm-las-fuelwood-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 180,
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Limited Areas",
+              "name": "Fuelwood Permit — Limited Areas",
               "unit": "cord",
               "price": 14,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -3609,22 +3616,22 @@
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Designated Areas",
+              "name": "Christmas Tree Permit — Designated Areas",
               "unit": "tree",
               "price": 10,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 },
                 {
                   "label": "Planning Your Trip",
-                  "url": "#"
+                  "url": "documents/christmas-tree-trip-planning.pdf"
                 }
               ],
               "minQty": 1,
@@ -3636,18 +3643,18 @@
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Limited",
+              "name": "Christmas Tree Permit — Limited",
               "unit": "tree",
               "price": 10,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -3655,7 +3662,7 @@
               "saleEndDate": "today+442",
               "id": "nm-las-christmas-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             }
           ],
@@ -3668,11 +3675,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -3691,7 +3698,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -3699,7 +3706,7 @@
               "saleEndDate": "today+444",
               "id": "nm-las-mushrooms-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 7,
               "eligibilityRule": null
             }
           ]
@@ -3713,7 +3720,7 @@
     "attachments": [
       {
         "label": "Oregon seasonal road guidance",
-        "url": "#"
+        "url": "documents/or-seasonal-road-guidance.pdf"
       }
     ],
     "offices": [
@@ -3723,22 +3730,22 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Standard",
+              "name": "Fuelwood Permit — Standard",
               "unit": "cord",
               "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 },
                 {
                   "label": "How to Measure Fuelwood",
-                  "url": "#"
+                  "url": "documents/firewood-measuring.pdf"
                 }
               ],
               "minQty": 2,
@@ -3750,18 +3757,18 @@
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Limited Areas",
+              "name": "Fuelwood Permit — Limited Areas",
               "unit": "cord",
               "price": 22,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -3769,28 +3776,28 @@
               "saleEndDate": "today+440",
               "id": "or-salem-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 60,
               "eligibilityRule": null
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Designated Areas",
+              "name": "Christmas Tree Permit — Designated Areas",
               "unit": "tree",
               "price": 10,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 },
                 {
                   "label": "Planning Your Trip",
-                  "url": "#"
+                  "url": "documents/christmas-tree-trip-planning.pdf"
                 }
               ],
               "minQty": 1,
@@ -3798,22 +3805,22 @@
               "saleEndDate": "today+441",
               "id": "or-salem-christmas-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Limited",
+              "name": "Christmas Tree Permit — Limited",
               "unit": "tree",
               "price": 10,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -3834,11 +3841,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -3846,7 +3853,7 @@
               "saleEndDate": "today+443",
               "id": "or-salem-mushrooms-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 7,
               "eligibilityRule": null
             },
             {
@@ -3857,7 +3864,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -3865,7 +3872,7 @@
               "saleEndDate": "today+444",
               "id": "or-salem-mushrooms-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             }
           ]
@@ -3878,28 +3885,28 @@
         "attachments": [
           {
             "label": "Prineville winter travel map",
-            "url": "#"
+            "url": "documents/or-prin-winter-travel-map.pdf"
           }
         ],
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Standard",
+              "name": "Fuelwood Permit — Standard",
               "unit": "cord",
               "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 },
                 {
                   "label": "How to Measure Fuelwood",
-                  "url": "#"
+                  "url": "documents/firewood-measuring.pdf"
                 }
               ],
               "minQty": 2,
@@ -3907,22 +3914,22 @@
               "saleEndDate": "today+126",
               "id": "or-prin-fuelwood-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 60,
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Limited Areas",
+              "name": "Fuelwood Permit — Limited Areas",
               "unit": "cord",
               "price": 17,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -3930,28 +3937,28 @@
               "saleEndDate": "today+440",
               "id": "or-prin-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 90,
               "eligibilityRule": null
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Designated Areas",
+              "name": "Christmas Tree Permit — Designated Areas",
               "unit": "tree",
               "price": 10,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 },
                 {
                   "label": "Planning Your Trip",
-                  "url": "#"
+                  "url": "documents/christmas-tree-trip-planning.pdf"
                 }
               ],
               "minQty": 1,
@@ -3963,18 +3970,18 @@
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Limited",
+              "name": "Christmas Tree Permit — Limited",
               "unit": "tree",
               "price": 10,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -3982,7 +3989,7 @@
               "saleEndDate": "today+442",
               "id": "or-prin-christmas-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             }
           ],
@@ -3995,11 +4002,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -4007,7 +4014,7 @@
               "saleEndDate": "today+443",
               "id": "or-prin-mushrooms-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             },
             {
@@ -4018,7 +4025,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -4038,22 +4045,22 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Standard",
+              "name": "Fuelwood Permit — Standard",
               "unit": "cord",
               "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 },
                 {
                   "label": "How to Measure Fuelwood",
-                  "url": "#"
+                  "url": "documents/firewood-measuring.pdf"
                 }
               ],
               "minQty": 2,
@@ -4061,22 +4068,22 @@
               "saleEndDate": "today+127",
               "id": "or-lake-fuelwood-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 90,
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Limited Areas",
+              "name": "Fuelwood Permit — Limited Areas",
               "unit": "cord",
               "price": 17,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -4084,28 +4091,28 @@
               "saleEndDate": "today+440",
               "id": "or-lake-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 180,
               "eligibilityRule": null
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Designated Areas",
+              "name": "Christmas Tree Permit — Designated Areas",
               "unit": "tree",
               "price": 10,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 },
                 {
                   "label": "Planning Your Trip",
-                  "url": "#"
+                  "url": "documents/christmas-tree-trip-planning.pdf"
                 }
               ],
               "minQty": 1,
@@ -4113,22 +4120,22 @@
               "saleEndDate": "today+441",
               "id": "or-lake-christmas-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Limited",
+              "name": "Christmas Tree Permit — Limited",
               "unit": "tree",
               "price": 10,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -4149,11 +4156,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -4172,7 +4179,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -4180,7 +4187,7 @@
               "saleEndDate": "today+444",
               "id": "or-lake-mushrooms-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 7,
               "eligibilityRule": null
             }
           ]
@@ -4197,22 +4204,22 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Standard",
+              "name": "Fuelwood Permit — Standard",
               "unit": "cord",
               "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 },
                 {
                   "label": "How to Measure Fuelwood",
-                  "url": "#"
+                  "url": "documents/firewood-measuring.pdf"
                 }
               ],
               "minQty": 2,
@@ -4220,22 +4227,22 @@
               "saleEndDate": "today+84",
               "id": "ut-ccfo-fuelwood-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 180,
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Limited Areas",
+              "name": "Fuelwood Permit — Limited Areas",
               "unit": "cord",
               "price": 3,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -4249,22 +4256,22 @@
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Designated Areas",
+              "name": "Christmas Tree Permit — Designated Areas",
               "unit": "tree",
               "price": 10,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 },
                 {
                   "label": "Planning Your Trip",
-                  "url": "#"
+                  "url": "documents/christmas-tree-trip-planning.pdf"
                 }
               ],
               "minQty": 1,
@@ -4276,18 +4283,18 @@
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Limited",
+              "name": "Christmas Tree Permit — Limited",
               "unit": "tree",
               "price": 10,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -4295,7 +4302,7 @@
               "saleEndDate": "today+442",
               "id": "ut-ccfo-christmas-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             }
           ],
@@ -4308,11 +4315,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -4320,7 +4327,7 @@
               "saleEndDate": "today+443",
               "id": "ut-ccfo-mushrooms-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 7,
               "eligibilityRule": null
             },
             {
@@ -4331,7 +4338,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -4339,7 +4346,7 @@
               "saleEndDate": "today+444",
               "id": "ut-ccfo-mushrooms-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             }
           ]
@@ -4357,22 +4364,22 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Standard",
+              "name": "Fuelwood Permit — Standard",
               "unit": "cord",
               "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 },
                 {
                   "label": "How to Measure Fuelwood",
-                  "url": "#"
+                  "url": "documents/firewood-measuring.pdf"
                 }
               ],
               "minQty": 2,
@@ -4380,22 +4387,22 @@
               "saleEndDate": "today+130",
               "id": "ut-moab-fuelwood-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 60,
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Limited Areas",
+              "name": "Fuelwood Permit — Limited Areas",
               "unit": "cord",
               "price": 17,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -4403,28 +4410,28 @@
               "saleEndDate": "today+440",
               "id": "ut-moab-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 90,
               "eligibilityRule": null
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Designated Areas",
+              "name": "Christmas Tree Permit — Designated Areas",
               "unit": "tree",
               "price": 10,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 },
                 {
                   "label": "Planning Your Trip",
-                  "url": "#"
+                  "url": "documents/christmas-tree-trip-planning.pdf"
                 }
               ],
               "minQty": 1,
@@ -4436,18 +4443,18 @@
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Limited",
+              "name": "Christmas Tree Permit — Limited",
               "unit": "tree",
               "price": 10,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -4455,7 +4462,7 @@
               "saleEndDate": "today+442",
               "id": "ut-moab-christmas-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             }
           ],
@@ -4468,11 +4475,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -4491,7 +4498,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -4499,7 +4506,7 @@
               "saleEndDate": "today+444",
               "id": "ut-moab-mushrooms-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 7,
               "eligibilityRule": null
             }
           ]
@@ -4516,22 +4523,22 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Standard",
+              "name": "Fuelwood Permit — Standard",
               "unit": "cord",
               "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 },
                 {
                   "label": "How to Measure Fuelwood",
-                  "url": "#"
+                  "url": "documents/firewood-measuring.pdf"
                 }
               ],
               "minQty": 2,
@@ -4539,22 +4546,22 @@
               "saleEndDate": "today+87",
               "id": "wa-spk-fuelwood-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 90,
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Limited Areas",
+              "name": "Fuelwood Permit — Limited Areas",
               "unit": "cord",
               "price": 22,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -4562,28 +4569,28 @@
               "saleEndDate": "today+440",
               "id": "wa-spk-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 180,
               "eligibilityRule": null
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Designated Areas",
+              "name": "Christmas Tree Permit — Designated Areas",
               "unit": "tree",
               "price": 10,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 },
                 {
                   "label": "Planning Your Trip",
-                  "url": "#"
+                  "url": "documents/christmas-tree-trip-planning.pdf"
                 }
               ],
               "minQty": 1,
@@ -4591,22 +4598,22 @@
               "saleEndDate": "today+441",
               "id": "wa-spk-christmas-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Limited",
+              "name": "Christmas Tree Permit — Limited",
               "unit": "tree",
               "price": 10,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -4627,11 +4634,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -4639,7 +4646,7 @@
               "saleEndDate": "today+443",
               "id": "wa-spk-mushrooms-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 7,
               "eligibilityRule": null
             },
             {
@@ -4650,7 +4657,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -4658,7 +4665,7 @@
               "saleEndDate": "today+444",
               "id": "wa-spk-mushrooms-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             }
           ]
@@ -4670,22 +4677,22 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Standard",
+              "name": "Fuelwood Permit — Standard",
               "unit": "cord",
               "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 },
                 {
                   "label": "How to Measure Fuelwood",
-                  "url": "#"
+                  "url": "documents/firewood-measuring.pdf"
                 }
               ],
               "minQty": 2,
@@ -4693,22 +4700,22 @@
               "saleEndDate": "today+132",
               "id": "wa-wen-fuelwood-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 180,
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Limited Areas",
+              "name": "Fuelwood Permit — Limited Areas",
               "unit": "cord",
               "price": 20,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -4722,22 +4729,22 @@
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Designated Areas",
+              "name": "Christmas Tree Permit — Designated Areas",
               "unit": "tree",
               "price": 10,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 },
                 {
                   "label": "Planning Your Trip",
-                  "url": "#"
+                  "url": "documents/christmas-tree-trip-planning.pdf"
                 }
               ],
               "minQty": 1,
@@ -4749,18 +4756,18 @@
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Limited",
+              "name": "Christmas Tree Permit — Limited",
               "unit": "tree",
               "price": 10,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -4768,7 +4775,7 @@
               "saleEndDate": "today+442",
               "id": "wa-wen-christmas-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             }
           ],
@@ -4781,11 +4788,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -4793,7 +4800,7 @@
               "saleEndDate": "today+443",
               "id": "wa-wen-mushrooms-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             },
             {
@@ -4804,7 +4811,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -4824,22 +4831,22 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Standard",
+              "name": "Fuelwood Permit — Standard",
               "unit": "cord",
               "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 },
                 {
                   "label": "How to Measure Fuelwood",
-                  "url": "#"
+                  "url": "documents/firewood-measuring.pdf"
                 }
               ],
               "minQty": 2,
@@ -4851,18 +4858,18 @@
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Limited Areas",
+              "name": "Fuelwood Permit — Limited Areas",
               "unit": "cord",
               "price": 20,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -4870,28 +4877,28 @@
               "saleEndDate": "today+440",
               "id": "wa-van-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 60,
               "eligibilityRule": null
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Designated Areas",
+              "name": "Christmas Tree Permit — Designated Areas",
               "unit": "tree",
               "price": 10,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 },
                 {
                   "label": "Planning Your Trip",
-                  "url": "#"
+                  "url": "documents/christmas-tree-trip-planning.pdf"
                 }
               ],
               "minQty": 1,
@@ -4899,22 +4906,22 @@
               "saleEndDate": "today+441",
               "id": "wa-van-christmas-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Limited",
+              "name": "Christmas Tree Permit — Limited",
               "unit": "tree",
               "price": 10,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -4935,11 +4942,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -4958,7 +4965,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -4966,7 +4973,7 @@
               "saleEndDate": "today+444",
               "id": "wa-van-mushrooms-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 7,
               "eligibilityRule": null
             }
           ]
@@ -4983,22 +4990,22 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Standard",
+              "name": "Fuelwood Permit — Standard",
               "unit": "cord",
               "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 },
                 {
                   "label": "How to Measure Fuelwood",
-                  "url": "#"
+                  "url": "documents/firewood-measuring.pdf"
                 }
               ],
               "minQty": 2,
@@ -5006,22 +5013,22 @@
               "saleEndDate": "today+439",
               "id": "wy-casp-fuelwood-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 60,
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Limited Areas",
+              "name": "Fuelwood Permit — Limited Areas",
               "unit": "cord",
               "price": 17,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -5029,28 +5036,28 @@
               "saleEndDate": "today+440",
               "id": "wy-casp-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 90,
               "eligibilityRule": null
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Designated Areas",
+              "name": "Christmas Tree Permit — Designated Areas",
               "unit": "tree",
               "price": 10,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 },
                 {
                   "label": "Planning Your Trip",
-                  "url": "#"
+                  "url": "documents/christmas-tree-trip-planning.pdf"
                 }
               ],
               "minQty": 1,
@@ -5062,18 +5069,18 @@
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Limited",
+              "name": "Christmas Tree Permit — Limited",
               "unit": "tree",
               "price": 10,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -5081,7 +5088,7 @@
               "saleEndDate": "today+442",
               "id": "wy-casp-christmas-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             }
           ],
@@ -5094,11 +5101,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -5106,7 +5113,7 @@
               "saleEndDate": "today+443",
               "id": "wy-casp-mushrooms-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 7,
               "eligibilityRule": null
             },
             {
@@ -5117,7 +5124,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -5125,7 +5132,7 @@
               "saleEndDate": "today+444",
               "id": "wy-casp-mushrooms-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             }
           ]
@@ -5137,22 +5144,22 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Standard",
+              "name": "Fuelwood Permit — Standard",
               "unit": "cord",
               "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 },
                 {
                   "label": "How to Measure Fuelwood",
-                  "url": "#"
+                  "url": "documents/firewood-measuring.pdf"
                 }
               ],
               "minQty": 2,
@@ -5160,22 +5167,22 @@
               "saleEndDate": "today+135",
               "id": "wy-rock-fuelwood-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 90,
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Limited Areas",
+              "name": "Fuelwood Permit — Limited Areas",
               "unit": "cord",
               "price": 14,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -5183,28 +5190,28 @@
               "saleEndDate": "today+440",
               "id": "wy-rock-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 180,
               "eligibilityRule": null
             }
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Designated Areas",
+              "name": "Christmas Tree Permit — Designated Areas",
               "unit": "tree",
               "price": 10,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 },
                 {
                   "label": "Planning Your Trip",
-                  "url": "#"
+                  "url": "documents/christmas-tree-trip-planning.pdf"
                 }
               ],
               "minQty": 1,
@@ -5212,22 +5219,22 @@
               "saleEndDate": "today+441",
               "id": "wy-rock-christmas-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Limited",
+              "name": "Christmas Tree Permit — Limited",
               "unit": "tree",
               "price": 10,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -5248,11 +5255,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -5260,7 +5267,7 @@
               "saleEndDate": "today+443",
               "id": "wy-rock-mushrooms-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             },
             {
@@ -5271,7 +5278,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -5291,22 +5298,22 @@
         "products": {
           "fuelwood": [
             {
-              "name": "Fuelwood Permit \u2014 Standard",
+              "name": "Fuelwood Permit — Standard",
               "unit": "cord",
               "price": 0,
               "maxQty": 10,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 },
                 {
                   "label": "How to Measure Fuelwood",
-                  "url": "#"
+                  "url": "documents/firewood-measuring.pdf"
                 }
               ],
               "minQty": 2,
@@ -5314,22 +5321,22 @@
               "saleEndDate": "today+136",
               "id": "wy-worl-fuelwood-01",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 180,
               "eligibilityRule": null
             },
             {
-              "name": "Fuelwood Permit \u2014 Limited Areas",
+              "name": "Fuelwood Permit — Limited Areas",
               "unit": "cord",
               "price": 14,
               "maxQty": 6,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/firewood-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/firewood-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -5343,22 +5350,22 @@
           ],
           "christmas": [
             {
-              "name": "Christmas Tree Permit \u2014 Designated Areas",
+              "name": "Christmas Tree Permit — Designated Areas",
               "unit": "tree",
               "price": 10,
               "maxQty": 5,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 },
                 {
                   "label": "Planning Your Trip",
-                  "url": "#"
+                  "url": "documents/christmas-tree-trip-planning.pdf"
                 }
               ],
               "minQty": 1,
@@ -5370,18 +5377,18 @@
               "eligibilityRule": null
             },
             {
-              "name": "Christmas Tree Permit \u2014 Limited",
+              "name": "Christmas Tree Permit — Limited",
               "unit": "tree",
               "price": 10,
               "maxQty": 3,
               "requiredDocs": [
                 {
                   "label": "Map",
-                  "url": "#"
+                  "url": "documents/christmas-tree-map.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/christmas-tree-stipulations.pdf"
                 }
               ],
               "minQty": 2,
@@ -5389,7 +5396,7 @@
               "saleEndDate": "today+442",
               "id": "wy-worl-christmas-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 14,
               "eligibilityRule": null
             }
           ],
@@ -5402,11 +5409,11 @@
               "requiredDocs": [
                 {
                   "label": "Collection Areas",
-                  "url": "#"
+                  "url": "documents/mushroom-collection-areas.pdf"
                 },
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 3,
@@ -5425,7 +5432,7 @@
               "requiredDocs": [
                 {
                   "label": "Stipulations",
-                  "url": "#"
+                  "url": "documents/mushroom-stipulations.pdf"
                 }
               ],
               "minQty": 1,
@@ -5433,7 +5440,7 @@
               "saleEndDate": "today+444",
               "id": "wy-worl-mushrooms-02",
               "quantityStep": 1,
-              "validForDays": 30,
+              "validForDays": 7,
               "eligibilityRule": null
             }
           ]

@@ -5,7 +5,7 @@ import { resolve, extname, sep } from 'node:path';
 
 export async function startServer() {
   const root = fileURLToPath(new URL('../', import.meta.url));
-  const mime = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.ico': 'image/x-icon', '.woff2': 'font/woff2' };
+  const mime = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.ico': 'image/x-icon', '.woff2': 'font/woff2', '.pdf': 'application/pdf' };
   const server = createServer(async (request, response) => {
     const pathname = new URL(request.url, 'http://localhost').pathname;
     const path = resolve(root, `.${pathname === '/' ? '/index.html' : pathname}`);
