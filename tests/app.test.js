@@ -136,6 +136,7 @@ test('restoration matches active IDs after inactive products and catalog reorder
   assert.match(a.$('input[name=product]:checked').closest('.prod').textContent, /Anchorage South/);
   assert.equal(a.$('input[name=product]:checked').id, 'prod_0');
   assert.equal(a.$('#qty').value, '2');
+  assert.equal(a.$('#qtyGuard').textContent, 'Maximum allowed per permit: 6 cords', 'restore shows the same quantity guidance as selection');
   assert.equal(a.$('#FirstName').disabled, false);
   assert.equal(a.$('#confirmPaygov').disabled, true, 'personal data must be reentered');
 });

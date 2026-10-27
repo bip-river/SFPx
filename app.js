@@ -223,13 +223,7 @@ function restoreState() {
       radio.checked = true;
       updateProductCardSelection();
     }
-    const minQty = Number.isFinite(p.minQty) ? p.minQty : 1;
-    qtyHint.textContent = `Enter ${minQty}–${p.maxQty} ${p.unit}(s). Price: ${feeLabelForUnit(p.price, p.unit)}.`;
-    qtyEl.min = minQty;
-    qtyEl.max = p.maxQty;
-    qtyEl.step = p.quantityStep;
-    setControlEnabled(qtyEl, true);
-    qtySection.style.display = 'block';
+    showQuantityFor(p);
     if (savedModel.qty) {
       qtyEl.value = savedModel.qty;
     }
@@ -737,25 +731,29 @@ function renderProducts() {
   updateProductCardSelection();
 }
 
+// Shared by selection and restore so both configure the quantity field the same way.
+function showQuantityFor(p) {
+  const minQty = Number.isFinite(p.minQty) ? p.minQty : 1;
+  qtyHint.textContent = `Enter ${minQty}–${p.maxQty} ${p.unit}(s). Price: ${feeLabelForUnit(p.price, p.unit)}.`;
+  qtyGuard.textContent = p.maxQty ? `Maximum allowed per permit: ${p.maxQty} ${p.unit}${p.maxQty === 1 ? '' : 's'}` : '';
+  qtyEl.min = minQty;
+  qtyEl.max = p.maxQty;
+  qtyEl.step = p.quantityStep;
+  setControlEnabled(qtyEl, true);
+  qtySection.style.display = 'block';
+}
+
 function selectProduct(p, idx) {
   invalidateCheckout();
   updateProductCardSelection();
 
   model.productKey = getProductKey(p);
   model.product = p;
-  const minQty = Number.isFinite(p.minQty) ? p.minQty : 1;
-  qtyHint.textContent = `Enter ${minQty}–${p.maxQty} ${p.unit}(s). Price: ${feeLabelForUnit(p.price, p.unit)}.`;
-  const maxLine = p.maxQty ? `Maximum allowed per permit: ${p.maxQty} ${p.unit}${p.maxQty === 1 ? '' : 's'}` : '';
-  qtyGuard.textContent = maxLine || '';
-  qtyEl.min = minQty;
-  qtyEl.max = p.maxQty;
-  qtyEl.step = p.quantityStep;
+  showQuantityFor(p);
   qtyEl.value = '';
   totalEl.value = '';
   if (totalAmount) totalAmount.textContent = '—';
   totalCalc.textContent = '';
-  setControlEnabled(qtyEl, true);
-  qtySection.style.display = 'block';
   model.qty = 0;
   stepState.completed[1] = false;
   stepState.available[2] = false;
