@@ -1,6 +1,6 @@
 # Regression checks
 
-`npm run check` parses the JavaScript files and validates the actual demo catalog.
+`npm run check` parses the JavaScript files, validates the actual demo catalog, and confirms every CSS custom property used in `styles.css` is defined.
 
 `npm test` runs Node's test runner with jsdom. The DOM tests load the real ES module graph using VM modules (Node prints an experimental VM-module warning). They exercise the real markup, events, catalog loader, validation, and checkout code. They cover:
 
