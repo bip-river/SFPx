@@ -1040,6 +1040,15 @@ function clearPermitHolder() {
   Object.values(permitHolder).forEach(el => { el.value = ''; lastValues.set(el, ''); });
 }
 
+// Firefox restores form values on reload, so an agreement or quantity from before the reload could reappear.
+function clearRestoredFormState() {
+  clearPermitHolder();
+  agreeEl.checked = false;
+  ackEligibility.checked = false;
+  qtyEl.value = '';
+  lastValues.set(qtyEl, '');
+}
+
 function resetAll() {
   invalidateCheckout();
   clearPermitHolder();
@@ -1063,6 +1072,7 @@ window.addEventListener('pageshow', event => {
   if (!event.persisted) return;
   clearPermitHolder();
   agreeEl.checked = false;
+  ackEligibility.checked = false;
   invalidateCheckout();
   if (SCREENS.indexOf(currentScreen) > SCREENS.indexOf('details')) showScreen('details', { history: 'replace' });
 });
@@ -1070,7 +1080,7 @@ window.addEventListener('pageshow', event => {
 async function boot() {
   productTypeRadios = renderProductTypes(productTypeOptions, handleProductTypeChange);
   populateUSStates(permitHolder.AddrState);
-  clearPermitHolder();
+  clearRestoredFormState();
   await loadProductData();
   restoring = true;
   try { restoreState(); } finally { restoring = false; }

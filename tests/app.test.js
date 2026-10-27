@@ -10,8 +10,8 @@ const html = await readFile(new URL('index.html', root), 'utf8');
 const catalog = JSON.parse(await readFile(new URL('products.json', root), 'utf8'));
 const HOLDER = { FirstName: 'Test', LastName: 'Purchaser', AddressLine1: '123 Test Street', City: 'Test City', AddrState: 'UT', Zip: '84037', DeliveryEmail: 'test@example.com', ConfirmEmail: 'test@example.com' };
 
-async function app(t, { data = structuredClone(catalog), saved, storageBlocked = false, loadFails = false, hash = '' } = {}) {
-  const dom = new JSDOM(html, { url: `http://localhost/${hash}`, runScripts: 'outside-only', pretendToBeVisual: true });
+async function app(t, { data = structuredClone(catalog), saved, storageBlocked = false, loadFails = false, hash = '', markup = html } = {}) {
+  const dom = new JSDOM(markup, { url: `http://localhost/${hash}`, runScripts: 'outside-only', pretendToBeVisual: true });
   t.after(() => dom.window.close());
   const w = dom.window;
   let now = '2026-10-21T12:00:00';
@@ -525,6 +525,17 @@ test('back-forward cache return clears browser-retained purchaser information', 
   a.w.dispatchEvent(new a.w.PageTransitionEvent('pageshow', { persisted: true }));
   assert.equal(a.$('#FirstName').value, '');
   assert.equal(a.screen(), 'details');
+});
+
+test('form values a browser restores on reload are cleared', async t => {
+  // Firefox restores checkbox and input state on reload, independently of sessionStorage.
+  const markup = html.replace('id="agree"', 'id="agree" checked').replace('id="ackEligibility"', 'id="ackEligibility" checked').replace('id="FirstName"', 'id="FirstName" value="Kept"').replace('id="qty"', 'id="qty" value="9"');
+  const a = await app(t, { markup });
+  for (const id of ['agree', 'ackEligibility']) assert.equal(a.$(`#${id}`).checked, false, id);
+  assert.equal(a.$('#FirstName').value, '');
+  assert.equal(a.$('#qty').value, '');
+  a.choose(); a.holder(); a.check('#agree'); await a.generate();
+  assert.equal(a.payload().total, 10);
 });
 
 test('holder blur and unchanged change events preserve the prepared permit and button text nodes', async t => {

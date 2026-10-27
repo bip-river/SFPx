@@ -37,6 +37,13 @@ try {
     assert.equal(await download.failure(), null);
     return { name: download.suggestedFilename(), text: (await readPdf(new Blob([await readFile(await download.path())]))).text };
   };
+  const waitForDone = async () => {
+    try { await page.locator('#screen-done').waitFor({ state: 'visible' }); }
+    catch (error) {
+      console.log('Browser checkout diagnostics:', engineName, await page.evaluate(() => ({ secure: isSecureContext, uuid: typeof crypto.randomUUID, agreed: document.getElementById('agree').checked, error: document.getElementById('errorList').textContent, button: document.getElementById('confirmPaygov').outerHTML, focus: document.activeElement.id })));
+      throw error;
+    }
+  };
   for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 }]) {
     await page.setViewportSize(viewport);
     const errors = [];
@@ -96,11 +103,7 @@ try {
     await checkAccessibility(page, 'review');
     await page.locator('label[for=agree]').click();
     await page.locator('#confirmPaygov').click();
-    try { await page.locator('#screen-done').waitFor({ state: 'visible' }); }
-    catch (error) {
-      console.log('Browser checkout diagnostics:', engineName, errors, await page.evaluate(() => ({ secure: isSecureContext, uuid: typeof crypto.randomUUID, error: document.getElementById('errorList').textContent, button: document.getElementById('confirmPaygov').outerHTML, focus: document.activeElement.id })));
-      throw error;
-    }
+    await waitForDone();
     assert.equal(await focused(), 'doneTitle');
     const first = await payload();
     assert.equal(first.total, 10);
@@ -115,7 +118,7 @@ try {
     await page.goBack();
     assert.equal(await screen(), 'review');
     await page.locator('#confirmPaygov').click();
-    await page.locator('#screen-done').waitFor({ state: 'visible' });
+    await waitForDone();
     assert.equal((await payload()).idempotencyKey, first.idempotencyKey);
 
     await page.reload(); await page.waitForFunction(() => document.documentElement.dataset.appReady === 'true');
@@ -130,7 +133,7 @@ try {
     await page.locator('label[for=agree]').click();
     assert.equal(await page.locator('#confirmPaygov').textContent(), 'Get my free permit');
     await page.locator('#confirmPaygov').click();
-    await page.locator('#screen-done').waitFor({ state: 'visible' });
+    await waitForDone();
     assert.equal((await payload()).total, 0);
     assert.equal(await focused(), 'doneTitle');
     assert.equal(await page.getByRole('heading', { level: 1, name: 'Your permit is ready' }).count(), 1);
