@@ -2,13 +2,22 @@
 
 Runtime tokens live under `:root` in `styles.css`; `tokens.json` documents the same palette and scale for reference. Keep both synchronized when changing token values.
 
-- Colors distinguish surfaces, body/helper text, primary actions, status messages, and focus indicators.
-- Typography uses the system font stack and the existing heading/body/small text tokens.
-- Spacing tokens define an 8px scale; component-specific spacing also appears in the stylesheet.
-- Shared classes cover buttons, fields, product cards, alerts, document links, totals, and form grids. Generated payloads use `.payload-content`; repeated summary lines use `.summary-line`.
-- Form sections use `.flow-step`, `.step-toggle`, and `.step-body`. Obsolete stepper and progress-header styles are removed.
-- Selected cards use both `:has()` styles and the existing JavaScript `.is-selected` fallback.
+The flow asks one question per screen in a single 600px column, so a phone shows most screens without scrolling and desktop keeps a comfortable line length. The header and footer keep their content; the red prototype banner is gone, and a small "Demo" note on the first screen, the details screen's lede and the payment notes carry the same warning.
 
-Product radios have concise names with price, validity, and availability descriptions, with document links outside their labels. In-text links are underlined, area attachment links meet a 24px minimum target height, and step sections have heading semantics. Required purchaser fields have native `required` attributes. Step buttons identify their panels through `aria-controls`; unavailable/collapsed panels are inert. Purchaser field errors appear once a field is left and then update while typing until fixed; errors are attached to their fields. Continue stays enabled: pressing it with problems shows the shared error summary, which takes focus and links each error to its field. The office selector supports arrow keys, Enter, and Escape.
+- **Type:** Atkinson Hyperlegible Next, self-hosted, designed for low-vision readers. Its slashed zero tells 0 from O, which matters in ZIP codes and permit references. Body text is 17px, headings 30px (36px on wide screens).
+- **Color:** a white page with one forest green (`--color-primary`) reserved for actions, selections and links. Muted text, hairlines and tints are shades of the same green-grey. Errors use `--color-danger` with a tinted summary.
+- **Shape:** thin dividers and single borders instead of boxes inside boxes. Option cards have a 12px radius; the review summary and permit card 14px.
+- **Controls:** text fields are 52px tall and primary buttons 56px; every tap target is at least 44px. Labels sit above fields, and only optional fields are marked.
 
-Motion respects `prefers-reduced-motion`. Real screen-reader and contrast audits remain part of manual accessibility verification; these notes do not claim a completed accessibility certification.
+Shared classes:
+
+- `.screen`, `.screen-top`, `.back-link`, `.progress`: the screen frame.
+- `.field`, `.field-input`, `.field-error`, `.field-pair`, `.field-group`: fields. Errors are inserted before `.field-input` and a `.has-error` field gets a red rule.
+- `.option`, `.option-label`, `.option-input`, `.option-title`, `.option-sub`, `.option-aside`: radio cards. Checked cards use `:has()` with an `.is-selected` fallback.
+- `.qty-panel`, `.stepper`: the quantity panel inside the chosen permit.
+- `.disclosure`: every `<details>`, including help, notices, terms and the demo payload.
+- `.summary-list`, `.summary-row`, `.rules`, `.checkbox`: the check screen.
+- `.permit-card`, `.next-steps`, `.payload-content`: the finished-permit screen.
+- `.production-label`: marks production-only promises such as email delivery.
+
+Motion is limited to color and progress-bar transitions and respects `prefers-reduced-motion`. Real screen-reader and contrast audits remain part of manual accessibility verification; these notes do not claim a completed accessibility certification.

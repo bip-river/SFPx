@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- A long-lived public prototype with fictional agency names should not appear in search results. -->
   <meta name="robots" content="noindex" />
-  <title>Forest Product Permits | Bureau of Wandering Lands</title>
+  <title>Forest product permit | Bureau of Wandering Lands</title>
+  <link rel="preload" href="vendor/fonts/atkinson-hyperlegible-next-latin.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" href="images/favicon.ico" />
 </head>
@@ -16,38 +17,28 @@
   <section class="usa-banner" aria-label="Official site of the United Regions of Elsewhere">
     <div class="wrap">
       <div class="inner">
-        <div class="flag" aria-hidden="true">
-          <img src="logos/URE_flag.png" alt="" />
-        </div>
+        <img class="flag" src="logos/URE_flag.png" alt="" />
         <div class="meta">An official site of the United Regions of Elsewhere</div>
         <button type="button" id="bannerToggle" aria-expanded="false" aria-controls="bannerDetails">Here’s how you know</button>
       </div>
 
-      <div class="usa-banner-details" id="bannerDetails">
-        <div class="grid">
-          <div class="info-card">
-            <div class="badge">.ure</div>
-            <div><strong>Official sites use .ure</strong>A .ure site belongs to an official United Regions of Elsewhere organization.</div>
-          </div>
-          <div class="info-card">
-            <div class="badge">🔒</div>
-            <div><strong>Secure .ure sites use HTTPS</strong>A lock or https:// means you’ve safely connected to the .ure website.</div>
-          </div>
+      <div class="usa-banner-details" id="bannerDetails" hidden>
+        <div class="info-card">
+          <span class="badge" aria-hidden="true">.ure</span>
+          <p><strong>Official sites use .ure</strong>A .ure site belongs to an official United Regions of Elsewhere organization.</p>
+        </div>
+        <div class="info-card">
+          <span class="badge" aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+          <p><strong>Secure .ure sites use HTTPS</strong>A lock or https:// means you’ve safely connected to the .ure website.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <div class="prototype-banner">
-    Prototype preview — non-production. Hosted on github.io for testing only.
-  </div>
-
   <div class="agency-bar" role="banner">
     <div class="wrap">
       <div class="row">
-        <div class="agency-logos" aria-hidden="true">
-          <img class="agency-logo bwl" src="logos/BWL_logo.png" alt="" />
-        </div>
+        <img class="agency-logo" src="logos/BWL_logo.png" alt="" />
         <div class="agency-title">
           <div class="top">MINISTRY OF OUTSIDE THINGS</div>
           <div class="bot">BUREAU OF WANDERING LANDS</div>
@@ -61,351 +52,253 @@
   </div>
 
   <main id="main">
-    <div class="wrap">
-      <div class="hero-band">
-        <section class="pagehead" aria-label="Page title and instructions">
-          <h1>Get a Forest Product Permit</h1>
-          <p class="agency-subtitle">Issued by the Bureau of Wandering Lands (BWL)</p>
-          <p class="hero-subtitle">Choose what and where you’re collecting, select a permit, and complete checkout. <span class="production-label">In production:</span> we’ll email your permit package to you.</p>
-          <div class="alert">
-            <div class="icon" aria-hidden="true">i</div>
-            <div class="txt">
-              <strong>Notice</strong>
-              This is a demonstration. No payments are collected and no email is sent. Use fictional purchaser information when testing.
-            </div>
-          </div>
-        </section>
+    <div class="wrap narrow">
+      <div class="screen-top" id="screenTop">
+        <a class="back-link" id="backLink" href="#what" hidden>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Back
+        </a>
+        <span class="step-count" id="stepCount">Step 1 of 5</span>
+        <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
       </div>
 
-      <section class="layout layout-offset">
-        <div class="card" role="region" aria-label="Form content">
+      <div class="error-summary" id="errorBox" role="alert" tabindex="-1" hidden>
+        <h2 class="error-summary-title">There is a problem</h2>
+        <ul id="errorList"></ul>
+      </div>
 
-          <div class="error" id="errorBox" role="alert" aria-live="assertive" aria-hidden="true" tabindex="-1">
-            <strong>Fix the following to continue:</strong>
-            <ul id="errorList"></ul>
-          </div>
+      <div id="stepLiveRegion" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
 
-          <div id="stepLiveRegion" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+      <form class="screen" id="screen-what" aria-labelledby="whatTitle" novalidate>
+        <h1 id="whatTitle" tabindex="-1">What are you collecting?</h1>
+        <p class="lede">Get a forest product permit in about 3 minutes. Have your mailing address and email ready.</p>
+        <p class="demo-note"><strong>Demo.</strong> Nothing is charged, emailed or issued. Use fictional details.</p>
+        <fieldset class="field" id="ptypeGroup">
+          <legend class="sr-only">What are you collecting?</legend>
+          <div class="choice-list field-input" id="ptypeOptions"></div>
+        </fieldset>
+        <button class="primary" type="submit">Continue</button>
+      </form>
 
-          <!-- Step 1 -->
-          <section id="step1" class="flow-step" aria-labelledby="step1Title">
-            <div class="step-head">
-              <h2 class="step-heading"><button class="step-toggle" type="button" aria-controls="step1Body" aria-expanded="true">
-                <span class="step-toggle-text" id="step1Title">Step 1 · Find available products</span>
-                <svg class="chev" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                  <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd"/>
-                </svg>
-              </button></h2>
-              <div class="step-status" id="status1">In progress</div>
-            </div>
-            <div class="step-body" id="step1Body">
-              <div class="step-body-inner">
-              <div class="grid2 form-grid">
-                <div class="row full-width">
-                  <fieldset id="ptypeGroup">
-                    <legend>What are you collecting? <span aria-hidden="true" class="required-marker">*</span></legend>
-                    <div class="ptype-grid" id="ptypeOptions"></div>
-                  </fieldset>
-                </div>
-
-                <div class="row" id="stateRow">
-                  <label for="state">State <span aria-hidden="true" class="required-marker">*</span></label>
-                  <select id="state" required disabled>
-                    <option value="">Select a state</option>
-                  </select>
-                </div>
-
-                <div class="row" id="officeRow">
-                  <label for="officeInput">BWL office / district <span aria-hidden="true" class="required-marker">*</span></label>
-                  <div class="hint" id="officeHint">Start typing to filter. Use ↑/↓ to navigate; Enter to select.</div>
-                  <div class="combo" id="officeCombo">
-                    <input id="officeInput" type="text" autocomplete="off" placeholder="Type to search offices"
-                      role="combobox" aria-expanded="false" aria-controls="officeList" aria-autocomplete="list"
-                      aria-activedescendant="" aria-haspopup="listbox" aria-describedby="officeHint" disabled />
-                    <svg class="chev" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                      <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd"/>
-                    </svg>
-                    <div id="officeList" class="dropdown" role="listbox" aria-hidden="true"></div>
-                  </div>
-                  <input type="hidden" id="officeId" />
-                </div>
-              </div>
-
-              <div class="actions">
-                <button class="ghost" id="resetAll" type="button">Reset</button>
-              </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- Step 2 -->
-          <section id="step2" class="flow-step collapsed" aria-labelledby="step2Title">
-            <div class="step-head">
-              <h2 class="step-heading"><button class="step-toggle" type="button" aria-controls="step2Body" aria-expanded="false">
-                <span class="step-toggle-text" id="step2Title">Step 2 · Select a product and quantity</span>
-                <svg class="chev" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                  <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd"/>
-                </svg>
-              </button></h2>
-              <div class="step-status" id="status2">Locked</div>
-            </div>
-            <div class="lock-note" id="step2LockNote" aria-live="polite" aria-atomic="true"></div>
-            <div class="step-body" id="step2Body">
-              <div class="step-body-inner">
-              <div id="locationNotice" class="location-note" style="display:none;" aria-live="polite"></div>
-              <div id="comingSoonSection" class="coming-soon" style="display:none;" aria-live="polite">
-                <div id="comingSoonList"></div>
-              </div>
-              <div class="products" id="productList" role="radiogroup" aria-label="Available permits"></div>
-
-              <div id="qtySection" style="display:none;">
-                <div class="grid2 form-grid">
-                  <div class="row">
-                    <label for="qty">Quantity <span aria-hidden="true" class="required-marker">*</span></label>
-                    <div class="hint" id="qtyHint"></div>
-                    <div class="hint subtle" id="qtyGuard"></div>
-                    <input id="qty" type="number" min="1" step="1" inputmode="numeric" aria-describedby="qtyHint qtyGuard" required />
-                  </div>
-                  <div class="row">
-                    <div class="field-label">Total</div>
-                    <div class="hint">Estimated total based on listed unit price.</div>
-                    <div class="total-panel" aria-live="polite">
-                      <div class="total-amount" id="totalAmount">—</div>
-                      <div class="calc" id="totalCalc"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- Step 3 -->
-          <section id="step3" class="flow-step collapsed" aria-labelledby="step3Title">
-            <div class="step-head">
-              <h2 class="step-heading"><button class="step-toggle" type="button" aria-controls="step3Body" aria-expanded="false">
-                <span class="step-toggle-text" id="step3Title">Step 3 · Agreements and permit holder information</span>
-                <svg class="chev" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                  <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd"/>
-                </svg>
-              </button></h2>
-              <div class="step-status" id="status3">Locked</div>
-            </div>
-            <div class="lock-note" id="step3LockNote" aria-live="polite" aria-atomic="true"></div>
-            <div class="step-body" id="step3Body">
-              <div class="step-body-inner">
-              <fieldset class="agreements">
-                <legend class="sr-only">Policy acknowledgements</legend>
-                <div class="agreements-copy">
-                  <div class="title">Review and accept</div>
-                </div>
-                <div class="agreements-list">
-                  <div class="agreement-item">
-                    <label class="checkline"><input type="checkbox" id="ackPrivacy" />
-                      I understand how my information will be used.
-                    </label>
-                    <details id="privacyDetail">
-                      <summary>Privacy Act Notification</summary>
-                      <div class="body">NOTICE: The Privacy Act of 1974 and applicable regulations require that you be furnished with the following information in connection with information collected for this permit purchase.
-
-AUTHORITY: 30 U.S.C. 601 et seq.; 43 U.S.C. 1181a; and 43 CFR 5400 (as applicable).
-
-PRINCIPAL PURPOSE: The Bureau of Wandering Lands (BWL) uses the information you provide to identify the permittee, document the authorization to remove vegetative materials from public lands, and administer and enforce permit terms.
-
-ROUTINE USES: The BWL may disclose information consistent with published routine uses for the relevant system of records, and as otherwise authorized by law.
-
-EFFECT OF NOT PROVIDING INFORMATION: Providing the requested information is voluntary; however, failure to provide required information may prevent us from issuing your permit.
-</div>
-                    </details>
-                  </div>
-                  <div class="agreement-item">
-                    <label class="checkline"><input type="checkbox" id="ackTerms" />
-                      I understand the rules for this permit.
-                    </label>
-                    <details id="termsDetail">
-                      <summary>Terms and Conditions</summary>
-                      <div class="body">Terms and Conditions (Demo Summary)
-
-• All purchases are final; no refunds.
-• Permit is for personal use unless stated otherwise and may be non-transferable.
-• You must comply with all permit stipulations, seasonal restrictions, closures, and area boundaries.
-• You must carry the permit (paper or digital, as allowed) while harvesting/collecting.
-• Violations may result in penalties and/or revocation of privileges.
-
-Replace this demo text with the authoritative terms and conditions used by your production system.
-</div>
-                    </details>
-                  </div>
-                  <div class="agreement-item" id="eligibilityAgreement" style="display:none;">
-                    <label class="checkline"><input type="checkbox" id="ackEligibility" />
-                      <span id="eligibilityLabel">I certify that I meet the eligibility requirements for this permit.</span>
-                    </label>
-                    <details id="eligibilityDetail">
-                      <summary>Eligibility details</summary>
-                      <div class="body" id="eligibilityBody"></div>
-                    </details>
-                  </div>
-                </div>
-              </fieldset>
-
-              <div class="hint" id="permitHolderBlockedHint" style="display:none;">Check all acknowledgement boxes above to enter permit holder information.</div>
-
-              <fieldset id="permitHolderFieldset" disabled>
-              <legend class="sr-only">Permit holder information</legend>
-              <div class="grid2 form-grid">
-                <div class="row">
-                  <label for="FirstName">First name <span aria-hidden="true" class="required-marker">*</span></label>
-                  <input id="FirstName" type="text" autocomplete="given-name" maxlength="50" required />
-                </div>
-                <div class="row">
-                  <label for="MiddleName">Middle name</label>
-                  <input id="MiddleName" type="text" autocomplete="additional-name" maxlength="50" />
-                </div>
-                <div class="row">
-                  <label for="LastName">Last name <span aria-hidden="true" class="required-marker">*</span></label>
-                  <input id="LastName" type="text" autocomplete="family-name" maxlength="50" required />
-                </div>
-
-                <div class="row full-width">
-                  <label for="AddressLine1">Street address line 1 <span aria-hidden="true" class="required-marker">*</span></label>
-                  <input id="AddressLine1" type="text" autocomplete="address-line1" maxlength="120" required />
-                </div>
-                <div class="row full-width">
-                  <label for="AddressLine2">Street address line 2</label>
-                  <input id="AddressLine2" type="text" autocomplete="address-line2" maxlength="120" />
-                </div>
-
-                <div class="row">
-                  <label for="City">City <span aria-hidden="true" class="required-marker">*</span></label>
-                  <input id="City" type="text" autocomplete="address-level2" maxlength="80" required />
-                </div>
-                <div class="row">
-                  <label for="AddrState">State <span aria-hidden="true" class="required-marker">*</span></label>
-                  <select id="AddrState" required></select>
-                </div>
-                <div class="row">
-                  <label for="Zip">ZIP <span aria-hidden="true" class="required-marker">*</span></label>
-                  <input id="Zip" type="text" inputmode="numeric" autocomplete="postal-code" maxlength="10" required />
-                </div>
-                <div class="row"></div>
-
-                <div class="row full-width">
-                  <label for="DeliveryEmail">Email address (for delivery) <span aria-hidden="true" class="required-marker">*</span></label>
-                  <input id="DeliveryEmail" type="email" autocomplete="email" maxlength="120" required />
-                </div>
-                <div class="row full-width">
-                  <label for="ConfirmEmail">Confirm email address <span aria-hidden="true" class="required-marker">*</span></label>
-                  <input id="ConfirmEmail" type="email" autocomplete="email" maxlength="120" required />
-                </div>
-              </div>
-              </fieldset>
-              </div>
-            </div>
-          </section>
-
-          <section class="post-step" aria-label="Review and next steps" id="postStep3" style="display:none;">
-            <div class="summary" id="reviewSummary" style="margin-top:14px;"></div>
-            <div class="alert" id="reviewNotice" style="display:none; margin-top:12px;">
-              <div class="icon" aria-hidden="true">i</div>
-              <div class="txt">
-                <strong>What happens next</strong>
-                <ul id="nextStepsList"></ul>
-              </div>
-            </div>
-            <div class="actions" id="reviewActions" style="margin-top:6px;">
-              <button class="primary" type="button" id="confirmPaygov" disabled>Continue to Pay.gov</button>
-            </div>
-
-            <div class="alert" id="confirmation" role="region" aria-labelledby="confirmationTitle" tabindex="-1" style="display:none; margin-top:12px;">
-              <div class="icon" aria-hidden="true">i</div>
-              <div class="txt">
-                <strong id="confirmationTitle">Demo permit generated</strong>
-                <div class="small" style="margin-top:4px;">Reference: <span id="permitRef">—</span></div>
-                <div style="margin-top:10px;">
-                  <button class="primary" type="button" id="permitDownloadBtn">Download permit (PDF)</button>
-                </div>
-                <div class="hint" style="margin-top:8px;">
-                  Save the permit for your records. This demo provides a download only; no email is sent.
-                </div>
-              </div>
-            </div>
-            <div class="summary" id="handoff" style="display:none; margin-top:14px;"></div>
-          </section>
+      <form class="screen" id="screen-where" aria-labelledby="whereTitle" novalidate hidden>
+        <h1 id="whereTitle" tabindex="-1">Where will you collect?</h1>
+        <div class="field">
+          <label for="state">State</label>
+          <select class="field-input" id="state" required>
+            <option value="">Select a state</option>
+          </select>
         </div>
+        <p class="notice" id="noAreas" hidden></p>
+        <fieldset class="field" id="areaGroup" hidden>
+          <legend>Area</legend>
+          <div class="choice-list field-input" id="areaOptions"></div>
+        </fieldset>
+        <details class="disclosure" id="locationNotice" hidden>
+          <summary>Area notices and maps</summary>
+          <div class="disclosure-body" id="locationNoticeBody"></div>
+        </details>
+        <button class="primary" type="submit">Continue</button>
+      </form>
 
-<aside class="card side" aria-label="Need help" id="need-help">
-  <h2>Need help?</h2>
+      <form class="screen" id="screen-permit" aria-labelledby="permitTitle" novalidate hidden>
+        <h1 id="permitTitle" tabindex="-1">Choose a permit</h1>
+        <p class="lede" id="permitLede"></p>
+        <p class="notice" id="noProducts" hidden></p>
+        <fieldset class="field" id="productGroup">
+          <legend class="sr-only">Available permits</legend>
+          <div class="choice-list field-input" id="productList"></div>
+        </fieldset>
+        <div class="qty-panel" id="qtyPanel" hidden>
+          <div class="field">
+            <label for="qty" id="qtyLabel">How many?</label>
+            <p class="sr-only" id="qtyHint"></p>
+            <div class="stepper field-input">
+              <button type="button" class="stepper-button" id="qtyDec" aria-label="Fewer">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg>
+              </button>
+              <input id="qty" type="number" inputmode="numeric" aria-describedby="qtyHint" required />
+              <button type="button" class="stepper-button" id="qtyInc" aria-label="More">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M12 5v14"/></svg>
+              </button>
+            </div>
+          </div>
+          <p class="qty-total" id="totalLine" aria-live="polite" aria-atomic="true"><span class="qty-total-label">Total<span class="sr-only" id="totalFor"></span></span> <strong id="totalAmount">—</strong></p>
+          <p class="hint" id="qtyValidity"></p>
+          <div id="qtyDocs"></div>
+        </div>
+        <section class="coming-soon" id="comingSoonSection" aria-labelledby="comingSoonTitle" hidden>
+          <h2 id="comingSoonTitle">Opening soon</h2>
+          <ul id="comingSoonList"></ul>
+        </section>
+        <button class="primary" type="submit">Continue</button>
+      </form>
 
-  <div class="help-stack">
-    <div class="alert help-alert">
-      <div class="icon" aria-hidden="true">i</div>
-      <div class="txt">
-        <strong>Pay.gov outages</strong>
-        If Pay.gov is down, wait 15 minutes and try again. You can also complete
-        your purchase at a
-        local BWL office.
-      </div>
-    </div>
+      <form class="screen" id="screen-details" aria-labelledby="detailsTitle" novalidate hidden>
+        <h1 id="detailsTitle" tabindex="-1">Your details</h1>
+        <p class="lede">The permit is issued in this name. This is a demo, so use fictional details.</p>
+        <div class="field-pair">
+          <div class="field">
+            <label for="FirstName">First name</label>
+            <input class="field-input" id="FirstName" type="text" autocomplete="given-name" maxlength="50" required />
+          </div>
+          <div class="field">
+            <label for="LastName">Last name</label>
+            <input class="field-input" id="LastName" type="text" autocomplete="family-name" maxlength="50" required />
+          </div>
+        </div>
+        <fieldset class="field-group" aria-describedby="addressHint">
+          <legend>Mailing address</legend>
+          <p class="hint" id="addressHint">Required by law for every permit.</p>
+          <div class="field">
+            <label for="AddressLine1">Street address</label>
+            <input class="field-input" id="AddressLine1" type="text" autocomplete="address-line1" maxlength="120" required />
+          </div>
+          <div class="field">
+            <label for="AddressLine2">Apartment, suite or unit <span class="optional">(optional)</span></label>
+            <input class="field-input" id="AddressLine2" type="text" autocomplete="address-line2" maxlength="120" />
+          </div>
+          <div class="field">
+            <label for="City">City</label>
+            <input class="field-input" id="City" type="text" autocomplete="address-level2" maxlength="80" required />
+          </div>
+          <div class="field-pair">
+            <div class="field">
+              <label for="AddrState">State</label>
+              <select class="field-input" id="AddrState" autocomplete="address-level1" required></select>
+            </div>
+            <div class="field">
+              <label for="Zip">ZIP code</label>
+              <input class="field-input" id="Zip" type="text" inputmode="numeric" autocomplete="postal-code" maxlength="10" required />
+            </div>
+          </div>
+        </fieldset>
+        <div class="field">
+          <label for="DeliveryEmail">Email</label>
+          <p class="hint" id="emailHint"><span class="production-label">In production:</span> we’ll email your permit here.</p>
+          <input class="field-input" id="DeliveryEmail" type="email" autocomplete="email" maxlength="120" aria-describedby="emailHint" required />
+        </div>
+        <div class="field">
+          <label for="ConfirmEmail">Confirm email</label>
+          <p class="hint" id="confirmHint">Enter it again so we can catch typos.</p>
+          <input class="field-input" id="ConfirmEmail" type="email" autocomplete="email" maxlength="120" aria-describedby="confirmHint" required />
+        </div>
+        <button class="primary" type="submit">Continue</button>
+      </form>
 
-    <div class="help-card">
-      <div class="help-title">Availability and options</div>
-      <p>
-        We show only collection types, permits, and offices available online for your selections.
-        If you don’t see an option, it may be available in person only. Availability can change.
-      </p>
-      <details class="help-details">
-        <summary>What if I need a different permit?</summary>
-        <p>
-          Contact your local BWL office
-          for in-person options or seasonal releases.
-        </p>
-      </details>
-    </div>
+      <form class="screen" id="screen-review" aria-labelledby="reviewTitle" novalidate hidden>
+        <h1 id="reviewTitle" tabindex="-1">Check and pay</h1>
+        <dl class="summary-list" id="reviewSummary"></dl>
+        <section class="rules" aria-labelledby="rulesTitle">
+          <h2 id="rulesTitle">Before you go</h2>
+          <ul>
+            <li>Carry your permit while collecting, printed or on your phone.</li>
+            <li>Stay inside your permit area and follow posted closures.</li>
+            <li>Personal use only. All sales are final.</li>
+          </ul>
+        </section>
+        <div class="field" id="eligibilityAgreement" hidden>
+          <div class="checkbox field-input">
+            <input type="checkbox" id="ackEligibility" />
+            <label for="ackEligibility" id="eligibilityLabel">I certify that I meet the eligibility requirements for this permit.</label>
+          </div>
+          <details class="disclosure indented" id="eligibilityDetail">
+            <summary>Who qualifies</summary>
+            <div class="disclosure-body" id="eligibilityBody"></div>
+          </details>
+        </div>
+        <div class="field" id="agreeField">
+          <div class="checkbox field-input">
+            <input type="checkbox" id="agree" required />
+            <label for="agree">I agree to the permit terms and the privacy notice.</label>
+          </div>
+          <details class="disclosure indented" id="termsDetail">
+            <summary>Read the permit terms</summary>
+            <div class="disclosure-body prose">
+              <ul>
+                <li>All purchases are final; no refunds.</li>
+                <li>Permit is for personal use unless stated otherwise and may be non-transferable.</li>
+                <li>You must comply with all permit stipulations, seasonal restrictions, closures, and area boundaries.</li>
+                <li>You must carry the permit (paper or digital, as allowed) while harvesting/collecting.</li>
+                <li>Violations may result in penalties and/or revocation of privileges.</li>
+              </ul>
+              <p>These are demo terms. Replace them with the authoritative terms and conditions used by your production system.</p>
+            </div>
+          </details>
+          <details class="disclosure indented" id="privacyDetail">
+            <summary>Read the privacy notice</summary>
+            <div class="disclosure-body prose">
+              <p>The Privacy Act of 1974 and applicable regulations require that you be furnished with the following information in connection with information collected for this permit purchase.</p>
+              <p><strong>Authority:</strong> 30 U.S.C. 601 et seq.; 43 U.S.C. 1181a; and 43 CFR 5400 (as applicable).</p>
+              <p><strong>Principal purpose:</strong> The Bureau of Wandering Lands (BWL) uses the information you provide to identify the permittee, document the authorization to remove vegetative materials from public lands, and administer and enforce permit terms.</p>
+              <p><strong>Routine uses:</strong> The BWL may disclose information consistent with published routine uses for the relevant system of records, and as otherwise authorized by law.</p>
+              <p><strong>Effect of not providing information:</strong> Providing the requested information is voluntary; however, failure to provide required information may prevent us from issuing your permit.</p>
+            </div>
+          </details>
+        </div>
+        <button class="primary" type="submit" id="confirmPaygov">Pay on Pay.gov</button>
+        <p class="hint center" id="payNote"></p>
+        <button class="text-button center" type="button" id="resetAll">Start over</button>
+      </form>
 
-    <div class="help-card">
-      <div class="help-title">Troubleshooting payments</div>
-      <p>Payment issues are often caused by bank restrictions or temporary Pay.gov outages.</p>
-      <details class="help-details">
-        <summary>What if my payment was declined?</summary>
-        <p>Verify your payment information and try again. If the issue continues, wait a few minutes or contact your bank.</p>
-      </details>
-      <details class="help-details">
-        <summary>I think I was charged twice</summary>
-        <p>
-          Contact your local BWL office
-          with your name, email address, and confirmation details.
-        </p>
-      </details>
-    </div>
-
-    <div class="help-card">
-      <div class="help-title">Permit delivery</div>
-      <p>Download your permit from the confirmation page. <span class="production-label">In production:</span> a copy is also sent to your email.</p>
-      <details class="help-details">
-        <summary>I can’t download or open my permit</summary>
-        <ul>
-          <li>Make sure pop-up blockers are disabled</li>
-          <li>Try opening the file in a different browser or PDF viewer</li>
-          <li>Check your device’s download folder</li>
-        </ul>
-        <p>
-          If you are still unable to access your permit, contact your
-          local BWL office.
-        </p>
-      </details>
-      <details class="help-details">
-        <summary>I closed the page or lost my permit</summary>
-        <p>
-          This system does not support online permit lookup. Contact your local office during business hours.
-          Staff can help locate your permit using your name and email address.
-        </p>
-      </details>
-    </div>
-  </div>
-</aside>
-
+      <section class="screen" id="screen-done" aria-labelledby="doneTitle" hidden>
+        <span class="done-mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+        <h1 id="doneTitle" tabindex="-1">Your permit is ready</h1>
+        <p class="lede" id="doneLede"></p>
+        <div class="permit-card" id="permitCard"></div>
+        <button class="primary" type="button" id="permitDownloadBtn" disabled>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="M7 10.5l5 5 5-5"/><path d="M5 20h14"/></svg>Download permit (PDF)
+        </button>
+        <section class="next-steps" aria-labelledby="nextStepsTitle">
+          <h2 id="nextStepsTitle">What to do next</h2>
+          <ol>
+            <li>Save your permit to your phone or print it.</li>
+            <li id="nextStepNotices">Check the area notices and maps before your trip.</li>
+            <li>Carry it with you while collecting.</li>
+          </ol>
+        </section>
+        <details class="disclosure" id="handoffDetail">
+          <summary>Demo checkout data</summary>
+          <div class="disclosure-body" id="handoff"></div>
+        </details>
+        <button class="text-button" type="button" id="startAnother">Start another permit</button>
       </section>
     </div>
+
+    <section class="help" id="need-help" aria-labelledby="helpTitle">
+      <div class="wrap narrow">
+        <h2 id="helpTitle">Need help?</h2>
+        <details class="disclosure">
+          <summary>Pay.gov is down</summary>
+          <div class="disclosure-body">Wait 15 minutes and try again. You can also buy your permit at a local BWL office.</div>
+        </details>
+        <details class="disclosure">
+          <summary>I don’t see the permit I need</summary>
+          <div class="disclosure-body">We only show the permits and areas you can buy online right now. Some permits are sold in person or released by season. Contact your local BWL office for other options.</div>
+        </details>
+        <details class="disclosure">
+          <summary>My payment was declined</summary>
+          <div class="disclosure-body">Check your payment details and try again. If it keeps happening, wait a few minutes or contact your bank.</div>
+        </details>
+        <details class="disclosure">
+          <summary>I think I was charged twice</summary>
+          <div class="disclosure-body">Contact your local BWL office with your name, email address and permit reference.</div>
+        </details>
+        <details class="disclosure">
+          <summary>I can’t download or open my permit</summary>
+          <div class="disclosure-body">
+            <ul>
+              <li>Turn off pop-up blockers.</li>
+              <li>Try another browser or PDF viewer.</li>
+              <li>Check your device’s downloads folder.</li>
+            </ul>
+            <p>Still stuck? Contact your local BWL office.</p>
+          </div>
+        </details>
+        <details class="disclosure">
+          <summary>I closed the page or lost my permit</summary>
+          <div class="disclosure-body"><span class="production-label">In production:</span> a copy is also sent to your email. Permits can’t be looked up online, so contact your local BWL office during business hours. Staff can find your permit with your name and email address.</div>
+        </details>
+      </div>
+    </section>
   </main>
 
   <footer>

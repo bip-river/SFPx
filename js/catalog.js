@@ -1,7 +1,8 @@
+// The catalog keeps the official "fuelwood" key; visitors see the everyday word.
 export const PRODUCT_TYPE_OPTIONS = [
-  { id: 'fuelwood', label: 'Fuelwood', image: 'firewood.png' },
-  { id: 'christmas', label: 'Christmas tree', image: 'xmas.png' },
-  { id: 'mushrooms', label: 'Mushrooms', image: 'mushrooms.png' }
+  { id: 'fuelwood', label: 'Firewood', noun: 'firewood', description: 'Cut and gather wood to heat or cook at home.' },
+  { id: 'christmas', label: 'Christmas tree', noun: 'Christmas tree', description: 'Cut a tree for the holidays.' },
+  { id: 'mushrooms', label: 'Mushrooms', noun: 'mushroom', description: 'Gather morels, chanterelles and more.' }
 ];
 
 export function parseDate(iso) {

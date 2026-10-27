@@ -2,6 +2,8 @@
 
 `products.json` maps state codes to state names, descriptions, optional attachments, and an `offices` array. Each office has an `id`, `name`, optional description/attachments, and product arrays keyed by `fuelwood`, `christmas`, or `mushrooms`.
 
+Visitors see offices as **areas** on the "Where will you collect?" screen, listed only when they have a permit of the chosen type on sale or opening within 15 days. State and office descriptions and attachments appear under "Area notices and maps" there, and again on the finished-permit screen. The `fuelwood` type is shown as "Firewood". Permit options drop the repeated prefix of the catalog name ("Fuelwood Permit — Anchorage North" is shown as "Anchorage North", and a trailing "(No fee)" is dropped beside the No fee price); the payload and the PDF keep the full catalog name.
+
 Each product requires these fields:
 
 | Field | Rule |
@@ -18,7 +20,7 @@ Each product requires these fields:
 
 Run `npm run check` after editing. Invalid catalog data prevents catalog use and shows a load error; technical diagnostics go to the console. Links are restricted to HTTP(S), mail, telephone, and relative URLs. `#` remains a demo placeholder.
 
-The shipped demo uses relative dates so the long-lived prototype never runs out of products. They are resolved once when the catalog loads, so an open tab still reaches a sale's end date. Fixed dates remain valid for tests or for reproducing a specific calendar, but `npm test` fails if any shipped product's sale would end for a visitor up to 2040. The current offsets were converted from the earlier fixed dates using 2026-10-21 as `today`, which is also the date the tests pin. Three Anchorage Aurora Outpost products start at `today+7` so the "Coming soon" section is visible on the live demo; keep at least one such product when editing the catalog.
+The shipped demo uses relative dates so the long-lived prototype never runs out of products. They are resolved once when the catalog loads, so an open tab still reaches a sale's end date. Fixed dates remain valid for tests or for reproducing a specific calendar, but `npm test` fails if any shipped product's sale would end for a visitor up to 2040. The current offsets were converted from the earlier fixed dates using 2026-10-21 as `today`, which is also the date the tests pin. Three Anchorage Aurora Outpost products start at `today+7` so the "Opening soon" list is visible on the live demo; keep at least one such product when editing the catalog.
 
 Sale availability uses the visitor's local calendar date. This prototype does not enforce an office-specific time zone. Production integrations must establish their authoritative date/time policy and validate catalog rules, prices, quantities, eligibility, and payment status on the server.
 

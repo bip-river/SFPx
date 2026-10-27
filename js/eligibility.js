@@ -1,8 +1,9 @@
 const ANILCA_ELIGIBILITY = {
   requiresCertification: true,
   basis: 'ANILCA Title VIII subsistence eligibility (16 U.S.C. § 3113)',
-  label: 'I certify that I qualify for subsistence uses under ANILCA (16 U.S.C. § 3113) for this no-fee permit.',
-  intro: 'This no-fee permit option is available only to eligible subsistence users in Alaska.',
+  label: 'I certify that I qualify for subsistence uses under ANILCA (16 U.S.C. § 3113) for this permit.',
+  summary: 'Only for eligible subsistence users (ANILCA)',
+  intro: 'This permit is available only to eligible subsistence users in Alaska.',
   bullets: [
     'I am eligible for subsistence uses as defined in 16 U.S.C. § 3113.',
     'I will use the forest products collected under this permit for personal or family subsistence use (not commercial resale).',

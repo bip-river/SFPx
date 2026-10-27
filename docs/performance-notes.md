@@ -1,18 +1,16 @@
 # Performance notes
 
-The five PNGs loaded by the main page were resized for their existing display sizes, retaining roughly 3x pixel density. File paths are unchanged.
+The two PNG logos in the header were resized for their display sizes, retaining roughly 3x pixel density.
 
 | Asset | Before (bytes) | After (bytes) |
 | --- | ---: | ---: |
-| `images/firewood.png` | 339,653 | 35,755 |
-| `images/mushrooms.png` | 350,707 | 34,552 |
-| `images/xmas.png` | 222,784 | 21,775 |
 | `logos/BWL_logo.png` | 1,047,923 | 35,275 |
 | `logos/URE_flag.png` | 2,723,375 | 4,303 |
-| **Total** | **4,684,442** | **131,660** |
 
-This reduces these image bytes by 97.2%. The unused MOT logo was also removed. The favicon is unchanged. These are file-size measurements, not Lighthouse or network-timing results.
+The three collection-type photos (92,082 bytes after an earlier resize) were replaced by inline SVG line icons, and the unused MOT logo was removed. The favicon is unchanged. These are file-size measurements, not Lighthouse or network-timing results.
 
-The application remains static. PDF generation uses checked-in, self-hosted pdfmake and DejaVu font modules (approximately 1.8 MB combined before HTTP compression), requested only when a no-fee PDF is generated. They do not load during initial browsing or the paid handoff. `npm run build:pdf-vendor` regenerates these files from locked development dependencies; deployment requires no build. Native modules add small JavaScript requests. Total animations run only when the displayed amount changes. Collapsible panels animate grid rows and opacity; reduced-motion preferences disable animations/transitions.
+The page font, Atkinson Hyperlegible Next, is self-hosted as two variable WOFF2 subsets: Latin (33,996 bytes, preloaded) and Latin Extended (19,092 bytes, downloaded only when a character from that range appears). `font-display: swap` shows system text until the font arrives.
+
+The application remains static. PDF generation uses checked-in, self-hosted pdfmake and DejaVu font modules (approximately 1.8 MB combined before HTTP compression), requested only when a permit PDF is generated on the check screen. They do not load while the visitor answers the questions. `npm run build:pdf-vendor` and `npm run build:font-vendor` regenerate the vendored files from locked development dependencies; deployment requires no build. Native modules add small JavaScript requests. Motion is limited to color and progress-bar transitions; reduced-motion preferences disable them.
 
 Run `npm run test:browser` for desktop/mobile functional checks. Use browser network tooling or Lighthouse for deployment-specific performance measurements.

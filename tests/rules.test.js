@@ -64,10 +64,10 @@ test('shortened validity counts calendar days across a daylight-saving change', 
 test('quantity increments support explicit fractional products without fractional trees', () => {
   const product = { minQty: 0.1, maxQty: 1, quantityStep: 0.1, unit: 'cord' };
   assert.equal(quantityError(product, '0.3'), '');
-  assert.match(quantityError(product, '0.35'), /increments/);
-  assert.match(quantityError(product, ''), /Enter a quantity/);
+  assert.match(quantityError(product, '0.35'), /steps of 0\.1 cords/);
+  assert.match(quantityError(product, ''), /Enter how many cords/);
   assert.match(quantityError(product, '2'), /fewer/);
-  assert.match(quantityError({ ...product, minQty: 1, maxQty: 5, quantityStep: 1, unit: 'tree' }, '1.5'), /increments/);
+  assert.match(quantityError({ ...product, minQty: 1, maxQty: 5, quantityStep: 1, unit: 'tree' }, '1.5'), /steps of 1 tree\./);
 });
 
 test('links allow intended relative and contact URLs and block normalized script protocols', () => {

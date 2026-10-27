@@ -21,6 +21,22 @@ try {
   });
   const context = await browser.newContext({ reducedMotion: 'reduce', acceptDownloads: true });
   const page = await context.newPage();
+  const screen = () => page.evaluate(() => [...document.querySelectorAll('.screen')].find(el => !el.hidden)?.id.replace('screen-', ''));
+  const focused = () => page.evaluate(() => document.activeElement.id);
+  const cont = async () => page.locator(`#screen-${await screen()} button[type=submit]`).click();
+  const payload = () => page.locator('#handoff .payload-content').textContent().then(JSON.parse);
+  const noOverflow = () => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth);
+  const fields = { FirstName: 'Áłtsé José', LastName: 'Muñoz Żółć', AddressLine1: '123 Test Street', City: 'Test City', Zip: '84037', DeliveryEmail: 'test@example.com', ConfirmEmail: 'test@example.com' };
+  const fillHolder = async () => {
+    for (const [id, value] of Object.entries(fields)) await page.locator(`#${id}`).fill(value);
+    await page.locator('#AddrState').selectOption('UT');
+  };
+  const pdfText = async () => {
+    const downloadEvent = page.waitForEvent('download'); await page.locator('#permitDownloadBtn').click();
+    const download = await downloadEvent;
+    assert.equal(await download.failure(), null);
+    return { name: download.suggestedFilename(), text: (await readPdf(new Blob([await readFile(await download.path())]))).text };
+  };
   for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 }]) {
     await page.setViewportSize(viewport);
     const errors = [];
@@ -28,96 +44,107 @@ try {
     page.on('response', response => { if (response.status() >= 400) errors.push(`${response.status()}: ${response.url()}`); });
     await page.clock.setFixedTime(new Date('2026-10-21T12:00:00Z'));
     await page.goto(url);
+    await page.evaluate(() => sessionStorage.clear());
+    await page.reload();
     await page.waitForFunction(() => document.documentElement.dataset.appReady === 'true');
-    assert.equal(await page.locator('#step3Body').getAttribute('inert'), '');
-    await checkAccessibility(page, 'initial form');
-    await page.locator('#resetAll').focus(); await page.keyboard.press('Tab');
-    assert.equal(await page.evaluate(() => !!document.activeElement.closest('[inert]')), false, 'locked controls are skipped');
-    await page.locator('.ptype-card').first().click();
+    assert.equal(await screen(), 'what');
+    assert.equal(await page.locator('.screen:not([hidden])').count(), 1, 'one screen at a time');
+    await checkAccessibility(page, 'what');
+
+    // Keyboard: arrows move between collection types and Enter on Continue submits.
+    await page.locator('#ptype_fuelwood').focus(); await page.keyboard.press('Space');
+    await page.keyboard.press('ArrowDown'); assert.equal(await page.locator('#ptype_christmas').isChecked(), true);
+    await page.keyboard.press('ArrowUp'); assert.equal(await page.locator('#ptype_fuelwood').isChecked(), true);
+    // macOS WebKit can skip buttons when tabbing, so focus Continue directly.
+    await page.locator('#screen-what button[type=submit]').focus(); await page.keyboard.press('Enter');
+    assert.equal(await screen(), 'where');
+    assert.equal(await focused(), 'whereTitle', 'focus moves to the new question');
+
     await page.locator('#state').selectOption('AK');
-    // Opening the list must not scroll the page mid-click, or the button release can land outside the field.
-    await page.evaluate(() => { document.body.click(); document.activeElement.blur(); scrollBy(0, document.getElementById('officeInput').getBoundingClientRect().bottom - innerHeight + 4); });
-    const scrollBeforeOpen = await page.evaluate(() => scrollY), fieldBox = await page.locator('#officeInput').boundingBox();
-    await page.mouse.click(fieldBox.x + fieldBox.width / 2, fieldBox.y + fieldBox.height / 2);
-    assert.equal(await page.evaluate(() => scrollY), scrollBeforeOpen, 'opening the office list at the bottom edge does not scroll the page');
-    assert.equal(await page.locator('#officeInput').getAttribute('aria-expanded'), 'true', 'clicking the field opens the list');
-    // A pointer press held longer than a quick tap must still choose the option.
-    await page.locator('#officeInput').click();
-    const slowOption = page.locator('#officeOption_1'); await slowOption.scrollIntoViewIfNeeded();
-    const optionBox = await slowOption.boundingBox();
-    await page.mouse.move(optionBox.x + optionBox.width / 2, optionBox.y + optionBox.height / 2);
-    await page.mouse.down(); await page.waitForTimeout(250); await page.mouse.up();
-    assert.equal(await page.locator('#officeInput').inputValue(), 'Juneau Harbor Outpost', 'slow pointer click selects an office');
-    await page.locator('#officeInput').click();
-    assert.equal(await page.locator('#officeInput').getAttribute('aria-expanded'), 'true', 'clicking the still-focused field reopens the list');
-    await page.locator('#officeInput').fill(''); await page.locator('#state').focus();
-    await page.locator('#officeInput').focus();
-    await page.keyboard.press('ArrowDown'); await page.keyboard.press('ArrowUp'); await page.keyboard.press('Enter');
-    assert.equal(await page.locator('#officeInput').inputValue(), 'Anchorage Aurora Outpost');
-    assert.equal(await page.getByRole('radio', { name: 'Fuelwood Permit — Anchorage North', exact: true }).count(), 1);
-    await checkAccessibility(page, 'available products');
-    await page.locator('.prod-header').first().click();
+    await page.locator('label[for=office_0]').click();
+    await page.locator('#locationNotice summary').click();
+    await checkAccessibility(page, 'where');
+    await cont();
+    assert.equal(await screen(), 'permit');
+    assert.equal(await page.getByRole('radio', { name: 'Anchorage North', exact: true }).count(), 1);
+    await page.locator('label[for=prod_0]').click();
+    assert.equal(await page.locator('#qty').inputValue(), '1', 'quantity starts at the minimum');
+    await page.locator('#qtyInc').click();
+    assert.equal(await page.locator('#totalAmount').textContent(), '$20.00');
+    await checkAccessibility(page, 'permit with quantity');
     await page.locator('#qty').fill('0'); await page.locator('#qty').press('Tab');
     assert.equal(await page.locator('#qty').getAttribute('aria-invalid'), 'true');
     assert.ok((await page.locator('#qty').getAttribute('aria-describedby')).includes('qty-error'));
-    assert.notEqual(await page.evaluate(() => document.activeElement.id), 'qty', 'validation does not steal focus');
-    await page.locator('#qty').fill('1'); await page.locator('#qty').press('Tab');
-    await page.locator('#ackPrivacy').check(); await page.locator('#ackTerms').check();
-    const fields = { FirstName: 'Áłtsé José', LastName: 'Muñoz Żółć', AddressLine1: '123 Test Street', City: 'Test City', Zip: '84037', DeliveryEmail: 'test@example.com', ConfirmEmail: 'test@example.com' };
-    for (const [id, value] of Object.entries(fields)) await page.locator(`#${id}`).fill(value);
-    await page.locator('#AddrState').selectOption('UT');
+    assert.notEqual(await focused(), 'qty', 'validation does not steal focus');
+    await page.locator('#qty').fill('1'); await page.locator('#qty').press('Enter');
+    assert.equal(await screen(), 'details', 'Enter in the quantity field continues');
+
+    await fillHolder();
     assert.equal(await page.getByRole('textbox', { name: 'First name', exact: true }).getAttribute('required'), '');
     await checkAccessibility(page, 'completed purchaser fields');
     // A mistyped confirmation is explained when Continue is pressed, with a link that moves to the field.
     await page.locator('#ConfirmEmail').fill('typo@example.com');
-    await page.locator('#confirmPaygov').click();
+    await cont();
     await page.locator('#errorBox').waitFor({ state: 'visible' });
-    assert.equal(await page.evaluate(() => document.activeElement.id), 'errorBox', 'the error summary takes focus');
+    assert.equal(await focused(), 'errorBox', 'the error summary takes focus');
     await checkAccessibility(page, 'error summary');
     await page.locator('#errorList a[href="#ConfirmEmail"]').click();
-    assert.equal(await page.evaluate(() => document.activeElement.id), 'ConfirmEmail', 'the summary link moves to its field');
+    assert.equal(await focused(), 'ConfirmEmail', 'the summary link moves to its field');
     await page.locator('#ConfirmEmail').fill('test@example.com');
+    await cont();
+    assert.equal(await screen(), 'review');
+    await checkAccessibility(page, 'review');
+    await page.locator('label[for=agree]').click();
     await page.locator('#confirmPaygov').click();
-    const payload = () => page.locator('#handoff .payload-content').textContent().then(JSON.parse);
-    let first;
-    try { first = await payload(); }
+    try { await page.locator('#screen-done').waitFor({ state: 'visible' }); }
     catch (error) {
       console.log('Browser checkout diagnostics:', engineName, errors, await page.evaluate(() => ({ secure: isSecureContext, uuid: typeof crypto.randomUUID, error: document.getElementById('errorList').textContent, button: document.getElementById('confirmPaygov').outerHTML, focus: document.activeElement.id })));
       throw error;
     }
+    assert.equal(await focused(), 'doneTitle');
+    const first = await payload();
     assert.equal(first.total, 10);
-    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, 'no horizontal overflow with checkout payload');
-    await page.locator('#confirmPaygov').click(); assert.equal((await payload()).idempotencyKey, first.idempotencyKey);
-    await page.reload(); await page.waitForFunction(() => document.documentElement.dataset.appReady === 'true');
-    assert.equal(await page.locator('input[name=product]:checked').count(), 1);
-    assert.equal(await page.locator('#FirstName').inputValue(), '');
-    assert.notEqual(await page.locator('#status3').textContent(), 'Completed', 'purchaser details must be reentered');
-    // Change to the free-use option, then generate and download a PDF.
-    await page.locator('.prod-header').nth(3).click();
-    await page.locator('#qty').fill('1'); await page.locator('#qty').press('Tab');
-    await page.locator('#ackPrivacy').check(); await page.locator('#ackTerms').check();
-    for (const [id, value] of Object.entries(fields)) await page.locator(`#${id}`).fill(value);
-    await page.locator('#AddrState').selectOption('UT');
+    await page.locator('#handoffDetail summary').click();
+    assert.equal(await noOverflow(), true, 'no horizontal overflow with checkout payload');
+    await checkAccessibility(page, 'done');
+    const paidPdf = await pdfText();
+    assert.match(paidPdf.name, /^TX-.+\.pdf$/);
+    assert.match(paidPdf.text, /Áłtsé José Muñoz Żółć/);
+
+    // The browser's Back button returns to the check screen; paying again keeps the same reference.
+    await page.goBack();
+    assert.equal(await screen(), 'review');
     await page.locator('#confirmPaygov').click();
-    await page.locator('#confirmation').waitFor({ state: 'visible' });
+    await page.locator('#screen-done').waitFor({ state: 'visible' });
+    assert.equal((await payload()).idempotencyKey, first.idempotencyKey);
+
+    await page.reload(); await page.waitForFunction(() => document.documentElement.dataset.appReady === 'true');
+    assert.equal(await screen(), 'details', 'purchaser details must be reentered after a reload');
+    assert.equal(await page.locator('#FirstName').inputValue(), '');
+    await page.locator('#backLink').click();
+    assert.equal(await page.locator('input[name=product]:checked').count(), 1, 'the permit choice survives the reload');
+
+    // Change to the free-use option, then generate and download a PDF.
+    await page.locator('label[for=prod_3]').click();
+    await cont(); await fillHolder(); await cont();
+    await page.locator('label[for=agree]').click();
+    assert.equal(await page.locator('#confirmPaygov').textContent(), 'Get my free permit');
+    await page.locator('#confirmPaygov').click();
+    await page.locator('#screen-done').waitFor({ state: 'visible' });
     assert.equal((await payload()).total, 0);
-    assert.equal(await page.evaluate(() => document.activeElement.id), 'confirmation');
-    assert.equal(await page.getByRole('region', { name: 'Demo permit generated', exact: true }).count(), 1);
-    await page.waitForFunction(() => document.getElementById('stepLiveRegion').textContent.includes('download button is ready'));
-    await checkAccessibility(page, 'permit confirmation');
-    const downloadEvent = page.waitForEvent('download'); await page.locator('#permitDownloadBtn').click();
-    const download = await downloadEvent; assert.match(download.suggestedFilename(), /^PERMIT-.+\.pdf$/);
-    assert.equal(await download.failure(), null);
-    const pdf = await readPdf(new Blob([await readFile(await download.path())]));
-    assert.match(pdf.text, /Áłtsé José Muñoz Żółć/);
-    await page.locator('#FirstName').fill('Changed');
-    assert.equal(await page.locator('#confirmation').isVisible(), false);
-    await page.locator('#resetAll').click();
+    assert.equal(await focused(), 'doneTitle');
+    assert.equal(await page.getByRole('heading', { level: 1, name: 'Your permit is ready' }).count(), 1);
+    const freePdf = await pdfText();
+    assert.match(freePdf.name, /^PERMIT-.+\.pdf$/);
+    assert.match(freePdf.text, /Issued to: Áłtsé José Muñoz Żółć/);
+
+    await page.locator('#startAnother').click();
+    assert.equal(await screen(), 'what');
     assert.equal(await page.locator('#FirstName').inputValue(), '');
     assert.equal(await page.evaluate(() => sessionStorage.getItem('sfp-demo-state')), null);
-    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, 'no horizontal overflow');
+    assert.equal(await noOverflow(), true, 'no horizontal overflow');
     assert.deepEqual(errors, []);
-    console.log(`PASS ${engineName}: checkout, Unicode PDF, accessibility, focus, reload, Reset at ${viewport.width}px`);
+    console.log(`PASS ${engineName}: keyboard, screens, browser Back, checkout, Unicode PDFs, accessibility, focus, reload and reset at ${viewport.width}px`);
   }
   await page.goto(`${url}/tests/smoke.html`);
   await page.waitForFunction(() => document.querySelectorAll('#results .status').length === 8);
