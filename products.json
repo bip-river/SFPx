@@ -124,6 +124,29 @@
               "quantityStep": 1,
               "validForDays": 30,
               "eligibilityRule": null
+            },
+            {
+              "name": "Fuelwood Permit \u2014 Anchorage Late Season",
+              "unit": "cord",
+              "price": 10,
+              "maxQty": 4,
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ],
+              "minQty": 1,
+              "saleStartDate": "today+7",
+              "saleEndDate": "today+180",
+              "id": "ak-anch-fuelwood-05",
+              "quantityStep": 1,
+              "validForDays": 30,
+              "eligibilityRule": null
             }
           ],
           "christmas": [
@@ -199,6 +222,29 @@
               "quantityStep": 1,
               "validForDays": 30,
               "eligibilityRule": null
+            },
+            {
+              "name": "Christmas Tree Permit \u2014 Eagle River Holiday Lots",
+              "unit": "tree",
+              "price": 5,
+              "maxQty": 2,
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ],
+              "minQty": 1,
+              "saleStartDate": "today+7",
+              "saleEndDate": "today+60",
+              "id": "ak-anch-christmas-04",
+              "quantityStep": 1,
+              "validForDays": 30,
+              "eligibilityRule": null
             }
           ],
           "mushrooms": [
@@ -240,6 +286,29 @@
               "saleStartDate": "today-667",
               "saleEndDate": "today+449",
               "id": "ak-anch-mushrooms-02",
+              "quantityStep": 1,
+              "validForDays": 30,
+              "eligibilityRule": null
+            },
+            {
+              "name": "Morel Mushroom Permit \u2014 Burn Area (Personal Use)",
+              "unit": "pound",
+              "price": 3,
+              "maxQty": 10,
+              "requiredDocs": [
+                {
+                  "label": "Map",
+                  "url": "#"
+                },
+                {
+                  "label": "Stipulations",
+                  "url": "#"
+                }
+              ],
+              "minQty": 2,
+              "saleStartDate": "today+7",
+              "saleEndDate": "today+120",
+              "id": "ak-anch-mushrooms-03",
               "quantityStep": 1,
               "validForDays": 30,
               "eligibilityRule": null

@@ -368,6 +368,8 @@ body{
 .form-grid{margin-top:14px;}
 .full-width{grid-column:1 / -1;}
 .required-marker{color:var(--danger);}
+/* Marks copy that describes the production service rather than what this demo does. */
+.production-label{font-weight:800; color:var(--color-warning);}
 .summary-line + .summary-line{margin-top:2px;}
 .summary-group{margin-top:10px;}
 .payload-content{margin-top:6px; font:13px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; white-space:pre-wrap; overflow-wrap:anywhere;}

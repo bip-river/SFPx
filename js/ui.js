@@ -22,7 +22,8 @@ export function totalLabelFor(unitPrice, total) {
 export function formatDate(isoOrDate) {
   if (!isoOrDate) return '';
   const d = (isoOrDate instanceof Date) ? isoOrDate : new Date(isoOrDate + 'T00:00:00');
-  return d.toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' });
+  // Fixed to en-US: the page is English, and the demo PDF's embedded font cannot render every locale's date characters.
+  return d.toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' });
 }
 
 export function getAvailableUntilLabel(product) {

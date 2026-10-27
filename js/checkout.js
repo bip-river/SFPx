@@ -57,7 +57,8 @@ export function buildCheckoutPayload({ model, holder, reference, eligibility = n
     quantity: model.qty,
     total,
     permitHolder: holder,
-    ...(noFee ? { eligibility: eligibility || { certified: false, basis: 'Not required' } } : {}),
+    // A certification belongs with any product whose rule requires it, paid or not.
+    ...(eligibility ? { eligibility } : noFee ? { eligibility: { certified: false, basis: 'Not required' } } : {}),
     nextStep: noFee
       ? 'Issue permit (no fee) server-side, then present a confirmation page with a download link for the permit PDF.'
       : 'Redirect to Pay.gov, verify payment status server-side, then return to download the permit with this reference.',
