@@ -278,6 +278,18 @@ test('assistive descriptions include product price and drop the purchaser lock h
   assert.doesNotMatch(description(a.$('#permitHolderFieldset')), /Check all acknowledgement boxes/);
 });
 
+test('unchanged lock notes are not rewritten while typing', async t => {
+  const a = await app(t);
+  a.$('input[name=ptype][value=fuelwood]').click(); a.change('#state', 'AK'); a.$('#officeOption_0').click(); a.$('#prod_0').click();
+  a.input('#qty', '0');
+  const observer = new a.w.MutationObserver(() => {});
+  observer.observe(a.$('#step3LockNote'), { childList: true, characterData: true, subtree: true });
+  a.input('#qty', '00'); a.input('#qty', '0'); a.$('#qty').dispatchEvent(new a.w.Event('blur'));
+  assert.equal(a.$('#step3LockNote').textContent, 'To unlock Step 3, enter a quantity within the allowed range.');
+  assert.equal(observer.takeRecords().length, 0, 'a polite live region is not rewritten with identical text');
+  observer.disconnect();
+});
+
 test('back-forward cache return clears browser-retained purchaser information', async t => {
   const a = await app(t); a.choose(); a.holder();
   a.w.dispatchEvent(new a.w.PageTransitionEvent('pageshow', { persisted: true }));

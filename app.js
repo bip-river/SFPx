@@ -779,6 +779,11 @@ function updateProductCardSelection() {
   });
 }
 
+// Rewriting a live region with identical text can make screen readers repeat it.
+function setLiveText(el, text) {
+  if (el.textContent !== text) el.textContent = text;
+}
+
 function announce(message) {
   if (!stepLiveRegion || !message) return;
   stepLiveRegion.textContent = '';
@@ -1280,18 +1285,18 @@ function updateLockNotes() {
     if (!model.state) needs.push('choose a state');
     if (!model.officeId) needs.push('pick a BWL office');
 
-    lockNotes[1].textContent = needs.length
+    setLiveText(lockNotes[1], needs.length
       ? `To unlock Step 2, ${humanJoin(needs)}.`
-      : '';
+      : '');
   }
 
   if (lockNotes[2]) {
     if (!model.product) {
-      lockNotes[2].textContent = 'To unlock Step 3, choose a product and enter a quantity.';
+      setLiveText(lockNotes[2], 'To unlock Step 3, choose a product and enter a quantity.');
     } else if (!model.qty) {
-      lockNotes[2].textContent = 'To unlock Step 3, enter a quantity within the allowed range.';
+      setLiveText(lockNotes[2], 'To unlock Step 3, enter a quantity within the allowed range.');
     } else {
-      lockNotes[2].textContent = '';
+      setLiveText(lockNotes[2], '');
     }
   }
 }
