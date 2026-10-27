@@ -242,6 +242,20 @@ test('address-state change alone updates checkout readiness', async t => {
   a.change('#AddrState', 'UT'); assert.equal(a.$('#confirmPaygov').disabled, false);
 });
 
+test('delivery email edits refresh the confirm-email error in both directions', async t => {
+  const a = await app(t); a.choose(); a.holder();
+  a.input('#DeliveryEmail', 'other@example.com');
+  assert.equal(a.$('#ConfirmEmail').getAttribute('aria-invalid'), 'true', 'mismatch is explained, not only a disabled button');
+  assert.match(a.$('#ConfirmEmail-error').textContent, /must match/);
+  assert.equal(a.$('#confirmPaygov').disabled, true);
+  a.input('#DeliveryEmail', 'test@example.com');
+  assert.equal(a.$('#ConfirmEmail').hasAttribute('aria-invalid'), false, 'stale mismatch is cleared');
+  assert.equal(a.$('#ConfirmEmail-error').textContent, '');
+  assert.equal(a.$('#confirmPaygov').disabled, false);
+  const b = await app(t); b.choose(); b.check('#ackPrivacy'); b.check('#ackTerms'); b.input('#DeliveryEmail', 'test@example.com');
+  assert.equal(b.$('#ConfirmEmail').hasAttribute('aria-invalid'), false, 'an untouched confirm field is not flagged early');
+});
+
 test('back-forward cache return clears browser-retained purchaser information', async t => {
   const a = await app(t); a.choose(); a.holder();
   a.w.dispatchEvent(new a.w.PageTransitionEvent('pageshow', { persisted: true }));

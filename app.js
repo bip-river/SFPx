@@ -1506,6 +1506,8 @@ if (ackEligibility) ackEligibility.addEventListener('change', onAckChange);
 
 function onPermitHolderEdit(el) {
   validateField(el);
+  // Confirm email is judged against the delivery email, so its message must follow edits to either field.
+  if (el === permitHolder.DeliveryEmail && permitHolder.ConfirmEmail.value.trim()) validateField(permitHolder.ConfirmEmail);
   if (holderValues.get(el) === el.value) return;
   holderValues.set(el, el.value);
   invalidateCheckout();
