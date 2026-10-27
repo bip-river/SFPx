@@ -35,6 +35,12 @@ try {
     assert.equal(await page.evaluate(() => !!document.activeElement.closest('[inert]')), false, 'locked controls are skipped');
     await page.locator('.ptype-card').first().click();
     await page.locator('#state').selectOption('AK');
+    // Opening the list must not scroll the page mid-click, or the button release can land outside the field.
+    await page.evaluate(() => { document.body.click(); document.activeElement.blur(); scrollBy(0, document.getElementById('officeInput').getBoundingClientRect().bottom - innerHeight + 4); });
+    const scrollBeforeOpen = await page.evaluate(() => scrollY), fieldBox = await page.locator('#officeInput').boundingBox();
+    await page.mouse.click(fieldBox.x + fieldBox.width / 2, fieldBox.y + fieldBox.height / 2);
+    assert.equal(await page.evaluate(() => scrollY), scrollBeforeOpen, 'opening the office list at the bottom edge does not scroll the page');
+    assert.equal(await page.locator('#officeInput').getAttribute('aria-expanded'), 'true', 'clicking the field opens the list');
     // A pointer press held longer than a quick tap must still choose the option.
     await page.locator('#officeInput').click();
     const slowOption = page.locator('#officeOption_1'); await slowOption.scrollIntoViewIfNeeded();

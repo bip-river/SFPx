@@ -439,12 +439,25 @@ function filterOfficeOptions(q) {
   return base.filter(o => o.name.toLowerCase().includes(query)).slice(0, 60);
 }
 
-function highlightOffice(idx) {
+// Only arrow keys may scroll the page to the active option. Opening the list happens inside a click,
+// and moving the page then lets the button release land outside the field and close the list.
+function keepOptionVisible(el, scrollPage) {
+  if (scrollPage) {
+    el.scrollIntoView({ block:'nearest' });
+    return;
+  }
+  const top = el.offsetTop;
+  const bottom = top + el.offsetHeight;
+  if (top < officeList.scrollTop) officeList.scrollTop = top;
+  else if (bottom > officeList.scrollTop + officeList.clientHeight) officeList.scrollTop = bottom - officeList.clientHeight;
+}
+
+function highlightOffice(idx, { scrollPage = false } = {}) {
   const items = Array.from(officeList.querySelectorAll('.opt'));
   items.forEach((el, i) => {
     const selected = (i === idx);
     el.setAttribute('aria-selected', String(selected));
-    if (selected) el.scrollIntoView({ block:'nearest' });
+    if (selected) keepOptionVisible(el, scrollPage);
   });
   if (idx >= 0 && items[idx]) {
     officeInput.setAttribute('aria-activedescendant', items[idx].id);
@@ -1444,11 +1457,11 @@ officeInput.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowDown') {
     e.preventDefault();
     activeIndex = Math.min(activeIndex + 1, officeOptions.length - 1);
-    highlightOffice(activeIndex);
+    highlightOffice(activeIndex, { scrollPage: true });
   } else if (e.key === 'ArrowUp') {
     e.preventDefault();
     activeIndex = Math.max(activeIndex - 1, 0);
-    highlightOffice(activeIndex);
+    highlightOffice(activeIndex, { scrollPage: true });
   } else if (e.key === 'Enter') {
     if (officeInput.getAttribute('aria-expanded') === 'true' && activeIndex >= 0) {
       e.preventDefault();
