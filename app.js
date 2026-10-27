@@ -1377,13 +1377,19 @@ stateEl.addEventListener('change', () => {
 
 stateEl.addEventListener('blur', () => validateField(stateEl));
 
-officeInput.addEventListener('focus', () => {
+function openOfficeList() {
   if (!model.state) return;
   officeOptions = filterOfficeOptions(officeInput.value);
   renderOfficeList(officeOptions, officeInput.value);
   setOfficeExpanded(true);
   activeIndex = officeOptions.length ? 0 : -1;
   highlightOffice(activeIndex);
+}
+
+officeInput.addEventListener('focus', openOfficeList);
+// Focus stays in the input after choosing an option, so a later click must reopen the list itself.
+officeInput.addEventListener('click', () => {
+  if (officeInput.getAttribute('aria-expanded') !== 'true') openOfficeList();
 });
 
 officeInput.addEventListener('input', () => {

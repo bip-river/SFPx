@@ -42,6 +42,8 @@ try {
     await page.mouse.move(optionBox.x + optionBox.width / 2, optionBox.y + optionBox.height / 2);
     await page.mouse.down(); await page.waitForTimeout(250); await page.mouse.up();
     assert.equal(await page.locator('#officeInput').inputValue(), 'Juneau Harbor Outpost', 'slow pointer click selects an office');
+    await page.locator('#officeInput').click();
+    assert.equal(await page.locator('#officeInput').getAttribute('aria-expanded'), 'true', 'clicking the still-focused field reopens the list');
     await page.locator('#officeInput').fill(''); await page.locator('#state').focus();
     await page.locator('#officeInput').focus();
     await page.keyboard.press('ArrowDown'); await page.keyboard.press('ArrowUp'); await page.keyboard.press('Enter');

@@ -278,6 +278,16 @@ test('assistive descriptions include product price and drop the purchaser lock h
   assert.doesNotMatch(description(a.$('#permitHolderFieldset')), /Check all acknowledgement boxes/);
 });
 
+test('clicking the office field after choosing an office reopens the list', async t => {
+  const a = await app(t);
+  a.$('input[name=ptype][value=fuelwood]').click(); a.change('#state', 'AK');
+  a.$('#officeInput').focus(); a.$('#officeOption_1').click();
+  assert.equal(a.w.document.activeElement, a.$('#officeInput'));
+  assert.equal(a.$('#officeInput').getAttribute('aria-expanded'), 'false');
+  a.$('#officeInput').click();
+  assert.equal(a.$('#officeInput').getAttribute('aria-expanded'), 'true');
+});
+
 test('unchanged lock notes are not rewritten while typing', async t => {
   const a = await app(t);
   a.$('input[name=ptype][value=fuelwood]').click(); a.change('#state', 'AK'); a.$('#officeOption_0').click(); a.$('#prod_0').click();
