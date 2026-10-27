@@ -12,6 +12,7 @@ let catalogReady = false;
 let restoring = false;
 const selectionStorage = createSelectionStorage();
 const CATALOG_SOURCE = 'products.json';
+const COMING_SOON_DAYS = 15;
 
 // Banner toggle
 const bannerToggle = document.getElementById('bannerToggle');
@@ -381,7 +382,8 @@ function getOfficesForState(code) {
   const base = catalogData[code]?.offices || [];
   const filtered = (!model.productType)
     ? base
-    : base.filter(o => Array.isArray(o.products?.[model.productType]) && o.products[model.productType].length > 0);
+    // An office whose permits of this type have all ended would only lead to an empty product list.
+    : base.filter(o => (o.products?.[model.productType] || []).some(p => isSaleActive(p) || isSaleComingSoon(p, COMING_SOON_DAYS)));
   return filtered.map(o => ({ id:o.id, name:o.name }));
 }
 
@@ -671,7 +673,7 @@ function renderComingSoon(products) {
   title.textContent = 'Coming soon';
   const subtitle = document.createElement('div');
   subtitle.className = 'coming-soon-subtitle';
-  subtitle.textContent = 'Sales that open within the next 15 days.';
+  subtitle.textContent = `Sales that open within the next ${COMING_SOON_DAYS} days.`;
   const list = document.createElement('div');
   list.className = 'coming-soon-items';
   products.forEach((p) => {
@@ -699,7 +701,7 @@ function renderProducts() {
   const office = getSelectedOffice();
   const allProducts = getProductsForSelection({ includeInactive: true });
   const products = allProducts.filter(p => isSaleActive(p));
-  const comingSoonProducts = allProducts.filter(p => isSaleComingSoon(p, 15));
+  const comingSoonProducts = allProducts.filter(p => isSaleComingSoon(p, COMING_SOON_DAYS));
   productListEl.innerHTML = '';
 
   model.product = null;
@@ -1572,16 +1574,15 @@ async function confirmCheckout() {
   const total = unitPrice * quantity;
   const permitHolderName = [permitHolder.FirstName.value.trim(), permitHolder.MiddleName.value.trim(), permitHolder.LastName.value.trim()].filter(Boolean).join(' ');
   const permitHolderEmail = permitHolder.DeliveryEmail.value.trim();
+  const eligibility = productRequiresEligibility(model.product)
+    ? { certified: Boolean(ackEligibility?.checked), basis: getProductEligibility(model.product).basis }
+    : null;
 
   if (unitPrice === 0 && total === 0) {
     const permitReference = checkoutIdentity.referenceFor(checkoutSnapshot(), 'PERMIT');
 
-    const payload = buildCheckoutPayload({
-      model, holder: readPermitHolder(permitHolder), reference: permitReference,
-      eligibility: productRequiresEligibility(model.product)
-        ? { certified: Boolean(ackEligibility?.checked), basis: getProductEligibility(model.product).basis }
-        : null
-    });
+    const payload = buildCheckoutPayload({ model, holder: readPermitHolder(permitHolder), reference: permitReference, eligibility });
+    const { durationLabel, expirationLabel } = getValidityLabels(model.product);
 
     const payloadSize = payloadSizeBytes(payload);
     if (payloadSize > MAX_PAYLOAD_BYTES) {
@@ -1600,6 +1601,8 @@ async function confirmCheckout() {
       `Product: ${model.product?.name || '—'}`,
       `Quantity: ${quantity} ${model.product?.unit || 'unit'}${quantity === 1 ? '' : 's'}`,
       'Fee: No fee',
+      durationLabel,
+      expirationLabel,
       '',
       'This is a prototype-generated demo permit. Do not use for actual harvesting.'
     ];
@@ -1641,7 +1644,7 @@ async function confirmCheckout() {
 
   const transactionReference = checkoutIdentity.referenceFor(checkoutSnapshot(), 'TX');
 
-  const payload = buildCheckoutPayload({ model, holder: readPermitHolder(permitHolder), reference: transactionReference });
+  const payload = buildCheckoutPayload({ model, holder: readPermitHolder(permitHolder), reference: transactionReference, eligibility });
 
   const payloadSize = payloadSizeBytes(payload);
   if (payloadSize > MAX_PAYLOAD_BYTES) {

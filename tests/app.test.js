@@ -106,7 +106,9 @@ test('no-fee checkout retries reuse identity and edits revoke stale PDFs', async
   const a = await app(t); a.choose('fuelwood', 3); a.holder(); await a.generate();
   const first = a.payload(), originalUrl = [...a.urls.keys()].at(-1);
   assert.equal(first.total, 0); assert.equal(a.$('#confirmation').style.display, 'flex');
-  assert.match((await readPdf(a.urls.get(originalUrl))).text, /Issued to: Test Purchaser/);
+  const pdfText = (await readPdf(a.urls.get(originalUrl))).text;
+  assert.match(pdfText, /Issued to: Test Purchaser/);
+  for (const label of [...a.$('#reviewSummary').querySelectorAll('.summary-line')].map(line => line.textContent).filter(text => /^(Valid|Expires) /.test(text))) assert.ok(pdfText.includes(label), `PDF states "${label}"`);
   await a.generate(); assert.equal(a.payload().idempotencyKey, first.idempotencyKey);
   a.input('#FirstName', 'Changed');
   assert.equal(a.$('#confirmation').style.display, 'none');
@@ -298,6 +300,43 @@ test('unchanged lock notes are not rewritten while typing', async t => {
   assert.equal(a.$('#step3LockNote').textContent, 'To unlock Step 3, enter a quantity within the allowed range.');
   assert.equal(observer.takeRecords().length, 0, 'a polite live region is not rewritten with identical text');
   observer.disconnect();
+});
+
+test('production-only email promises are labelled as such', async t => {
+  const a = await app(t); a.choose(); a.holder();
+  const promise = /email your permit|sent to your email|emailed to you/i;
+  const leaves = [...a.w.document.body.querySelectorAll('*')].filter(el => promise.test(el.textContent) && ![...el.children].some(child => promise.test(child.textContent)));
+  assert.ok(leaves.length >= 2);
+  for (const el of leaves) assert.ok(el.querySelector('.production-label'), el.textContent.trim());
+  assert.doesNotMatch(a.$('#nextStepsList').textContent, /confirmation email/);
+});
+
+test('office picker lists only offices with a permit on sale or coming soon for the chosen type', async t => {
+  const officeNames = a => [...a.w.document.querySelectorAll('#officeList .opt')].map(option => option.firstChild.textContent);
+  const expireFuelwood = keep => { const data = structuredClone(catalog); for (const product of data.AK.offices[0].products.fuelwood) if (product.id !== keep) Object.assign(product, { saleStartDate: '2026-01-01', saleEndDate: '2026-10-20' }); return data; };
+  const comingSoonOnly = await app(t, { data: expireFuelwood('ak-anch-fuelwood-05') });
+  comingSoonOnly.$('input[name=ptype][value=fuelwood]').click(); comingSoonOnly.change('#state', 'AK');
+  assert.ok(officeNames(comingSoonOnly).includes('Anchorage Aurora Outpost'), 'an office with only a coming-soon permit is listed');
+  const nothing = await app(t, { data: expireFuelwood() });
+  nothing.$('input[name=ptype][value=fuelwood]').click(); nothing.change('#state', 'AK');
+  assert.ok(!officeNames(nothing).includes('Anchorage Aurora Outpost'), 'an office with nothing to buy is not listed');
+  nothing.$('input[name=ptype][value=christmas]').click(); nothing.change('#state', 'AK');
+  assert.ok(officeNames(nothing).includes('Anchorage Aurora Outpost'), 'the office is still listed for other collection types');
+});
+
+test('paid products with an eligibility rule carry the certification in checkout data', async t => {
+  const data = structuredClone(catalog); data.AK.offices[0].products.fuelwood[0].eligibilityRule = 'anilca-subsistence';
+  const a = await app(t, { data }); a.choose(); a.holder(); a.$('#confirmPaygov').click();
+  assert.equal(a.payload().total, 10);
+  assert.equal(a.payload().eligibility.certified, true);
+  assert.match(a.payload().eligibility.basis, /ANILCA/);
+});
+
+test('coming-soon products are shown in their own section and are not selectable', async t => {
+  const a = await app(t); a.choose();
+  assert.notEqual(a.$('#comingSoonSection').style.display, 'none');
+  assert.match(a.$('#comingSoonList').textContent, /Anchorage Late Season/);
+  assert.equal(a.w.document.querySelectorAll('input[name=product]').length, 4);
 });
 
 test('back-forward cache return clears browser-retained purchaser information', async t => {
