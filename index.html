@@ -3,6 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- A long-lived public prototype with fictional agency names should not appear in search results. -->
+  <meta name="robots" content="noindex" />
   <title>Forest Product Permits | Bureau of Wandering Lands</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" href="images/favicon.ico" />
@@ -52,7 +54,7 @@
         </div>
         <div class="agency-actions">
           <a href="#need-help">Help</a>
-          <a href="https://www.blm.gov/office/national-office" target="_blank" rel="noopener">Contact</a>
+          <a href="#need-help">Contact</a>
         </div>
       </div>
     </div>
@@ -341,7 +343,7 @@ Replace this demo text with the authoritative terms and conditions used by your 
         <strong>Pay.gov outages</strong>
         If Pay.gov is down, wait 15 minutes and try again. You can also complete
         your purchase at a
-        <a href="https://www.blm.gov/office/national-office" target="_blank" rel="noopener">local BWL office</a>.
+        local BWL office.
       </div>
     </div>
 
@@ -354,7 +356,7 @@ Replace this demo text with the authoritative terms and conditions used by your 
       <details class="help-details">
         <summary>What if I need a different permit?</summary>
         <p>
-          Contact your <a href="https://www.blm.gov/office/national-office" target="_blank" rel="noopener">local BWL office</a>
+          Contact your local BWL office
           for in-person options or seasonal releases.
         </p>
       </details>
@@ -370,7 +372,7 @@ Replace this demo text with the authoritative terms and conditions used by your 
       <details class="help-details">
         <summary>I think I was charged twice</summary>
         <p>
-          Contact your <a href="https://www.blm.gov/office/national-office" target="_blank" rel="noopener">local BWL office</a>
+          Contact your local BWL office
           with your name, email address, and confirmation details.
         </p>
       </details>
@@ -388,7 +390,7 @@ Replace this demo text with the authoritative terms and conditions used by your 
         </ul>
         <p>
           If you are still unable to access your permit, contact your
-          <a href="https://www.blm.gov/office/national-office" target="_blank" rel="noopener">local BWL office</a>.
+          local BWL office.
         </p>
       </details>
       <details class="help-details">
@@ -409,13 +411,13 @@ Replace this demo text with the authoritative terms and conditions used by your 
   <footer>
     <div class="wrap">
       <div><strong>forestproducts.bwl.ure</strong> — Prototype</div>
-      <nav class="footer-links" aria-label="Footer">
-        <a href="https://www.doi.gov/" target="_blank" rel="noopener">Ministry of Outside Things</a>
-        <a href="https://www.doi.gov/about" target="_blank" rel="noopener">About the MOT</a>
-        <a href="https://www.doi.gov/pmb/eeo/no-fear-act" target="_blank" rel="noopener">No FEAR Act data</a>
-        <a href="https://www.doioig.gov/" target="_blank" rel="noopener">Office of Inspiring Guidance</a>
-        <a href="https://www.usa.gov/" target="_blank" rel="noopener">URE.gov portal</a>
-      </nav>
+      <div class="footer-links">
+        <span>Ministry of Outside Things</span>
+        <span>About the MOT</span>
+        <span>No FEAR Act data</span>
+        <span>Office of Inspiring Guidance</span>
+        <span>URE.gov portal</span>
+      </div>
       <div class="smallprint">Data shown is representative demo content.</div>
     </div>
   </footer>

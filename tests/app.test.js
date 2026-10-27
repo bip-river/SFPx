@@ -346,11 +346,18 @@ test('static notices are not live regions, steps are named by their headings, an
   assert.equal(a.$('#totalCalc').hasAttribute('aria-live'), false, 'no live region nested inside the total panel');
   for (const step of doc.querySelectorAll('.flow-step')) assert.equal(doc.getElementById(step.getAttribute('aria-labelledby'))?.closest('.step-toggle'), step.querySelector('.step-toggle'), step.id);
   for (const label of doc.querySelectorAll('label')) assert.ok(label.control, label.outerHTML.slice(0, 80));
-  assert.ok(a.$('footer nav[aria-label="Footer"]'));
   assert.equal(a.$('.agency-title').hasAttribute('aria-label'), false, 'no aria-label on a role-less element');
   const docNames = [...doc.querySelectorAll('.prod .docs summary')].map(summary => summary.textContent.trim());
   assert.equal(new Set(docNames).size, docNames.length, 'each maps-and-rules control names its product');
   assert.equal(a.$('#prod_0').value, catalog.AK.offices[0].products.fuelwood[0].id);
+});
+
+test('the fictional demo does not send visitors to real agency websites and asks not to be indexed', async t => {
+  const a = await app(t); a.choose('fuelwood', 2);
+  const hosts = [...a.w.document.querySelectorAll('a[href]')].map(link => new URL(link.href).hostname);
+  assert.deepEqual(hosts.filter(host => /(^|\.)(blm|doi|doioig|usa)\.gov$/.test(host)), []);
+  assert.ok(hosts.includes('uscode.house.gov'), 'cited law stays linked');
+  assert.equal(a.$('meta[name="robots"]')?.content, 'noindex');
 });
 
 test('the demo PDF generates for visitors whose locale writes dates outside the embedded font', async t => {
