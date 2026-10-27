@@ -136,6 +136,7 @@ test('restoration matches active IDs after inactive products and catalog reorder
   assert.match(a.$('input[name=product]:checked').closest('.prod').textContent, /Anchorage South/);
   assert.equal(a.$('input[name=product]:checked').id, 'prod_0');
   assert.equal(a.$('#qty').value, '2');
+  assert.equal(a.$('#qtyGuard').textContent, 'Maximum allowed per permit: 6 cords', 'restore shows the same quantity guidance as selection');
   assert.equal(a.$('#FirstName').disabled, false);
   assert.equal(a.$('#confirmPaygov').disabled, true, 'personal data must be reentered');
 });
@@ -240,6 +241,63 @@ test('address-state change alone updates checkout readiness', async t => {
   const a = await app(t); a.choose(); a.holder();
   a.input('#AddrState', ''); assert.equal(a.$('#confirmPaygov').disabled, true);
   a.change('#AddrState', 'UT'); assert.equal(a.$('#confirmPaygov').disabled, false);
+});
+
+test('delivery email edits refresh the confirm-email error in both directions', async t => {
+  const a = await app(t); a.choose(); a.holder();
+  a.input('#DeliveryEmail', 'other@example.com');
+  assert.equal(a.$('#ConfirmEmail').getAttribute('aria-invalid'), 'true', 'mismatch is explained, not only a disabled button');
+  assert.match(a.$('#ConfirmEmail-error').textContent, /must match/);
+  assert.equal(a.$('#confirmPaygov').disabled, true);
+  a.input('#DeliveryEmail', 'test@example.com');
+  assert.equal(a.$('#ConfirmEmail').hasAttribute('aria-invalid'), false, 'stale mismatch is cleared');
+  assert.equal(a.$('#ConfirmEmail-error').textContent, '');
+  assert.equal(a.$('#confirmPaygov').disabled, false);
+  const b = await app(t); b.choose(); b.check('#ackPrivacy'); b.check('#ackTerms'); b.input('#DeliveryEmail', 'test@example.com');
+  assert.equal(b.$('#ConfirmEmail').hasAttribute('aria-invalid'), false, 'an untouched confirm field is not flagged early');
+});
+
+test('checkout works without crypto.randomUUID and reports unexpected failures', async t => {
+  const a = await app(t); a.choose(); a.holder();
+  // Insecure origins such as http://192.168.x.x expose getRandomValues but not randomUUID.
+  Object.defineProperty(a.w.crypto, 'randomUUID', { value: undefined, configurable: true });
+  a.$('#confirmPaygov').click(); await new Promise(resolve => setTimeout(resolve, 0));
+  assert.match(a.payload().idempotencyKey, /^TX-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+  a.input('#FirstName', 'Changed');
+  Object.defineProperty(a.w.crypto, 'getRandomValues', { value: undefined, configurable: true });
+  a.$('#confirmPaygov').click(); await new Promise(resolve => setTimeout(resolve, 0));
+  assert.match(a.$('#errorList').textContent, /could not prepare checkout/);
+  assert.equal(a.$('#FirstName').value, 'Changed');
+});
+
+test('assistive descriptions include product price and drop the purchaser lock hint once unlocked', async t => {
+  const a = await app(t); a.choose();
+  const description = el => (el.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean).map(id => a.w.document.getElementById(id)?.textContent || '').join(' ');
+  assert.match(description(a.$('#prod_0')), /\$10\.00 per cord/);
+  a.holder();
+  assert.doesNotMatch(description(a.$('#permitHolderFieldset')), /Check all acknowledgement boxes/);
+});
+
+test('clicking the office field after choosing an office reopens the list', async t => {
+  const a = await app(t);
+  a.$('input[name=ptype][value=fuelwood]').click(); a.change('#state', 'AK');
+  a.$('#officeInput').focus(); a.$('#officeOption_1').click();
+  assert.equal(a.w.document.activeElement, a.$('#officeInput'));
+  assert.equal(a.$('#officeInput').getAttribute('aria-expanded'), 'false');
+  a.$('#officeInput').click();
+  assert.equal(a.$('#officeInput').getAttribute('aria-expanded'), 'true');
+});
+
+test('unchanged lock notes are not rewritten while typing', async t => {
+  const a = await app(t);
+  a.$('input[name=ptype][value=fuelwood]').click(); a.change('#state', 'AK'); a.$('#officeOption_0').click(); a.$('#prod_0').click();
+  a.input('#qty', '0');
+  const observer = new a.w.MutationObserver(() => {});
+  observer.observe(a.$('#step3LockNote'), { childList: true, characterData: true, subtree: true });
+  a.input('#qty', '00'); a.input('#qty', '0'); a.$('#qty').dispatchEvent(new a.w.Event('blur'));
+  assert.equal(a.$('#step3LockNote').textContent, 'To unlock Step 3, enter a quantity within the allowed range.');
+  assert.equal(observer.takeRecords().length, 0, 'a polite live region is not rewritten with identical text');
+  observer.disconnect();
 });
 
 test('back-forward cache return clears browser-retained purchaser information', async t => {

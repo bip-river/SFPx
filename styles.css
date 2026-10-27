@@ -277,7 +277,6 @@ body{
     .prod .docs summary::-webkit-details-marker{display:none;}
     .docs-text{display:flex; align-items:center; gap:6px;}
     .prod .docs summary:focus-visible{outline:3px solid rgba(37,111,176,.35); outline-offset:3px}
-    .prod .docs summary:hover{color:var(--link-hover);}
     .docs-title{font-size:12.5px}
     .doc-links{
       display:flex;

@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { validateCatalog, parseDate, isSaleActive, isSaleComingSoon } from '../js/catalog.js';
+import { validateCatalog, parseDate, isSaleActive, isSaleComingSoon, calculatePermitValidity } from '../js/catalog.js';
 import { quantityError } from '../js/validation.js';
 import { sanitizeUrl } from '../js/links.js';
 
@@ -26,6 +26,16 @@ test('calendar parsing rejects impossible dates and missing sale bounds fail clo
   assert.equal(isSaleActive(product, parseDate('2026-10-23')), false);
   assert.ok(isSaleComingSoon(product, 15, parseDate('2026-10-06')));
   assert.equal(isSaleComingSoon(product, 15, parseDate('2026-10-05')), false);
+});
+
+test('shortened validity counts calendar days across a daylight-saving change', t => {
+  const originalTz = process.env.TZ;
+  process.env.TZ = 'America/Denver';
+  t.after(() => { if (originalTz === undefined) delete process.env.TZ; else process.env.TZ = originalTz; });
+  // The local-time span from Oct 21 to Nov 10, 2026 includes the 25-hour day when DST ends.
+  const validity = calculatePermitValidity({ saleStartDate: '2026-01-01', saleEndDate: '2026-11-10', validForDays: 30 }, parseDate('2026-10-21'));
+  assert.equal(validity.shortened, true);
+  assert.equal(validity.actualDays, 20);
 });
 
 test('quantity increments support explicit fractional products without fractional trees', () => {

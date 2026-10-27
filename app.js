@@ -223,13 +223,7 @@ function restoreState() {
       radio.checked = true;
       updateProductCardSelection();
     }
-    const minQty = Number.isFinite(p.minQty) ? p.minQty : 1;
-    qtyHint.textContent = `Enter ${minQty}–${p.maxQty} ${p.unit}(s). Price: ${feeLabelForUnit(p.price, p.unit)}.`;
-    qtyEl.min = minQty;
-    qtyEl.max = p.maxQty;
-    qtyEl.step = p.quantityStep;
-    setControlEnabled(qtyEl, true);
-    qtySection.style.display = 'block';
+    showQuantityFor(p);
     if (savedModel.qty) {
       qtyEl.value = savedModel.qty;
     }
@@ -737,25 +731,29 @@ function renderProducts() {
   updateProductCardSelection();
 }
 
+// Shared by selection and restore so both configure the quantity field the same way.
+function showQuantityFor(p) {
+  const minQty = Number.isFinite(p.minQty) ? p.minQty : 1;
+  qtyHint.textContent = `Enter ${minQty}–${p.maxQty} ${p.unit}(s). Price: ${feeLabelForUnit(p.price, p.unit)}.`;
+  qtyGuard.textContent = p.maxQty ? `Maximum allowed per permit: ${p.maxQty} ${p.unit}${p.maxQty === 1 ? '' : 's'}` : '';
+  qtyEl.min = minQty;
+  qtyEl.max = p.maxQty;
+  qtyEl.step = p.quantityStep;
+  setControlEnabled(qtyEl, true);
+  qtySection.style.display = 'block';
+}
+
 function selectProduct(p, idx) {
   invalidateCheckout();
   updateProductCardSelection();
 
   model.productKey = getProductKey(p);
   model.product = p;
-  const minQty = Number.isFinite(p.minQty) ? p.minQty : 1;
-  qtyHint.textContent = `Enter ${minQty}–${p.maxQty} ${p.unit}(s). Price: ${feeLabelForUnit(p.price, p.unit)}.`;
-  const maxLine = p.maxQty ? `Maximum allowed per permit: ${p.maxQty} ${p.unit}${p.maxQty === 1 ? '' : 's'}` : '';
-  qtyGuard.textContent = maxLine || '';
-  qtyEl.min = minQty;
-  qtyEl.max = p.maxQty;
-  qtyEl.step = p.quantityStep;
+  showQuantityFor(p);
   qtyEl.value = '';
   totalEl.value = '';
   if (totalAmount) totalAmount.textContent = '—';
   totalCalc.textContent = '';
-  setControlEnabled(qtyEl, true);
-  qtySection.style.display = 'block';
   model.qty = 0;
   stepState.completed[1] = false;
   stepState.available[2] = false;
@@ -779,6 +777,11 @@ function updateProductCardSelection() {
     const selected = Boolean(input && input.checked);
     card.classList.toggle('is-selected', selected);
   });
+}
+
+// Rewriting a live region with identical text can make screen readers repeat it.
+function setLiveText(el, text) {
+  if (el.textContent !== text) el.textContent = text;
 }
 
 function announce(message) {
@@ -1282,18 +1285,18 @@ function updateLockNotes() {
     if (!model.state) needs.push('choose a state');
     if (!model.officeId) needs.push('pick a BWL office');
 
-    lockNotes[1].textContent = needs.length
+    setLiveText(lockNotes[1], needs.length
       ? `To unlock Step 2, ${humanJoin(needs)}.`
-      : '';
+      : '');
   }
 
   if (lockNotes[2]) {
     if (!model.product) {
-      lockNotes[2].textContent = 'To unlock Step 3, choose a product and enter a quantity.';
+      setLiveText(lockNotes[2], 'To unlock Step 3, choose a product and enter a quantity.');
     } else if (!model.qty) {
-      lockNotes[2].textContent = 'To unlock Step 3, enter a quantity within the allowed range.';
+      setLiveText(lockNotes[2], 'To unlock Step 3, enter a quantity within the allowed range.');
     } else {
-      lockNotes[2].textContent = '';
+      setLiveText(lockNotes[2], '');
     }
   }
 }
@@ -1374,13 +1377,19 @@ stateEl.addEventListener('change', () => {
 
 stateEl.addEventListener('blur', () => validateField(stateEl));
 
-officeInput.addEventListener('focus', () => {
+function openOfficeList() {
   if (!model.state) return;
   officeOptions = filterOfficeOptions(officeInput.value);
   renderOfficeList(officeOptions, officeInput.value);
   setOfficeExpanded(true);
   activeIndex = officeOptions.length ? 0 : -1;
   highlightOffice(activeIndex);
+}
+
+officeInput.addEventListener('focus', openOfficeList);
+// Focus stays in the input after choosing an option, so a later click must reopen the list itself.
+officeInput.addEventListener('click', () => {
+  if (officeInput.getAttribute('aria-expanded') !== 'true') openOfficeList();
 });
 
 officeInput.addEventListener('input', () => {
@@ -1452,6 +1461,9 @@ document.addEventListener('click', (e) => {
   if (!officeCombo.contains(e.target)) setOfficeExpanded(false);
 });
 
+// Keep focus in the input while pressing an option; otherwise blur closes the list before a slow click lands.
+officeList.addEventListener('mousedown', (e) => e.preventDefault());
+
 stepToggles.forEach((btn, idx) => {
   btn.addEventListener('click', () => {
     if (!stepState.available[idx]) return;
@@ -1503,6 +1515,8 @@ if (ackEligibility) ackEligibility.addEventListener('change', onAckChange);
 
 function onPermitHolderEdit(el) {
   validateField(el);
+  // Confirm email is judged against the delivery email, so its message must follow edits to either field.
+  if (el === permitHolder.DeliveryEmail && permitHolder.ConfirmEmail.value.trim()) validateField(permitHolder.ConfirmEmail);
   if (holderValues.get(el) === el.value) return;
   holderValues.set(el, el.value);
   invalidateCheckout();
@@ -1538,7 +1552,7 @@ function checkoutSnapshot() {
   };
 }
 
-confirmPaygovBtn.addEventListener('click', async () => {
+async function confirmCheckout() {
   if (checkoutPending) return;
   const current = getProductsForSelection().find(product => product.id === model.product?.id);
   if (!validateStep1() || !current || current !== model.product || !validateQty()) {
@@ -1640,6 +1654,13 @@ confirmPaygovBtn.addEventListener('click', async () => {
     note: 'In production, the site would create a Sale ID and redirect the user to Pay.gov with that transaction context.'
   });
   scrollIntoViewSafe(handoff);
+}
+
+confirmPaygovBtn.addEventListener('click', () => {
+  confirmCheckout().catch((error) => {
+    console.error(error);
+    showErrors(['We could not prepare checkout. Your entries are still here. Please try again.']);
+  });
 });
 
 resetAllBtn.addEventListener('click', () => {

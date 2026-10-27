@@ -1,6 +1,6 @@
 # Regression checks
 
-`npm run check` parses the JavaScript files and validates the actual demo catalog.
+`npm run check` parses the JavaScript files, validates the actual demo catalog, and confirms every CSS custom property used in `styles.css` is defined.
 
 `npm test` runs Node's test runner with jsdom. The DOM tests load the real ES module graph using VM modules (Node prints an experimental VM-module warning). They exercise the real markup, events, catalog loader, validation, and checkout code. They cover:
 
@@ -12,8 +12,9 @@
 - Quantity bounds and increments, eligibility independent of display names, and open-tab sale expiry.
 - Malformed catalog data, malformed saved state, blocked storage, and fetch failures.
 - URL normalization and script-protocol rejection.
+- Confirm-email errors that follow delivery-email edits, checkout IDs without `crypto.randomUUID` (plain-HTTP device testing), prices in product radio descriptions, quantity guidance after restore, lock notes that are not rewritten with identical text, and validity day counts across a DST change.
 
-`npm run test:browser` uses Chromium by default. Set `BROWSER=firefox` or `BROWSER=webkit` for the other Playwright engines. The tests cover keyboard office selection, required-field semantics, invalid-quantity descriptions without focus stealing, both checkout paths, reload with purchaser reentry, Unicode PDF download, confirmation focus, Reset, and horizontal overflow at 1280px and 390px. Axe scans check WCAG 2 A/AA, 2.1 AA and 2.2 AA at initial load, product selection, completed purchaser fields, and PDF confirmation. All eight smoke-page checks must pass. `CHROMIUM_EXECUTABLE` can point to an existing Chromium executable.
+`npm run test:browser` uses Chromium by default. Set `BROWSER=firefox` or `BROWSER=webkit` for the other Playwright engines. The tests cover keyboard and slow-pointer office selection, required-field semantics, invalid-quantity descriptions without focus stealing, both checkout paths, reload with purchaser reentry, Unicode PDF download, confirmation focus, Reset, and horizontal overflow at 1280px and 390px. Axe scans check WCAG 2 A/AA, 2.1 AA and 2.2 AA at initial load, product selection, completed purchaser fields, and PDF confirmation. All eight smoke-page checks must pass. `CHROMIUM_EXECUTABLE` can point to an existing Chromium executable.
 
 `npm run test:safari` runs Selenium against installed Safari on macOS. Enable Safari automation first (`sudo safaridriver --enable`). This tests Safari itself; the separate WebKit job tests Playwright's WebKit build on Linux. Safari coverage includes keyboard office selection, both checkout paths, PDF generation, confirmation focus, reload, Reset, and the same automated accessibility rules. Actual PDF downloading is covered by the Playwright jobs.
 

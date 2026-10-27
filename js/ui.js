@@ -201,12 +201,13 @@ export function buildProductCard(p, idx, { docs, onSelect }) {
   name.className = 'name';
   name.id = `${id}_name`;
   input.setAttribute('aria-labelledby', name.id);
-  input.setAttribute('aria-describedby', `${id}_validity ${id}_availability`);
+  input.setAttribute('aria-describedby', `${id}_price ${id}_validity ${id}_availability`);
   name.textContent = p.name;
   info.appendChild(name);
   headerLeft.appendChild(info);
   const price = document.createElement('div');
   price.className = 'price';
+  price.id = `${id}_price`;
   price.textContent = priceLine;
   header.appendChild(headerLeft);
   header.appendChild(price);
