@@ -2,7 +2,7 @@
 
 Runtime tokens live under `:root` in `styles.css`; `tokens.json` documents the same palette and scale for reference. Keep both synchronized when changing token values.
 
-The flow asks one question per screen in a single 600px column, so a phone shows most screens without scrolling and desktop keeps a comfortable line length. The header and footer keep their content; the red prototype banner is gone, and a small "Demo" note on the first screen, the details screen's lede and the payment notes carry the same warning.
+A start page leads into a flow that asks one question per screen, all in a single 600px column, so a phone shows most screens without scrolling and desktop keeps a comfortable line length. The header and footer keep their content; the red prototype banner is gone, and a small "Demo" note on the start page, the details screen's lede and the payment notes carry the same warning.
 
 - **Type:** Atkinson Hyperlegible Next, self-hosted, designed for low-vision readers. Its slashed zero tells 0 from O, which matters in ZIP codes and permit references. Body text is 17px, headings 30px (36px on wide screens).
 - **Color:** a white page with one forest green (`--color-primary`) reserved for actions, selections and links. Muted text, hairlines and tints are shades of the same green-grey. Errors use `--color-danger` with a tinted summary.
@@ -16,6 +16,7 @@ Shared classes:
 - `.option`, `.option-label`, `.option-input`, `.option-title`, `.option-sub`, `.option-aside`: radio cards. Checked cards use `:has()` with an `.is-selected` fallback.
 - `.qty-panel`, `.stepper`: the quantity panel inside the chosen permit.
 - `.disclosure`: every `<details>`, including help, notices, terms and the demo payload.
+- `.start-button`, `.start-section`, `.check-list`, `.dot-list`: the start page. `.check-list` also draws the check screen's "Before you go" rules.
 - `.summary-list`, `.summary-row`, `.rules`, `.checkbox`: the check screen.
 - `.permit-card`, `.next-steps`, `.payload-content`: the finished-permit screen.
 - `.production-label`: marks production-only promises such as email delivery.

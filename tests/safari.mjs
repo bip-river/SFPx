@@ -48,6 +48,9 @@ try {
   const trackErrors = () => driver.executeScript(`window.__testErrors = []; window.addEventListener('error', e => window.__testErrors.push(e.message)); window.addEventListener('unhandledrejection', e => window.__testErrors.push(String(e.reason)));`);
   await driver.get(server.url); await ready();
   await driver.executeScript('sessionStorage.clear()'); await trackErrors();
+  await accessibility('Safari start');
+  await (await element('startButton')).click(); await waitForScreen('what');
+  assert.equal(await driver.executeScript('return document.activeElement.id'), 'whatTitle');
   await accessibility('Safari what');
   await driver.findElement(By.css('label[for=ptype_fuelwood]')).click();
   await cont(); await waitForScreen('where');

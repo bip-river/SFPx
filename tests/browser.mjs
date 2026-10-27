@@ -54,8 +54,12 @@ try {
     await page.evaluate(() => sessionStorage.clear());
     await page.reload();
     await page.waitForFunction(() => document.documentElement.dataset.appReady === 'true');
-    assert.equal(await screen(), 'what');
+    assert.equal(await screen(), 'start');
     assert.equal(await page.locator('.screen:not([hidden])').count(), 1, 'one screen at a time');
+    await checkAccessibility(page, 'start');
+    await page.getByRole('link', { name: 'Start now' }).click();
+    assert.equal(await screen(), 'what');
+    assert.equal(await focused(), 'whatTitle', 'focus moves to the first question');
     await checkAccessibility(page, 'what');
 
     // Keyboard: arrows move between collection types and Enter on Continue submits.

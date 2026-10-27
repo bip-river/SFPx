@@ -61,9 +61,10 @@ async function app(t, { data = structuredClone(catalog), saved, storageBlocked =
   const check = selector => { const el = $(selector); if (!el.checked) el.click(); };
   const screen = () => [...w.document.querySelectorAll('.screen')].filter(el => !el.hidden).map(el => el.id.replace('screen-', '')).join(',');
   const cont = () => $(`#screen-${screen()} button[type=submit]`).click();
+  const start = () => $('#startButton').click();
   // Stops on the permit screen with a permit selected; its quantity starts at the minimum.
   const pickPermit = (type = 'fuelwood', index = 0) => {
-    $(`#ptype_${type}`).click(); cont();
+    start(); $(`#ptype_${type}`).click(); cont();
     change('#state', 'AK'); $('input[name=office][value="AK-ANCH"]').click(); cont();
     $(`#prod_${index}`).click();
   };
@@ -89,17 +90,35 @@ async function app(t, { data = structuredClone(catalog), saved, storageBlocked =
   };
   // The browser's Back button: history traversal fires popstate asynchronously.
   const goBack = () => new Promise(resolve => { w.addEventListener('popstate', () => setTimeout(resolve, 0), { once: true }); w.history.back(); });
-  return { w, $, input, change, check, screen, cont, pickPermit, choose, holder, agree, payload, generate, goBack, urls, revoked, setNow(value) { now = value; } };
+  return { w, $, input, change, check, screen, cont, start, pickPermit, choose, holder, agree, payload, generate, goBack, urls, revoked, setNow(value) { now = value; } };
 }
 
 const savedFor = (product, extra = {}) => ({ model: { state: 'AK', officeId: 'AK-ANCH', productType: 'fuelwood', productKey: product.id, qty: product.minQty, ...extra } });
 
+test('a start page explains the service before the first question', async t => {
+  const a = await app(t);
+  assert.equal(a.screen(), 'start');
+  assert.equal(a.w.document.title, 'Get a forest product permit | Bureau of Wandering Lands');
+  assert.equal(a.$('#screenTop').hidden, true, 'the start page is not a numbered step');
+  assert.notEqual(a.w.document.activeElement, a.$('#startTitle'), 'the first load leaves focus with the browser');
+  assert.match(a.$('#screen-start').textContent, /mailing address/);
+  assert.match(a.$('#screen-start .demo-note').textContent, /Nothing is charged, emailed or issued/);
+  assert.equal(a.$('#startButton').getAttribute('href'), '#what');
+  a.$('#startButton').click();
+  assert.equal(a.screen(), 'what');
+  assert.equal(a.w.document.activeElement, a.$('#whatTitle'));
+  assert.match(a.w.document.title, /^What are you collecting\? – Step 1 of 5 – /);
+  assert.equal(a.$('#stepCount').textContent, 'Step 1 of 5');
+  assert.equal(a.$('#backLink').getAttribute('href'), '#start');
+  a.$('#backLink').click();
+  assert.equal(a.screen(), 'start', 'Back on the first question returns to the start page');
+  const help = await app(t, { hash: '#need-help' });
+  assert.equal(help.screen(), 'start', 'another fragment with nothing restored shows the start page');
+});
+
 test('one screen shows at a time; Continue, Back and the browser Back button move between them', async t => {
   const a = await app(t);
-  assert.equal(a.screen(), 'what');
-  assert.match(a.w.document.title, /^What are you collecting\? – Step 1 of 5 – /);
-  assert.notEqual(a.w.document.activeElement, a.$('#whatTitle'), 'the first load leaves focus with the browser');
-  assert.equal(a.$('#backLink').hidden, true);
+  a.start();
   a.$('#ptype_fuelwood').click(); a.cont();
   assert.equal(a.screen(), 'where');
   assert.equal(a.w.document.activeElement, a.$('#whereTitle'), 'focus moves to the new question');
@@ -282,7 +301,7 @@ test('malformed catalog fails closed with a visible error', async t => {
     const data = structuredClone(catalog); mutate(data.AK.offices[0].products.fuelwood[0]);
     const a = await app(t, { data }); assert.equal(a.$('#state').disabled, true);
     assert.equal(a.$('#errorBox').hidden, false);
-    a.$('#ptype_fuelwood').click(); a.cont();
+    a.start(); a.$('#ptype_fuelwood').click(); a.cont();
     assert.equal(a.screen(), 'what');
     assert.match(a.$('#errorList').textContent, /could not load/);
   }
@@ -370,7 +389,7 @@ test('field errors wait until the field is left, then clear as soon as the entry
 test('Continue explains what is missing with links to each field', async t => {
   const a = await app(t);
   const links = () => [...a.w.document.querySelectorAll('#errorList a')];
-  a.cont();
+  a.start(); a.cont();
   assert.equal(a.w.document.activeElement, a.$('#errorBox'));
   assert.deepEqual(links().map(link => link.getAttribute('href')), ['#ptypeGroup']);
   assert.ok(a.$('#ptypeGroup').getAttribute('aria-describedby').includes('ptypeGroup-error'));
@@ -434,7 +453,7 @@ test('production-only email promises are labelled as such', async t => {
 
 test('areas list only offices with a permit on sale or coming soon for the chosen type', async t => {
   const areaNames = a => [...a.w.document.querySelectorAll('#areaOptions .option-title')].map(title => title.textContent);
-  const reach = (a, type) => { a.$(`#ptype_${type}`).click(); a.cont(); a.change('#state', 'AK'); };
+  const reach = (a, type) => { if (a.screen() === 'start') a.start(); a.$(`#ptype_${type}`).click(); a.cont(); a.change('#state', 'AK'); };
   const expireFuelwood = keep => { const data = structuredClone(catalog); for (const product of data.AK.offices[0].products.fuelwood) if (product.id !== keep) Object.assign(product, { saleStartDate: '2026-01-01', saleEndDate: '2026-10-20' }); return data; };
   const comingSoonOnly = await app(t, { data: expireFuelwood('ak-anch-fuelwood-05') }); reach(comingSoonOnly, 'fuelwood');
   assert.ok(areaNames(comingSoonOnly).includes('Anchorage Aurora Outpost'), 'an office with only a coming-soon permit is listed');
@@ -490,7 +509,7 @@ test('coming-soon products are listed separately and are not selectable', async 
 test('static notices are not live regions, screens are named by their headings, and every label has a control', async t => {
   const a = await app(t); a.pickPermit();
   const doc = a.w.document;
-  for (const selector of ['.demo-note', '.notice', '.rules']) for (const el of doc.querySelectorAll(selector)) assert.ok(!el.hasAttribute('role') && !el.hasAttribute('aria-live'), selector);
+  for (const selector of ['.demo-note', '.notice', '.rules', '.start-section']) for (const el of doc.querySelectorAll(selector)) assert.ok(!el.hasAttribute('role') && !el.hasAttribute('aria-live'), selector);
   for (const screen of doc.querySelectorAll('.screen')) {
     assert.equal(doc.getElementById(screen.getAttribute('aria-labelledby')), screen.querySelector('h1'), screen.id);
     assert.equal(screen.querySelector('h1').getAttribute('tabindex'), '-1', screen.id);
