@@ -33,8 +33,7 @@ export function isSaleComingSoon(product, days = 15, today = getTodayStart()) {
   return start > today && start <= endWindow;
 }
 
-export function calculatePermitValidity(product) {
-  const today = getTodayStart();
+export function calculatePermitValidity(product, today = getTodayStart()) {
   const validForDays = Number.isFinite(product.validForDays) ? Number(product.validForDays) : 30;
   const startCandidate = parseDate(product.saleStartDate);
   const startDate = (startCandidate && startCandidate > today) ? startCandidate : today;
@@ -43,7 +42,8 @@ export function calculatePermitValidity(product) {
   const saleEnd = parseDate(product.saleEndDate);
   const expirationDate = saleEnd ? new Date(Math.min(endByDuration.getTime(), saleEnd.getTime())) : endByDuration;
   const msPerDay = 1000 * 60 * 60 * 24;
-  const actualDays = Math.max(1, Math.ceil((expirationDate.getTime() - startDate.getTime()) / msPerDay));
+  // Both dates are local midnights, so a DST change makes the span an hour off whole days; round, don't ceil.
+  const actualDays = Math.max(1, Math.round((expirationDate.getTime() - startDate.getTime()) / msPerDay));
   const shortened = Boolean(saleEnd && saleEnd.getTime() < endByDuration.getTime());
   return { validForDays, expirationDate, startDate, actualDays, shortened };
 }
