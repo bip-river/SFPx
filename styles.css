@@ -348,8 +348,6 @@ details .body{margin-top:10px; color:var(--muted); font-size:13.5px; white-space
 /* Footer */
 footer{border-top:1px solid rgba(0,0,0,.12); background:#fff; padding:18px 0; color:var(--muted); font-size:var(--font-size-small);}
 .footer-links{display:flex; flex-wrap:wrap; gap:10px 14px; margin-top:10px}
-.footer-links a{color:var(--muted)}
-.footer-links a:hover{color:var(--brand)}
 .smallprint{margin-top:10px; color:rgba(68,84,106,.9)}
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; }

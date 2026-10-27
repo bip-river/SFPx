@@ -5,6 +5,7 @@ A static, front-end-only prototype for selecting a forest product permit, review
 - Paid permits display a demo Pay.gov handoff payload.
 - No-fee permits generate a downloadable demo PDF.
 - No payments are processed, no email is sent, and no real permits are issued. Use fictional purchaser information.
+- Agency names are fictional. The page does not link to real agency websites and asks search engines not to index it. Pay.gov and the cited U.S. laws are kept because they describe the system this prototype targets.
 - Only selections and acknowledgements are saved in `sessionStorage`. Purchaser details and transaction snapshots stay in memory; Reset clears the entire form.
 
 ## Run locally
