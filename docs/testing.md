@@ -14,6 +14,7 @@
 - URL normalization and script-protocol rejection.
 - Relative catalog dates (`today±N`), malformed relative dates failing closed, and no shipped product sale ending for future visitors through 2040.
 - Offices listed only when the chosen collection type has a permit on sale or coming soon, coming-soon products shown but not selectable, validity and expiration on the demo PDF, eligibility certification carried for paid products with a rule, and production-only email promises labelled "In production:".
+- Changing the collection type keeps the state, and keeps the office when it offers the new type.
 - Confirm-email errors that follow delivery-email edits, checkout IDs without `crypto.randomUUID` (plain-HTTP device testing), prices in product radio descriptions, quantity guidance after restore, lock notes that are not rewritten with identical text, and validity day counts across a DST change.
 
 `npm run test:browser` uses Chromium by default. Set `BROWSER=firefox` or `BROWSER=webkit` for the other Playwright engines. The tests cover keyboard and slow-pointer office selection, required-field semantics, invalid-quantity descriptions without focus stealing, both checkout paths, reload with purchaser reentry, Unicode PDF download, confirmation focus, Reset, and horizontal overflow at 1280px and 390px. Axe scans check WCAG 2 A/AA, 2.1 AA and 2.2 AA at initial load, product selection, completed purchaser fields, and PDF confirmation. All eight smoke-page checks must pass. `CHROMIUM_EXECUTABLE` can point to an existing Chromium executable.

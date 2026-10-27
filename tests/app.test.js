@@ -324,6 +324,21 @@ test('office picker lists only offices with a permit on sale or coming soon for 
   assert.ok(officeNames(nothing).includes('Anchorage Aurora Outpost'), 'the office is still listed for other collection types');
 });
 
+test('changing the collection type keeps the state, and the office when it offers the new type', async t => {
+  const data = structuredClone(catalog); delete data.AK.offices[0].products.mushrooms;
+  const a = await app(t, { data }); a.choose();
+  a.$('input[name=ptype][value=christmas]').click();
+  assert.equal(a.$('#state').value, 'AK');
+  assert.equal(a.$('#officeInput').value, 'Anchorage Aurora Outpost');
+  assert.equal(a.$('#step2').classList.contains('collapsed'), false, 'step 2 opens for the new collection type');
+  assert.match(a.$('#productList').textContent, /Chugach Access/);
+  assert.equal(a.$('input[name=product]:checked'), null, 'the product and quantity still reset');
+  a.$('input[name=ptype][value=mushrooms]').click();
+  assert.equal(a.$('#state').value, 'AK');
+  assert.equal(a.$('#officeInput').value, '', 'an office without the new collection type is cleared');
+  assert.equal(a.$('#status2').textContent, 'Locked');
+});
+
 test('paid products with an eligibility rule carry the certification in checkout data', async t => {
   const data = structuredClone(catalog); data.AK.offices[0].products.fuelwood[0].eligibilityRule = 'anilca-subsistence';
   const a = await app(t, { data }); a.choose(); a.holder(); a.$('#confirmPaygov').click();

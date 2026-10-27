@@ -1263,12 +1263,15 @@ function attemptAdvanceFromStep1() {
 
 function handleProductTypeChange(value) {
   setProductType(value);
-  resetStateSelection();
+  // Keep the location that still applies: the state always does, the office only if it offers the new type.
+  if (model.officeId && !getOfficesForState(model.state).some(office => office.id === model.officeId)) resetOfficeSelection();
   resetProductSelection();
   hideReview();
   hideLocationNotice();
   resetFollowingSteps(0);
   stepState.open = [true, false, false];
+  // Treat the kept location as newly completed so step 2 opens for the new type.
+  stepState.completed[0] = false;
   validateProductType({ showErrors: false });
   setFieldError(stateEl, '');
   setFieldError(officeInput, '');
