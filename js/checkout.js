@@ -28,7 +28,6 @@ export function createCheckoutIdentity(makeId = randomId) {
 export function readPermitHolder(fields) {
   return {
     firstName: fields.FirstName.value.trim(),
-    middleName: fields.MiddleName.value.trim(),
     lastName: fields.LastName.value.trim(),
     addressLine1: fields.AddressLine1.value.trim(),
     addressLine2: fields.AddressLine2.value.trim(),

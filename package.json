@@ -1,12 +1,13 @@
 {
   "name": "sfpx",
   "version": "1.0.0",
-  "description": "This repo is a static, front-end-only prototype for buying a forest product permit. It demonstrates a three-step flow where a user selects what they are collecting, chooses a state and office, picks a permit and quantity, and then provides acknowledgements and purchaser details before reviewing a summary.",
+  "description": "This repo is a static, front-end-only prototype for buying a forest product permit. It asks one question per screen: what the visitor is collecting, where, which permit and how much, the permit holder details, and a final check before paying or getting a free permit.",
   "scripts": {
     "test": "node --experimental-vm-modules --test tests/*.test.js",
     "check": "node scripts/check.mjs",
     "test:browser": "node tests/browser.mjs",
     "build:pdf-vendor": "node scripts/build-pdf-vendor.mjs",
+    "build:font-vendor": "node scripts/build-font-vendor.mjs",
     "test:safari": "node tests/safari.mjs"
   },
   "repository": {
@@ -17,6 +18,7 @@
   "type": "module",
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
+    "@fontsource-variable/atkinson-hyperlegible-next": "^5.3.0",
     "dejavu-fonts-ttf": "^2.37.3",
     "esbuild": "^0.28.2",
     "fontkit": "^2.0.4",

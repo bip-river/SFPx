@@ -5,308 +5,217 @@ import { getProductEligibility, productRequiresEligibility } from './js/eligibil
 import { createSelectionStorage } from './js/state.js';
 import { MAX_PAYLOAD_BYTES, createCheckoutIdentity, readPermitHolder, buildCheckoutPayload, payloadSizeBytes } from './js/checkout.js';
 import { buildDemoPermitPdf } from './js/permit-pdf.js';
-import { renderProductTypes, money, feeLabelForUnit, totalLabelFor, formatDate, getValidityLabels, buildRequiredDocs, buildProductAlert, buildProductCard, renderPayload } from './js/ui.js';
+import { renderProductTypes, buildOption, syncSelectedOptions, money, feeLabelForUnit, totalLabelFor, unitLabel, quantityLabel, quantityRangeLabel, shortProductName, formatDate, validityText, buildDocLinks, buildRequiredDocs, renderPayload } from './js/ui.js';
+
+// One question per screen. "done" follows the five numbered steps once a permit has been prepared.
+const SCREENS = ['what', 'where', 'permit', 'details', 'review', 'done'];
+const STEP_COUNT = 5;
+const SERVICE_TITLE = 'Forest product permit | Bureau of Wandering Lands';
+const CATALOG_SOURCE = 'products.json';
+const COMING_SOON_DAYS = 15;
+const LOAD_ERROR = 'We could not load available permits right now. Refresh the page to try again.';
 
 let catalogData = {};
 let catalogReady = false;
 let restoring = false;
 const selectionStorage = createSelectionStorage();
-const CATALOG_SOURCE = 'products.json';
-const COMING_SOON_DAYS = 15;
+const byId = id => document.getElementById(id);
 
 // Banner toggle
-const bannerToggle = document.getElementById('bannerToggle');
-const bannerDetails = document.getElementById('bannerDetails');
+const bannerToggle = byId('bannerToggle');
+const bannerDetails = byId('bannerDetails');
 bannerToggle.addEventListener('click', () => {
-  const open = bannerDetails.style.display === 'block';
-  bannerDetails.style.display = open ? 'none' : 'block';
+  const open = bannerToggle.getAttribute('aria-expanded') === 'true';
+  bannerDetails.hidden = open;
   bannerToggle.setAttribute('aria-expanded', String(!open));
 });
 
 // Elements
-const stateEl = document.getElementById('state');
-const stateRow = document.getElementById('stateRow');
-const officeInput = document.getElementById('officeInput');
-const officeIdEl = document.getElementById('officeId');
-const officeRow = document.getElementById('officeRow');
-const officeCombo = document.getElementById('officeCombo');
-const officeList = document.getElementById('officeList');
-const productTypeGroup = document.getElementById('ptypeGroup');
-const productTypeOptions = document.getElementById('ptypeOptions');
+const screens = Object.fromEntries(SCREENS.map(name => [name, byId(`screen-${name}`)]));
+const screenTop = byId('screenTop');
+const backLink = byId('backLink');
+const stepCount = byId('stepCount');
+const progressBar = byId('progressBar');
+const errorBox = byId('errorBox');
+const errorList = byId('errorList');
+const stepLiveRegion = byId('stepLiveRegion');
+
+const productTypeGroup = byId('ptypeGroup');
+const productTypeOptions = byId('ptypeOptions');
 let productTypeRadios = [];
 
-const productListEl = document.getElementById('productList');
-const qtyEl = document.getElementById('qty');
-const qtyHint = document.getElementById('qtyHint');
-const qtyGuard = document.getElementById('qtyGuard');
-const totalAmount = document.getElementById('totalAmount');
-const totalCalc = document.getElementById('totalCalc');
+const stateEl = byId('state');
+const noAreas = byId('noAreas');
+const areaGroup = byId('areaGroup');
+const areaOptions = byId('areaOptions');
+const locationNotice = byId('locationNotice');
+const locationNoticeBody = byId('locationNoticeBody');
 
-const qtySection = document.getElementById('qtySection');
-const comingSoonSection = document.getElementById('comingSoonSection');
-const comingSoonList = document.getElementById('comingSoonList');
+const permitLede = byId('permitLede');
+const noProducts = byId('noProducts');
+const productGroup = byId('productGroup');
+const productListEl = byId('productList');
+const qtyPanel = byId('qtyPanel');
+const qtyEl = byId('qty');
+const qtyLabel = byId('qtyLabel');
+const qtyHint = byId('qtyHint');
+const qtyDec = byId('qtyDec');
+const qtyInc = byId('qtyInc');
+const totalAmount = byId('totalAmount');
+const totalFor = byId('totalFor');
+const qtyValidity = byId('qtyValidity');
+const qtyDocs = byId('qtyDocs');
+const comingSoonSection = byId('comingSoonSection');
+const comingSoonList = byId('comingSoonList');
 
-const ackPrivacy = document.getElementById('ackPrivacy');
-const ackTerms = document.getElementById('ackTerms');
+const reviewTitle = byId('reviewTitle');
+const reviewSummary = byId('reviewSummary');
+const eligibilityAgreement = byId('eligibilityAgreement');
+const ackEligibility = byId('ackEligibility');
+const eligibilityLabel = byId('eligibilityLabel');
+const eligibilityBody = byId('eligibilityBody');
+const agreeEl = byId('agree');
+const confirmPaygovBtn = byId('confirmPaygov');
+const payNote = byId('payNote');
+const resetAllBtn = byId('resetAll');
 
-const eligibilityAgreement = document.getElementById('eligibilityAgreement');
-const ackEligibility = document.getElementById('ackEligibility');
-const eligibilityLabel = document.getElementById('eligibilityLabel');
-const eligibilityBody = document.getElementById('eligibilityBody');
-
-const nextStepsList = document.getElementById('nextStepsList');
-const confirmation = document.getElementById('confirmation');
-const permitRefEl = document.getElementById('permitRef');
-const permitDownloadBtn = document.getElementById('permitDownloadBtn');
-
-const errorBox = document.getElementById('errorBox');
-const errorList = document.getElementById('errorList');
-
-const stepSections = [
-  document.getElementById('step1'),
-  document.getElementById('step2'),
-  document.getElementById('step3')
-];
-const stepToggles = Array.from(document.querySelectorAll('.step-toggle'));
-const stepStatuses = [
-  document.getElementById('status1'),
-  document.getElementById('status2'),
-  document.getElementById('status3')
-];
-
-const locationNotice = document.getElementById('locationNotice');
-const reviewSummary = document.getElementById('reviewSummary');
-const reviewNotice = document.getElementById('reviewNotice');
-const reviewActions = document.getElementById('reviewActions');
-const confirmPaygovBtn = document.getElementById('confirmPaygov');
-const handoff = document.getElementById('handoff');
-const postStep3 = document.getElementById('postStep3');
-const permitHolderFieldset = document.getElementById('permitHolderFieldset');
-const permitHolderBlockedHint = document.getElementById('permitHolderBlockedHint');
-const stepLiveRegion = document.getElementById('stepLiveRegion');
-const lockNotes = [null, document.getElementById('step2LockNote'), document.getElementById('step3LockNote')];
-
-const checkoutIdentity = createCheckoutIdentity();
-let checkoutRevision = 0;
-let checkoutPending = false;
-
-function invalidateCheckout() {
-  checkoutRevision += 1;
-  clearConfirmation();
-  handoff.replaceChildren();
-  handoff.style.display = 'none';
-  checkoutIdentity.clear();
-  selectionStorage.clearLegacyTransaction();
-}
-
-const resetAllBtn = document.getElementById('resetAll');
-
-let permitDownloadUrl = '';
-
-let lastAnnouncedStep = null;
+const doneLede = byId('doneLede');
+const permitCard = byId('permitCard');
+const permitDownloadBtn = byId('permitDownloadBtn');
+const nextStepNotices = byId('nextStepNotices');
+const handoff = byId('handoff');
+const startAnotherBtn = byId('startAnother');
 
 // Permit holder fields
 const permitHolder = {
-  FirstName: document.getElementById('FirstName'),
-  MiddleName: document.getElementById('MiddleName'),
-  LastName: document.getElementById('LastName'),
-  AddressLine1: document.getElementById('AddressLine1'),
-  AddressLine2: document.getElementById('AddressLine2'),
-  City: document.getElementById('City'),
-  AddrState: document.getElementById('AddrState'),
-  Zip: document.getElementById('Zip'),
-  DeliveryEmail: document.getElementById('DeliveryEmail'),
-  ConfirmEmail: document.getElementById('ConfirmEmail'),
+  FirstName: byId('FirstName'),
+  LastName: byId('LastName'),
+  AddressLine1: byId('AddressLine1'),
+  AddressLine2: byId('AddressLine2'),
+  City: byId('City'),
+  AddrState: byId('AddrState'),
+  Zip: byId('Zip'),
+  DeliveryEmail: byId('DeliveryEmail'),
+  ConfirmEmail: byId('ConfirmEmail'),
 };
 
-const holderValues = new WeakMap(Object.values(permitHolder).map(el => [el, el.value]));
+// Last committed value per field, so unchanged change/blur events do not discard a prepared permit.
+const lastValues = new WeakMap([...Object.values(permitHolder), qtyEl].map(el => [el, el.value]));
 
 // Model
 const model = {
+  productType: '',
   state: '',
   officeId: '',
   officeName: '',
-  productType: '',
   productKey: '',
   product: null,
   qty: 0
 };
 
-const stepState = {
-  available: [true, false, false],
-  completed: [false, false, false],
-  open: [true, false, false]
-};
-let prevAvailability = [...stepState.available];
+let currentScreen = 'what';
+// Set by the review screen's Change links so Continue can return there once everything is complete again.
+let returnToReview = false;
 
-function hasSelectionForReview() {
-  if (!model.product) return false;
-  return validateQty();
+const checkoutIdentity = createCheckoutIdentity();
+let checkoutRevision = 0;
+let checkoutPending = false;
+// The permit prepared for the current entries: { reference, url, payload, noFee }.
+let issued = null;
+
+function clearIssued() {
+  if (issued?.url) {
+    try { URL.revokeObjectURL(issued.url); } catch (err) { /* no-op */ }
+  }
+  issued = null;
+  permitDownloadBtn.disabled = true;
+  handoff.replaceChildren();
 }
 
-function setControlEnabled(el, enabled) {
-  if (!el) return;
-  el.disabled = !enabled;
-  if (enabled) el.removeAttribute('aria-disabled');
-  else el.setAttribute('aria-disabled', 'true');
+function invalidateCheckout() {
+  checkoutRevision += 1;
+  clearIssued();
+  checkoutIdentity.clear();
+  selectionStorage.clearLegacyTransaction();
+}
+
+function typeOption(id = model.productType) {
+  return PRODUCT_TYPE_OPTIONS.find(t => t.id === id) || null;
+}
+
+function stateName(code = model.state) {
+  return catalogData[code]?.name || code || '';
 }
 
 function persistState() {
   if (restoring) return;
-  const payload = {
+  selectionStorage.write({
     model: {
+      productType: model.productType,
       state: model.state,
       officeId: model.officeId,
       officeName: model.officeName,
-      officeInput: officeInput.value,
-      productType: model.productType,
       productKey: model.productKey,
-      qty: model.qty,
-    },
-    acknowledgements: {
-      privacy: ackPrivacy.checked,
-      terms: ackTerms.checked,
-      eligibility: ackEligibility ? ackEligibility.checked : false
+      qty: model.qty
     }
-  };
-  selectionStorage.write(payload);
+  });
 }
 
 function restoreState() {
-  const saved = selectionStorage.read();
-  if (!saved) return;
+  const saved = selectionStorage.read()?.model;
+  if (!saved || typeof saved !== 'object') return;
 
-  const savedModel = saved?.model || {};
-  const savedAcknowledgements = saved?.acknowledgements || {};
-
-  if (savedModel.state && catalogData[savedModel.state]) {
-    stateEl.value = savedModel.state;
-    model.state = savedModel.state;
+  setProductType(saved.productType || saved.ptype || '');
+  if (!model.productType) return;
+  if (catalogData[saved.state]) {
+    model.state = saved.state;
+    stateEl.value = saved.state;
   }
 
-  const savedProductType = savedModel.productType || savedModel.ptype;
-  if (savedProductType) {
-    setProductType(savedProductType);
-  }
+  const office = officesFor(model.state).find(o => o.id === saved.officeId);
+  if (!office) return;
+  model.officeId = office.id;
+  model.officeName = office.name;
 
-  if (savedModel.officeId) {
-    const offices = getOfficesForState(model.state);
-    const match = offices.find(o => o.id === savedModel.officeId);
-    if (match) {
-      officeIdEl.value = match.id;
-      model.officeId = match.id;
-      model.officeName = match.name;
-      officeInput.value = match.name;
-    }
-  } else if (savedModel.officeInput) {
-    officeInput.value = savedModel.officeInput;
-  }
-
-  syncSelectionAvailability();
-  attemptAdvanceFromStep1();
-
-  const products = getProductsForSelection();
-  const savedKey = savedModel.productKey || '';
-  const matchedIndex = savedKey
-    ? products.findIndex(p => getProductKey(p) === savedKey)
-    : -1;
-  // Old index-only selections cannot be restored safely after catalog changes.
-  const resolvedIndex = matchedIndex;
-  if (products.length && Number.isInteger(resolvedIndex) && products[resolvedIndex]) {
-    const p = products[resolvedIndex];
-
-    model.productKey = getProductKey(p);
-    model.product = p;
-    const radio = document.getElementById(`prod_${resolvedIndex}`);
-    if (radio) {
-      radio.checked = true;
-      updateProductCardSelection();
-    }
-    showQuantityFor(p);
-    if (savedModel.qty) {
-      qtyEl.value = savedModel.qty;
-    }
-    commitQuantity({ showErrors: false });
-  }
-
-  ackPrivacy.checked = Boolean(model.product && savedAcknowledgements.privacy);
-  ackTerms.checked = Boolean(model.product && savedAcknowledgements.terms);
-  if (ackEligibility) ackEligibility.checked = Boolean(model.product && savedAcknowledgements.eligibility);
-
-  renderEligibilityAgreement();
-
-  evaluateFinalStep();
-  syncPermitHolderAccess();
+  // Only an active product with the saved ID is restored; old index-only selections are ignored.
+  const product = saved.productKey ? getProductsForSelection().find(p => getProductKey(p) === saved.productKey) : null;
+  if (!product) return;
+  model.product = product;
+  model.productKey = getProductKey(product);
+  configureQuantity(product);
+  qtyEl.value = String(saved.qty && !quantityError(product, saved.qty) ? saved.qty : product.minQty);
+  lastValues.set(qtyEl, qtyEl.value);
+  updateTotal();
 }
 
 function setProductType(value) {
-  const hasMatch = productTypeRadios.some(r => r.value === value);
-  model.productType = hasMatch ? (value || '') : '';
-  productTypeRadios.forEach(r => { r.checked = r.value === value; });
+  model.productType = productTypeRadios.some(r => r.value === value) ? value : '';
+  productTypeRadios.forEach(r => { r.checked = r.value === model.productType; });
+  syncSelectedOptions(productTypeOptions);
 }
 
-function validateProductType({ showErrors = true } = {}) {
-  const hasType = Boolean(model.productType);
-  const msg = hasType ? '' : 'Select what you are collecting to view available permits.';
-  if (showErrors) setFieldError(productTypeGroup, msg);
-  return hasType;
-}
-
-function resetOfficeSelection() {
-  officeInput.value = '';
-  officeIdEl.value = '';
+function clearOffice() {
   model.officeId = '';
   model.officeName = '';
-  officeOptions = [];
-  renderOfficeList([], '');
-  setOfficeExpanded(false);
-  setFieldError(officeInput, '');
 }
 
-function resetStateSelection() {
-  stateEl.value = '';
-  model.state = '';
-  resetOfficeSelection();
-}
-
-function resetProductSelection() {
-  invalidateCheckout();
-
-  model.productKey = '';
+function clearProduct() {
   model.product = null;
-  qtyEl.value = '';
-  if (totalAmount) totalAmount.textContent = '—';
-  totalCalc.textContent = '';
-  qtyGuard.textContent = '';
+  model.productKey = '';
   model.qty = 0;
-  setControlEnabled(qtyEl, false);
-  qtySection.style.display = 'none';
-  productListEl.innerHTML = '';
-  if (comingSoonSection) comingSoonSection.style.display = 'none';
-  if (comingSoonList) comingSoonList.innerHTML = '';
-}
-
-function syncSelectionAvailability() {
-  const hasType = Boolean(model.productType);
-  const hasState = hasType && Boolean(model.state);
-  const canUseData = catalogReady && Object.keys(catalogData || {}).length > 0;
-
-  if (!hasType) resetStateSelection();
-  if (!hasState) resetOfficeSelection();
-
-  if (stateRow) stateRow.classList.toggle('hidden', !hasType);
-  if (officeRow) officeRow.classList.toggle('hidden', !hasState);
-
-  // Only enable controls once the catalog is available.
-  setControlEnabled(stateEl, canUseData && hasType);
-  setControlEnabled(officeInput, canUseData && hasState);
+  qtyEl.value = '';
+  lastValues.set(qtyEl, '');
+  setFieldError(qtyEl, '');
+  productGroup.after(qtyPanel);
+  qtyPanel.hidden = true;
+  ackEligibility.checked = false;
 }
 
 // Populate state dropdown
 function populateStates() {
   // Keep the first placeholder option, remove any prior dynamic options.
   while (stateEl.options.length > 1) stateEl.remove(1);
-  const codes = Object.keys(catalogData).sort((a,b) => catalogData[a].name.localeCompare(catalogData[b].name));
+  const codes = Object.keys(catalogData).sort((a, b) => catalogData[a].name.localeCompare(catalogData[b].name));
   for (const code of codes) {
     const opt = document.createElement('option');
     opt.value = code;
@@ -331,7 +240,7 @@ function populateUSStates(selectEl) {
   blank.value = '';
   blank.textContent = 'Select';
   selectEl.appendChild(blank);
-  for (const [code,name] of states) {
+  for (const [code, name] of states) {
     const opt = document.createElement('option');
     opt.value = code;
     opt.textContent = name;
@@ -340,9 +249,6 @@ function populateUSStates(selectEl) {
 }
 
 async function loadProductData() {
-  setControlEnabled(stateEl, false);
-  setControlEnabled(officeInput, false);
-
   try {
     const res = await fetch(CATALOG_SOURCE);
     if (!res.ok) throw new Error('Unable to load product catalog.');
@@ -351,143 +257,21 @@ async function loadProductData() {
     catalogData = validateCatalog(resolveCatalogDates(json));
     catalogReady = true;
     populateStates();
-    hideErrors();
   } catch (err) {
     console.error(err);
     catalogReady = false;
-
-    // Uses the shared error summary so it is focusable and consistent.
-    showErrors(['We could not load available products right now. Please refresh and try again.']);
-  } finally {
-    syncSelectionAvailability();
+    stateEl.disabled = true;
+    showErrors([LOAD_ERROR]);
   }
 }
 
-// Office combobox
-let officeOptions = [];
-let activeIndex = -1;
-
-function setOfficeExpanded(expanded) {
-  officeInput.setAttribute('aria-expanded', String(expanded));
-  officeList.setAttribute('aria-hidden', String(!expanded));
-  if (!expanded) {
-    officeInput.removeAttribute('aria-activedescendant');
-  }
+// Areas are BWL offices that have a permit of the chosen type on sale or coming soon.
+function officesFor(code, type = model.productType) {
+  return (catalogData[code]?.offices || []).filter(office => (office.products?.[type] || []).some(p => isSaleActive(p) || isSaleComingSoon(p, COMING_SOON_DAYS)));
 }
 
-function getOfficesForState(code) {
-  const base = catalogData[code]?.offices || [];
-  const filtered = (!model.productType)
-    ? base
-    // An office whose permits of this type have all ended would only lead to an empty product list.
-    : base.filter(o => (o.products?.[model.productType] || []).some(p => isSaleActive(p) || isSaleComingSoon(p, COMING_SOON_DAYS)));
-  return filtered.map(o => ({ id:o.id, name:o.name }));
-}
-
-function renderOfficeList(items, query) {
-  const fragment = document.createDocumentFragment();
-  if (!items.length) {
-    const div = document.createElement('div');
-    div.className = 'opt';
-    div.setAttribute('role','option');
-    div.id = 'officeOptionEmpty';
-    div.setAttribute('aria-selected','false');
-    div.setAttribute('aria-disabled','true');
-    if (!model.productType && !query) {
-      div.textContent = 'Start typing to search offices.';
-    } else if (model.productType && !query) {
-      div.textContent = 'No BWL offices in this state offer that collection type online.';
-    } else {
-      div.textContent = 'No matches. Try another search.';
-    }
-    fragment.appendChild(div);
-    officeList.replaceChildren(fragment);
-    officeInput.removeAttribute('aria-activedescendant');
-    return;
-  }
-  items.forEach((item, idx) => {
-    const div = document.createElement('div');
-    div.className = 'opt';
-    div.setAttribute('role','option');
-    div.id = `officeOption_${idx}`;
-    div.dataset.index = String(idx);
-
-    const nameDiv = document.createElement('div');
-    nameDiv.textContent = item.name;
-    const idSpan = document.createElement('span');
-    idSpan.className = 'small';
-    idSpan.textContent = item.id;
-
-    div.appendChild(nameDiv);
-    div.appendChild(idSpan);
-    // Use click (not mousedown) so the selection works even if the input
-    // itself is disabled or blocked from taking focus.
-    div.addEventListener('click', (e) => {
-      e.preventDefault();
-      selectOffice(idx);
-    });
-    fragment.appendChild(div);
-  });
-  officeList.replaceChildren(fragment);
-}
-
-function filterOfficeOptions(q) {
-  const query = (q || '').trim().toLowerCase();
-  const base = getOfficesForState(model.state);
-  if (!query) return base.slice(0, 60);
-  return base.filter(o => o.name.toLowerCase().includes(query)).slice(0, 60);
-}
-
-// Only arrow keys may scroll the page to the active option. Opening the list happens inside a click,
-// and moving the page then lets the button release land outside the field and close the list.
-function keepOptionVisible(el, scrollPage) {
-  if (scrollPage) {
-    el.scrollIntoView({ block:'nearest' });
-    return;
-  }
-  const top = el.offsetTop;
-  const bottom = top + el.offsetHeight;
-  if (top < officeList.scrollTop) officeList.scrollTop = top;
-  else if (bottom > officeList.scrollTop + officeList.clientHeight) officeList.scrollTop = bottom - officeList.clientHeight;
-}
-
-function highlightOffice(idx, { scrollPage = false } = {}) {
-  const items = Array.from(officeList.querySelectorAll('.opt'));
-  items.forEach((el, i) => {
-    const selected = (i === idx);
-    el.setAttribute('aria-selected', String(selected));
-    if (selected) keepOptionVisible(el, scrollPage);
-  });
-  if (idx >= 0 && items[idx]) {
-    officeInput.setAttribute('aria-activedescendant', items[idx].id);
-  } else {
-    officeInput.removeAttribute('aria-activedescendant');
-  }
-}
-
-function selectOffice(idx) {
-  const item = officeOptions[idx];
-  if (!item) return;
-  officeInput.value = item.name;
-  officeIdEl.value = item.id;
-  model.officeId = item.id;
-  model.officeName = item.name;
-  officeInput.removeAttribute('aria-activedescendant');
-  validateField(officeInput);
-  activeIndex = -1;
-  setOfficeExpanded(false);
-
-  // Reset downstream selections
-  resetProductSelection();
-  resetFollowingSteps(0);
-  stepState.open = [true, false, false];
-  attemptAdvanceFromStep1();
-}
-
-// Products
 function getSelectedOffice() {
-  const offices = catalogData[model.state]?.offices || [];
-  return offices.find(o => o.id === model.officeId) || null;
+  return officesFor(model.state).find(o => o.id === model.officeId) || null;
 }
 
 function getProductsForSelection({ includeInactive = false } = {}) {
@@ -504,296 +288,178 @@ function getLocationAttachments() {
   return [...stateDocs, ...officeDocs];
 }
 
-function hideLocationNotice() {
-  if (!locationNotice) return;
-  locationNotice.style.display = 'none';
-  locationNotice.innerHTML = '';
+function buildLinkList(docs) {
+  const list = document.createElement('ul');
+  list.className = 'link-list';
+  docs.forEach((doc) => {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = sanitizeUrl(doc.url);
+    a.textContent = doc.label;
+    li.appendChild(a);
+    list.appendChild(li);
+  });
+  return list;
+}
+
+function noAreasMessage() {
+  return `No areas in ${stateName()} sell ${typeOption()?.noun || ''} permits online right now. Choose another state, or contact a local BWL office.`;
+}
+
+function renderAreas() {
+  const offices = model.state ? officesFor(model.state) : [];
+  noAreas.hidden = !model.state || offices.length > 0;
+  if (!noAreas.hidden) noAreas.textContent = noAreasMessage();
+  areaGroup.hidden = offices.length === 0;
+  areaOptions.replaceChildren();
+  offices.forEach((office, idx) => {
+    const products = office.products[model.productType] || [];
+    const active = products.filter(p => isSaleActive(p)).length;
+    const soon = products.filter(p => isSaleComingSoon(p, COMING_SOON_DAYS)).length;
+    const sub = [active ? `${active} permit${active === 1 ? '' : 's'} online` : '', soon ? `${soon} opening soon` : ''].filter(Boolean).join(' · ');
+    const { card, input } = buildOption({ name: 'office', id: `office_${idx}`, value: office.id, title: office.name, sub });
+    input.required = true;
+    input.checked = office.id === model.officeId;
+    input.addEventListener('change', () => selectOffice(office));
+    areaOptions.appendChild(card);
+  });
+  syncSelectedOptions(areaOptions);
 }
 
 function renderLocationNotice() {
-  if (!locationNotice) return;
-  const stateData = catalogData[model.state];
-  const office = getSelectedOffice();
-  const attachments = getLocationAttachments();
-  const hasStateDesc = Boolean(stateData?.description);
-  const hasOfficeDesc = Boolean(office?.description);
-  const hasDocs = attachments.length > 0;
-
-  if (!hasStateDesc && !hasOfficeDesc && !hasDocs) {
-    hideLocationNotice();
-    return;
-  }
-
-  locationNotice.innerHTML = '';
-
-  const title = document.createElement('div');
-  title.className = 'title';
-  const badge = document.createElement('span');
-  badge.className = 'badge';
-  badge.setAttribute('aria-hidden', 'true');
-  badge.textContent = 'i';
-  const titleText = document.createElement('span');
-  titleText.textContent = 'Local details for your selection';
-  title.appendChild(badge);
-  title.appendChild(titleText);
-  locationNotice.appendChild(title);
-
-  if (hasStateDesc) {
-    const detail = document.createElement('div');
-    detail.className = 'detail';
-    const strong = document.createElement('strong');
-    strong.textContent = `${stateData.name}:`;
-    detail.appendChild(strong);
-    detail.append(' ', stateData.description);
-    locationNotice.appendChild(detail);
-  }
-
-  if (hasOfficeDesc) {
-    const detail = document.createElement('div');
-    detail.className = 'detail';
-    const strong = document.createElement('strong');
-    strong.textContent = `${office.name}:`;
-    detail.appendChild(strong);
-    detail.append(' ', office.description);
-    locationNotice.appendChild(detail);
-  }
-
-  if (hasDocs) {
-    const wrapper = document.createElement('div');
-    wrapper.className = 'detail';
-    const strong = document.createElement('strong');
-    strong.textContent = 'Attachments for this area:';
-    wrapper.appendChild(strong);
-    const list = document.createElement('ul');
-    attachments.forEach((doc) => {
-      const li = document.createElement('li');
-      const a = document.createElement('a');
-      a.href = sanitizeUrl(doc.url);
-      a.textContent = doc.label;
-      li.appendChild(a);
-      list.appendChild(li);
-    });
-    wrapper.appendChild(list);
-    locationNotice.appendChild(wrapper);
-  }
-  locationNotice.style.display = 'block';
-}
-
-function hideReview() {
-  if (postStep3) postStep3.style.display = 'none';
-  clearConfirmation();
-  reviewSummary.style.display = 'none';
-  reviewNotice.style.display = 'none';
-  reviewActions.style.display = 'none';
-  handoff.style.display = 'none';
-  stepState.completed[2] = false;
-  confirmPaygovBtn.disabled = true;
-}
-
-function renderReviewSummary() {
-  if (!hasSelectionForReview()) {
-    reviewSummary.style.display = 'none';
-    return;
-  }
-  const stateName = catalogData[model.state]?.name || model.state || '—';
-  const fullName = [permitHolder.FirstName.value.trim(), permitHolder.MiddleName.value.trim(), permitHolder.LastName.value.trim()].filter(Boolean).join(' ');
-  const addressParts = [
-    permitHolder.AddressLine1.value.trim(),
-    permitHolder.AddressLine2.value.trim(),
-    [permitHolder.City.value.trim(), permitHolder.AddrState.value, permitHolder.Zip.value.trim()].filter(Boolean).join(' ')
-  ].filter(Boolean).join(', ');
-  const deliveryEmail = permitHolder.DeliveryEmail.value.trim();
-  const total = (model.product?.price || 0) * (model.qty || 0);
-  const totalLabel = totalLabelFor(model.product?.price || 0, total);
-  const qtyLabel = model.qty ? `${model.qty} ${model.product?.unit || 'unit'}${model.qty === 1 ? '' : 's'}` : '—';
-  const { durationLabel, expirationLabel } = getValidityLabels(model.product);
-
-  handoff.style.display = 'none';
-  reviewSummary.innerHTML = '';
-  const custKey = document.createElement('div');
-  custKey.className = 'k';
-  custKey.textContent = 'Permit holder';
-  const custVal = document.createElement('div');
-  custVal.className = 'v';
-  [fullName || '—', addressParts || '—', `Delivery email: ${deliveryEmail}`].forEach((line) => {
-    const span = document.createElement('div');
-    span.className = 'summary-line';
-    span.textContent = line;
-    custVal.appendChild(span);
+  const descriptions = [catalogData[model.state]?.description, getSelectedOffice()?.description].filter(Boolean);
+  const docs = getLocationAttachments();
+  locationNoticeBody.replaceChildren();
+  locationNotice.hidden = !model.state || (!descriptions.length && !docs.length);
+  descriptions.forEach((text) => {
+    const p = document.createElement('p');
+    p.textContent = text;
+    locationNoticeBody.appendChild(p);
   });
-
-  const prodKey = document.createElement('div');
-  prodKey.className = 'k summary-group';
-  prodKey.textContent = 'Product';
-  const prodVal = document.createElement('div');
-  prodVal.className = 'v';
-  [
-    `${stateName} — ${model.officeName || '—'}`,
-    model.product?.name || '—',
-    qtyLabel,
-    durationLabel,
-    expirationLabel,
-    `Estimated total: ${totalLabel}`
-  ].forEach((line) => {
-    const span = document.createElement('div');
-    span.className = 'summary-line';
-    span.textContent = line;
-    prodVal.appendChild(span);
-  });
-
-  reviewSummary.appendChild(custKey);
-  reviewSummary.appendChild(custVal);
-  reviewSummary.appendChild(prodKey);
-  reviewSummary.appendChild(prodVal);
-
-  reviewSummary.style.display = 'block';
+  if (docs.length) locationNoticeBody.appendChild(buildLinkList(docs));
 }
 
-function updateReviewPanels() {
-  const hasSelection = hasSelectionForReview();
-  if (postStep3) postStep3.style.display = hasSelection ? 'block' : 'none';
-  if (!hasSelection) {
-    reviewSummary.style.display = 'none';
-    reviewNotice.style.display = 'none';
-    reviewActions.style.display = 'none';
-    handoff.style.display = 'none';
-    confirmPaygovBtn.disabled = true;
-    clearConfirmation();
-    return;
-  }
-
-  renderReviewSummary();
-  configureCheckoutCopy();
-  reviewActions.style.display = 'flex';
-  const ready = stepState.completed[2];
-  // Continue stays enabled: clicking it explains what is missing, which a disabled button cannot.
-  confirmPaygovBtn.disabled = checkoutPending;
-  reviewNotice.style.display = ready ? 'flex' : 'none';
-}
-
-function renderComingSoon(products) {
-  if (!comingSoonSection || !comingSoonList) return;
-  comingSoonList.innerHTML = '';
-  if (!products.length) {
-    comingSoonSection.style.display = 'none';
-    return;
-  }
-
-  const title = document.createElement('div');
-  title.className = 'coming-soon-title';
-  title.textContent = 'Coming soon';
-  const subtitle = document.createElement('div');
-  subtitle.className = 'coming-soon-subtitle';
-  subtitle.textContent = `Sales that open within the next ${COMING_SOON_DAYS} days.`;
-  const list = document.createElement('div');
-  list.className = 'coming-soon-items';
-  products.forEach((p) => {
-    const item = document.createElement('div');
-    item.className = 'coming-soon-item';
-    const name = document.createElement('div');
-    name.className = 'coming-soon-name';
-    name.textContent = p.name;
-    const date = document.createElement('div');
-    date.className = 'coming-soon-date';
-    const startDate = parseDate(p.saleStartDate);
-    date.textContent = startDate ? `Starts ${formatDate(startDate)}` : 'Start date to be announced';
-    item.appendChild(name);
-    item.appendChild(date);
-    list.appendChild(item);
-  });
-
-  comingSoonList.appendChild(title);
-  comingSoonList.appendChild(subtitle);
-  comingSoonList.appendChild(list);
-  comingSoonSection.style.display = 'block';
-}
-
-function renderProducts() {
-  const office = getSelectedOffice();
-  const allProducts = getProductsForSelection({ includeInactive: true });
-  const products = allProducts.filter(p => isSaleActive(p));
-  const comingSoonProducts = allProducts.filter(p => isSaleComingSoon(p, COMING_SOON_DAYS));
-  productListEl.innerHTML = '';
-
-  model.product = null;
-  qtySection.style.display = 'none';
-  setControlEnabled(qtyEl, false);
-  stepState.completed[1] = false;
-  stepState.available[2] = false;
-
-  renderLocationNotice();
-  renderComingSoon(comingSoonProducts);
-
-  const hasAnyOfficeProducts = (office?.products && Object.values(office.products).some(arr => (arr || []).length > 0));
-
-  if (!products.length) {
-    const productTypeLabel = PRODUCT_TYPE_OPTIONS.find(t => t.id === model.productType)?.label || 'this permit type';
-    const msg = hasAnyOfficeProducts
-      ? `${office?.name || 'This office'} does not offer ${productTypeLabel.toLowerCase()} permits online right now. Try another collection type or office.`
-      : `${office?.name || 'This office'} does not have online permits available right now. Please choose another office or check back later.`;
-    productListEl.appendChild(buildProductAlert(msg));
-    return;
-  }
-
-  products.forEach((p, idx) => {
-    productListEl.appendChild(buildProductCard(p, idx, {
-      docs: buildRequiredDocs(p, model.productType, getLocationAttachments()),
-      onSelect: () => selectProduct(p)
-    }));
-  });
-  updateProductCardSelection();
-}
-
-// Shared by selection and restore so both configure the quantity field the same way.
-function showQuantityFor(p) {
-  const minQty = Number.isFinite(p.minQty) ? p.minQty : 1;
-  qtyHint.textContent = `Enter ${minQty}–${p.maxQty} ${p.unit}(s). Price: ${feeLabelForUnit(p.price, p.unit)}.`;
-  qtyGuard.textContent = p.maxQty ? `Maximum allowed per permit: ${p.maxQty} ${p.unit}${p.maxQty === 1 ? '' : 's'}` : '';
-  qtyEl.min = minQty;
-  qtyEl.max = p.maxQty;
-  qtyEl.step = p.quantityStep;
-  setControlEnabled(qtyEl, true);
-  qtySection.style.display = 'block';
-}
-
-function selectProduct(p) {
+function selectOffice(office) {
+  if (office.id === model.officeId) return;
+  model.officeId = office.id;
+  model.officeName = office.name;
+  clearProduct();
   invalidateCheckout();
-  updateProductCardSelection();
-
-  model.productKey = getProductKey(p);
-  model.product = p;
-  showQuantityFor(p);
-  qtyEl.value = '';
-  if (totalAmount) totalAmount.textContent = '—';
-  totalCalc.textContent = '';
-  model.qty = 0;
-  stepState.completed[1] = false;
-  stepState.available[2] = false;
-  stepState.completed[2] = false;
-  resetAcknowledgements();
-  renderEligibilityAgreement();
-  clearConfirmation();
-  hideReview();
-  setFieldError(qtyEl, '');
-
-  updateReviewPanels();
+  setFieldError(areaGroup, '');
+  syncSelectedOptions(areaOptions);
+  renderLocationNotice();
   persistState();
 }
 
-// Provide a cross-browser fallback for "selected" styles.
-// Some browsers may not support :has(), so we apply a class on the label.
-function updateProductCardSelection() {
-  const cards = Array.from(productListEl.querySelectorAll('.prod'));
-  cards.forEach((card) => {
-    const input = card.querySelector('input[type="radio"]');
-    const selected = Boolean(input && input.checked);
-    card.classList.toggle('is-selected', selected);
+function renderComingSoon(products) {
+  comingSoonList.replaceChildren();
+  comingSoonSection.hidden = !products.length;
+  products.forEach((p) => {
+    const li = document.createElement('li');
+    const name = document.createElement('span');
+    name.className = 'coming-soon-name';
+    name.textContent = shortProductName(p);
+    const date = document.createElement('span');
+    date.className = 'coming-soon-date';
+    const startDate = parseDate(p.saleStartDate);
+    date.textContent = startDate ? `Opens ${formatDate(startDate)}` : 'Opening date to be announced';
+    li.append(name, date);
+    comingSoonList.appendChild(li);
   });
+}
+
+function renderProducts() {
+  const all = getProductsForSelection({ includeInactive: true });
+  const products = all.filter(p => isSaleActive(p));
+  // An open tab can cross a sale's end date; the expired selection must go.
+  if (model.product && !products.includes(model.product)) clearProduct();
+
+  permitLede.textContent = `${typeOption()?.label || ''} at ${model.officeName}, ${stateName()}.`;
+  noProducts.hidden = products.length > 0;
+  noProducts.textContent = `No ${typeOption()?.noun || ''} permits are on sale here right now. Go back to choose another area.`;
+  productGroup.hidden = !products.length;
+
+  // Park the quantity panel before the cards are replaced so it is not discarded with them.
+  productGroup.after(qtyPanel);
+  productListEl.replaceChildren();
+  products.forEach((p, idx) => {
+    const eligibility = getProductEligibility(p);
+    const { card, input } = buildOption({
+      name: 'product', id: `prod_${idx}`, value: p.id,
+      title: shortProductName(p),
+      sub: [quantityRangeLabel(p), eligibility?.summary].filter(Boolean).join(' · '),
+      aside: feeLabelForUnit(p.price, p.unit)
+    });
+    input.required = true;
+    if (p === model.product) {
+      input.checked = true;
+      card.appendChild(qtyPanel);
+    }
+    input.addEventListener('change', () => selectProduct(p, card));
+    productListEl.appendChild(card);
+  });
+  qtyPanel.hidden = !model.product;
+  syncSelectedOptions(productListEl);
+  renderComingSoon(all.filter(p => isSaleComingSoon(p, COMING_SOON_DAYS)));
+}
+
+function configureQuantity(p) {
+  const units = unitLabel(p.unit, 2);
+  qtyLabel.textContent = `How many ${units}?`;
+  qtyHint.textContent = quantityRangeLabel(p);
+  qtyEl.min = p.minQty;
+  qtyEl.max = p.maxQty;
+  qtyEl.step = p.quantityStep;
+  qtyEl.inputMode = Number.isInteger(p.quantityStep) && Number.isInteger(p.minQty) ? 'numeric' : 'decimal';
+  qtyDec.setAttribute('aria-label', `Fewer ${units}`);
+  qtyInc.setAttribute('aria-label', `More ${units}`);
+  qtyValidity.textContent = validityText(p);
+  qtyDocs.replaceChildren(buildDocLinks(buildRequiredDocs(p, model.productType), shortProductName(p)));
+}
+
+function selectProduct(p, card) {
+  invalidateCheckout();
+  model.product = p;
+  model.productKey = getProductKey(p);
+  card.appendChild(qtyPanel);
+  qtyPanel.hidden = false;
+  configureQuantity(p);
+  qtyEl.value = String(p.minQty);
+  lastValues.set(qtyEl, qtyEl.value);
+  ackEligibility.checked = false;
+  setFieldError(qtyEl, '');
+  setFieldError(productGroup, '');
+  syncSelectedOptions(productListEl);
+  updateTotal();
+  persistState();
 }
 
 // Rewriting a live region with identical text can make screen readers repeat it.
 function setLiveText(el, text) {
   if (el.textContent !== text) el.textContent = text;
+}
+
+function updateTotal() {
+  const p = model.product;
+  const valid = Boolean(p) && !quantityError(p, qtyEl.value);
+  model.qty = valid ? Number(qtyEl.value) : 0;
+  setLiveText(totalFor, valid ? ` for ${quantityLabel(p, model.qty)}` : '');
+  setLiveText(totalAmount, valid ? totalLabelFor(p.price, p.price * model.qty) : '—');
+  // aria-disabled keeps the buttons focusable, so reaching a limit does not drop keyboard focus.
+  const current = Number(qtyEl.value);
+  qtyDec.setAttribute('aria-disabled', String(!p || (valid && current <= p.minQty)));
+  qtyInc.setAttribute('aria-disabled', String(!p || (valid && current >= p.maxQty)));
+}
+
+function stepQuantity(direction) {
+  const p = model.product;
+  if (!p) return;
+  const current = Number(qtyEl.value);
+  let next = qtyEl.value.trim() === '' || !Number.isFinite(current) ? p.minQty : current + direction * p.quantityStep;
+  next = Math.min(p.maxQty, Math.max(p.minQty, next));
+  next = p.minQty + Math.round((next - p.minQty) / p.quantityStep) * p.quantityStep;
+  qtyEl.value = String(Number(next.toFixed(6)));
+  onQuantityEdit();
 }
 
 function announce(message) {
@@ -802,132 +468,24 @@ function announce(message) {
   requestAnimationFrame(() => { stepLiveRegion.textContent = message; });
 }
 
-const prefersReducedMotion = (() => {
-  try { return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
-  catch (err) { return false; }
-})();
-
-function isElementInView(el, margin = 12) {
-  if (!el) return true;
-  const rect = el.getBoundingClientRect();
-  const vh = window.innerHeight || document.documentElement.clientHeight;
-  return rect.top >= margin && rect.bottom <= (vh - margin);
-}
-
-function scrollIntoViewSafe(el, { force = false } = {}) {
-  if (!el) return;
-  if (!force && isElementInView(el)) return; // prevents rapid “jump” scrolling
-  el.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'start' });
-}
-
-function applyLockState() {
-  stepSections.forEach((sec, i) => {
-    const available = stepState.available[i];
-    if (lockNotes[i]) lockNotes[i].style.display = available ? 'none' : 'block';
-    sec.querySelectorAll('.step-body input, .step-body select, .step-body textarea, .step-body button').forEach(el => {
-      let enabled = available;
-      if (el === stateEl) enabled = catalogReady && Boolean(model.productType);
-      else if (el === officeInput) enabled = catalogReady && Boolean(model.productType && model.state);
-      else if (el === qtyEl) enabled = available && Boolean(model.product);
-      else if (el.closest('#permitHolderFieldset')) enabled = available && ackRequirementsMet();
-      else if (el === ackEligibility) enabled = available && productRequiresEligibility(model.product);
-      setControlEnabled(el, enabled);
-    });
-  });
-  syncPermitHolderAccess();
-}
-
-function updateStepUI() {
-  stepState.open = stepState.open.map((open, i) => (stepState.available[i] ? open : false));
-  const activeStepIndex = stepState.open.findIndex(Boolean);
-
-  stepSections.forEach((sec, i) => {
-    const open = stepState.open[i] && stepState.available[i];
-    sec.classList.toggle('collapsed', !open);
-    const body = sec.querySelector('.step-body');
-    const toggle = sec.querySelector('.step-toggle');
-    if (body) {
-      body.setAttribute('aria-hidden', open ? 'false' : 'true');
-      if (open) {
-        body.removeAttribute('inert');
-      } else {
-        body.setAttribute('inert', '');
-      }
-    }
-    if (toggle) {
-      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-      toggle.disabled = !stepState.available[i];
-      toggle.setAttribute('aria-disabled', String(!stepState.available[i]));
-    }
-    const statusEl = stepStatuses[i];
-    if (statusEl) {
-      const status = !stepState.available[i]
-        ? 'Locked'
-        : stepState.completed[i]
-          ? 'Completed'
-          : 'In progress';
-      statusEl.textContent = status;
-    }
-  });
-  updateLockNotes();
-  applyLockState();
-  stepState.available.forEach((available, i) => {
-    if (available && !prevAvailability[i]) {
-      announce(`Step ${i + 1} unlocked. You can now complete this section.`);
-    }
-  });
-  prevAvailability = [...stepState.available];
-
-  if (activeStepIndex !== -1 && activeStepIndex !== lastAnnouncedStep) {
-    const stepTitle = stepSections[activeStepIndex]?.querySelector('.step-toggle-text')?.textContent || `Step ${activeStepIndex + 1}`;
-    announce(`Now viewing ${stepTitle}.`);
-    lastAnnouncedStep = activeStepIndex;
-  }
-}
-
-function ackRequirementsMet() {
-  const base = ackPrivacy.checked && ackTerms.checked;
-  if (productRequiresEligibility(model.product)) {
-    return base && Boolean(ackEligibility && ackEligibility.checked);
-  }
-  return base;
-}
-
-function clearConfirmation() {
-  if (confirmation) confirmation.style.display = 'none';
-  if (permitDownloadBtn) permitDownloadBtn.disabled = true;
-  if (permitRefEl) permitRefEl.textContent = '—';
-  if (permitDownloadUrl) {
-    try { URL.revokeObjectURL(permitDownloadUrl); } catch (err) { /* no-op */ }
-    permitDownloadUrl = '';
-  }
-}
-
 function renderEligibilityAgreement() {
-  if (!eligibilityAgreement || !ackEligibility || !eligibilityLabel || !eligibilityBody) return;
-
   const required = productRequiresEligibility(model.product);
+  eligibilityAgreement.hidden = !required;
   ackEligibility.required = required;
+  eligibilityBody.replaceChildren();
   if (!required) {
-    eligibilityAgreement.style.display = 'none';
-    eligibilityBody.innerHTML = '';
-    eligibilityLabel.textContent = 'I certify that I meet the eligibility requirements for this permit.';
     ackEligibility.checked = false;
     return;
   }
 
-  const elig = getProductEligibility(model.product) || {};
-  eligibilityAgreement.style.display = 'block';
-  eligibilityLabel.textContent = elig.label || 'I certify that I meet the eligibility requirements for this permit.';
-
-  eligibilityBody.innerHTML = '';
+  const elig = getProductEligibility(model.product);
+  eligibilityLabel.textContent = elig.label;
   if (elig.intro) {
-    const p = document.createElement('div');
+    const p = document.createElement('p');
     p.textContent = elig.intro;
     eligibilityBody.appendChild(p);
   }
-
-  if (Array.isArray(elig.bullets) && elig.bullets.length) {
+  if (elig.bullets?.length) {
     const ul = document.createElement('ul');
     elig.bullets.forEach((b) => {
       const li = document.createElement('li');
@@ -936,89 +494,187 @@ function renderEligibilityAgreement() {
     });
     eligibilityBody.appendChild(ul);
   }
+  if (elig.citations?.length) {
+    const title = document.createElement('p');
+    title.textContent = 'Read the legal text:';
+    const list = buildLinkList(elig.citations.map(c => ({ label: c.label || 'Legal reference', url: c.url })));
+    list.querySelectorAll('a').forEach((a) => { a.target = '_blank'; a.rel = 'noopener'; });
+    eligibilityBody.append(title, list);
+  }
+}
 
-  if (Array.isArray(elig.citations) && elig.citations.length) {
-    const citeWrap = document.createElement('div');
-    citeWrap.style.marginTop = '8px';
-    const title = document.createElement('div');
-    title.style.fontWeight = '600';
-    title.textContent = 'Read the legal text';
-    citeWrap.appendChild(title);
+function holderName() {
+  return [permitHolder.FirstName.value.trim(), permitHolder.LastName.value.trim()].filter(Boolean).join(' ');
+}
 
-    const list = document.createElement('ul');
-    elig.citations.forEach((c) => {
-      const li = document.createElement('li');
-      const a = document.createElement('a');
-      a.href = sanitizeUrl(c.url);
-      a.textContent = c.label || 'Legal reference';
-      a.target = '_blank';
-      a.rel = 'noopener';
-      li.appendChild(a);
-      list.appendChild(li);
+function holderAddressLines() {
+  return [
+    permitHolder.AddressLine1.value.trim(),
+    permitHolder.AddressLine2.value.trim(),
+    `${permitHolder.City.value.trim()}, ${permitHolder.AddrState.value} ${permitHolder.Zip.value.trim()}`
+  ].filter(Boolean);
+}
+
+function appendProductionNote(container, text) {
+  const label = document.createElement('span');
+  label.className = 'production-label';
+  label.textContent = 'In production:';
+  container.append(label, ` ${text}`);
+}
+
+function summaryRow({ key, lines, change, changeLabel }) {
+  const row = document.createElement('div');
+  row.className = 'summary-row';
+  const dt = document.createElement('dt');
+  dt.textContent = key;
+  const dd = document.createElement('dd');
+  lines.forEach((line, i) => {
+    const span = document.createElement('span');
+    span.className = i === 0 ? 'summary-main' : 'summary-line';
+    span.textContent = line;
+    dd.appendChild(span);
+  });
+  row.append(dt, dd);
+  if (change) {
+    const action = document.createElement('dd');
+    action.className = 'summary-action';
+    const link = document.createElement('a');
+    link.href = `#${change}`;
+    link.textContent = 'Change';
+    const context = document.createElement('span');
+    context.className = 'sr-only';
+    context.textContent = ` ${changeLabel}`;
+    link.appendChild(context);
+    link.addEventListener('click', (event) => {
+      event.preventDefault();
+      returnToReview = true;
+      showScreen(change);
     });
-    citeWrap.appendChild(list);
-    eligibilityBody.appendChild(citeWrap);
+    action.appendChild(link);
+    row.appendChild(action);
   }
+  return row;
 }
 
-function configureCheckoutCopy() {
-  if (!model.product || !model.qty) return;
-  const unitPrice = model.product?.price || 0;
-  const total = unitPrice * (model.qty || 0);
-  const noFee = unitPrice === 0 && total === 0;
-
-  const label = noFee ? 'Confirm and get permit' : 'Continue to Pay.gov';
-  if (confirmPaygovBtn && confirmPaygovBtn.textContent !== label) confirmPaygovBtn.textContent = label;
-
-  if (nextStepsList) {
-    nextStepsList.innerHTML = '';
-    const items = noFee
-      ? [
-          'No payment is required.',
-          'After you confirm, you will be able to download and save your permit.',
-          'This demo does not send email.'
-        ]
-      : [
-          'You will be redirected to Pay.gov to complete payment.',
-          'After payment, you will return here to download and save your permit.',
-          'This demo does not send email.'
-        ];
-    items.forEach((t) => {
-      const li = document.createElement('li');
-      li.textContent = t;
-      nextStepsList.appendChild(li);
-    });
-  }
-}
-
-function syncPermitHolderAccess() {
-  const unlocked = ackRequirementsMet();
-  if (permitHolderFieldset) {
-    permitHolderFieldset.disabled = !unlocked;
-    permitHolderFieldset.style.display = unlocked ? 'block' : 'none';
-  }
-  if (permitHolderBlockedHint) {
-    permitHolderBlockedHint.style.display = unlocked ? 'none' : 'block';
-  }
-  if (!unlocked) {
-    Object.values(permitHolder).forEach(el => setFieldError(el, ''));
-  }
-}
-
-function resetAcknowledgements() {
-  ackPrivacy.checked = false;
-  ackTerms.checked = false;
-  if (ackEligibility) ackEligibility.checked = false;
-  ackPrivacy.disabled = false;
-  ackTerms.disabled = false;
-  ackPrivacy.removeAttribute('aria-disabled');
-  ackTerms.removeAttribute('aria-disabled');
-  syncPermitHolderAccess();
+function renderReview() {
+  const p = model.product;
+  if (!p) return;
+  const total = p.price * model.qty;
+  const noFee = p.price === 0;
+  reviewTitle.textContent = noFee ? 'Check and confirm' : 'Check and pay';
+  reviewSummary.replaceChildren(
+    summaryRow({ key: 'Permit', lines: [`${typeOption()?.label}: ${shortProductName(p)}`, quantityLabel(p, model.qty), validityText(p)], change: 'permit', changeLabel: 'permit' }),
+    summaryRow({ key: 'Where', lines: [model.officeName, stateName()], change: 'where', changeLabel: 'area' }),
+    summaryRow({ key: 'Permit holder', lines: [holderName(), ...holderAddressLines(), permitHolder.DeliveryEmail.value.trim()], change: 'details', changeLabel: 'your details' }),
+    summaryRow({ key: 'Total', lines: [totalLabelFor(p.price, total)] })
+  );
+  reviewSummary.lastElementChild.classList.add('summary-total');
   renderEligibilityAgreement();
+
+  const label = noFee ? 'Get my free permit' : `Pay ${money(total)} on Pay.gov`;
+  // Rewriting identical text would replace the node a pending click or screen reader is using.
+  if (confirmPaygovBtn.textContent !== label) confirmPaygovBtn.textContent = label;
+  payNote.replaceChildren();
+  if (noFee) payNote.textContent = 'No payment is needed. You can download your permit right away.';
+  else appendProductionNote(payNote, 'you’ll pay on Pay.gov, then come back here for your permit. This demo skips payment.');
+}
+
+function renderDone() {
+  if (!issued) return;
+  const p = model.product;
+  doneLede.replaceChildren(issued.noFee ? 'No payment was needed. ' : 'This demo skipped payment, so nothing was charged. ');
+  appendProductionNote(doneLede, `we’d also email a copy to ${permitHolder.DeliveryEmail.value.trim()}.`);
+
+  const line = (className, text) => {
+    const el = document.createElement(className === 'permit-card-title' ? 'strong' : 'span');
+    el.className = className;
+    el.textContent = text;
+    return el;
+  };
+  permitCard.replaceChildren(
+    line('permit-card-type', `${typeOption()?.label} permit`),
+    line('permit-card-title', `${shortProductName(p)} · ${quantityLabel(p, model.qty)}`),
+    line('permit-card-line', `${model.officeName}, ${stateName()}`),
+    line('permit-card-line', validityText(p)),
+    line('permit-card-line', `Issued to ${holderName()}`),
+    line('permit-card-ref', `Reference ${issued.reference}`)
+  );
+  permitDownloadBtn.disabled = false;
+
+  nextStepNotices.querySelector('.link-list')?.remove();
+  const docs = getLocationAttachments();
+  if (docs.length) nextStepNotices.appendChild(buildLinkList(docs));
+
+  renderPayload(handoff, issued.payload, {
+    note: issued.noFee
+      ? 'In production, the site would request permit issuance from the permitting system and return a signed permit PDF for download.'
+      : 'In production, the site would create a Sale ID and redirect the visitor to Pay.gov with this transaction context, then issue the permit after verifying payment.'
+  });
+}
+
+function renderScreen(name) {
+  if (name === 'where') {
+    renderAreas();
+    renderLocationNotice();
+  } else if (name === 'permit') {
+    renderProducts();
+  } else if (name === 'review') {
+    renderReview();
+  } else if (name === 'done') {
+    renderDone();
+  }
+}
+
+function screenComplete(name) {
+  switch (name) {
+    case 'what': return catalogReady && Boolean(model.productType);
+    case 'where': return Boolean(model.state && getSelectedOffice());
+    case 'permit': return Boolean(model.product) && !quantityError(model.product, qtyEl.value);
+    case 'details': return Object.values(permitHolder).every(el => !getFieldErrorMessage(el));
+    case 'review': return Boolean(issued);
+    default: return false;
+  }
+}
+
+// A screen can be shown only when every screen before it is complete.
+function furthestReachable() {
+  let index = 0;
+  while (index < SCREENS.length - 1 && screenComplete(SCREENS[index])) index += 1;
+  return index;
+}
+
+function showScreen(name, { history: mode = 'push', focus = true } = {}) {
+  const index = Math.min(Math.max(SCREENS.indexOf(name), 0), furthestReachable());
+  const target = SCREENS[index];
+  currentScreen = target;
+  if (target === 'review') returnToReview = false;
+  renderScreen(target);
+  for (const [screenName, el] of Object.entries(screens)) el.hidden = screenName !== target;
+
+  const done = target === 'done';
+  screenTop.hidden = done;
+  backLink.hidden = index === 0 || done;
+  if (index > 0) backLink.href = `#${SCREENS[index - 1]}`;
+  stepCount.textContent = `Step ${Math.min(index + 1, STEP_COUNT)} of ${STEP_COUNT}`;
+  progressBar.style.width = `${(Math.min(index + 1, STEP_COUNT) / STEP_COUNT) * 100}%`;
+
+  const heading = screens[target].querySelector('h1');
+  document.title = done
+    ? `${heading.textContent} – ${SERVICE_TITLE}`
+    : `${heading.textContent} – Step ${index + 1} of ${STEP_COUNT} – ${SERVICE_TITLE}`;
+  if (mode === 'push') history.pushState({ screen: target }, '', `#${target}`);
+  else if (mode === 'replace') history.replaceState({ screen: target }, '', `#${target}`);
+
+  // Moving focus to the new question tells screen reader users the screen changed; the first load keeps the browser's focus.
+  if (focus) {
+    hideErrors();
+    window.scrollTo(0, 0);
+    heading.focus({ preventScroll: true });
+  }
 }
 
 function getFieldContainer(el) {
-  return el?.closest('.row') || el?.closest('.agreement-item') || el?.parentElement;
+  return el?.closest('.field');
 }
 
 function updateAriaDescribedBy(el, id, add) {
@@ -1034,38 +690,33 @@ function updateAriaDescribedBy(el, id, add) {
   }
 }
 
+// Errors sit above their control. A fieldset is described by its error; aria-invalid is not allowed on a group.
 function setFieldError(el, message) {
-  if (!el) return;
   const container = getFieldContainer(el);
   if (!container) return;
-  let target = container.querySelector('.field-error');
+  let target = container.querySelector(':scope > .field-error');
   if (!target) {
-    target = document.createElement('div');
+    if (!message) return;
+    target = document.createElement('p');
     target.className = 'field-error';
+    target.id = `${el.id}-error`;
     target.setAttribute('aria-live', 'polite');
-    container.appendChild(target);
+    container.insertBefore(target, container.querySelector(':scope > .field-input'));
   }
-  if (!target.id) {
-    const baseId = el.id || el.name || 'field';
-    target.id = `${baseId}-error`;
-  }
-  if (message) {
-    target.textContent = message;
-    target.classList.add('active');
-    el.setAttribute('aria-invalid', 'true');
-    updateAriaDescribedBy(el, target.id, true);
-  } else {
-    target.textContent = '';
-    target.classList.remove('active');
-    el.removeAttribute('aria-invalid');
-    updateAriaDescribedBy(el, target.id, false);
-  }
+  const isGroup = el.matches('fieldset');
+  container.classList.toggle('has-error', Boolean(message));
+  target.textContent = message;
+  updateAriaDescribedBy(el, target.id, Boolean(message));
+  if (isGroup) return;
+  if (message) el.setAttribute('aria-invalid', 'true');
+  else el.removeAttribute('aria-invalid');
 }
 
 function clearAllFieldErrors() {
-  document.querySelectorAll('.field-error').forEach(el => {
-    el.textContent = '';
-    el.classList.remove('active');
+  document.querySelectorAll('.field-error').forEach((target) => {
+    const field = target.closest('.field');
+    field?.classList.remove('has-error');
+    target.textContent = '';
   });
   document.querySelectorAll('[aria-invalid="true"]').forEach(el => el.removeAttribute('aria-invalid'));
   document.querySelectorAll('[aria-describedby]').forEach((el) => {
@@ -1079,9 +730,14 @@ function clearAllFieldErrors() {
   });
 }
 
+function focusField(field) {
+  const target = field.matches('fieldset') ? (field.querySelector('input:checked') || field.querySelector('input')) : field;
+  target?.focus();
+}
+
 // Messages are strings, or { text, field } so the summary can link each field error to its control.
 function showErrors(messages) {
-  errorList.innerHTML = '';
+  errorList.replaceChildren();
   for (const m of messages) {
     const li = document.createElement('li');
     if (m?.field) {
@@ -1090,23 +746,21 @@ function showErrors(messages) {
       link.textContent = m.text;
       link.addEventListener('click', (event) => {
         event.preventDefault();
-        m.field.focus();
+        focusField(m.field);
       });
       li.appendChild(link);
     } else {
-      li.textContent = m;
+      li.textContent = m?.text ?? m;
     }
     errorList.appendChild(li);
   }
-  errorBox.setAttribute('aria-hidden', 'false');
-  errorBox.style.display = 'block';
+  errorBox.hidden = false;
   errorBox.focus();
 }
 
 function hideErrors() {
-  errorBox.setAttribute('aria-hidden', 'true');
-  errorBox.style.display = 'none';
-  errorList.innerHTML = '';
+  errorBox.hidden = true;
+  errorList.replaceChildren();
 }
 
 const FIELD_VALIDATORS = createFieldValidators({ model, permitHolder });
@@ -1123,426 +777,142 @@ function validateField(el) {
   return !msg;
 }
 
-function validateStep1() {
-  const ok = Boolean(model.state) && Boolean(model.officeId) && Boolean(model.productType);
-  stepState.completed[0] = ok;
-  return ok;
+function validatePermitHolder() {
+  return Object.values(permitHolder)
+    .map(el => ({ text: getFieldErrorMessage(el), field: el }))
+    .filter(error => error.text);
 }
 
-function validateQty() {
-  const p = model.product;
-
-  const v = Number(qtyEl.value);
-  const invalid = Boolean(quantityError(p, qtyEl.value));
-  if (invalid) {
-    // Keep model/UI consistent so downstream logic does not rely on stale quantities/totals.
-    model.qty = 0;
-    if (totalAmount) totalAmount.textContent = '—';
-    totalCalc.textContent = '';
-    return false;
+function reviewErrors() {
+  const errors = [];
+  if (productRequiresEligibility(model.product) && !ackEligibility.checked) {
+    errors.push({ text: 'Confirm that you qualify for this subsistence permit.', field: ackEligibility });
   }
-
-  model.qty = v;
-  const unitPrice = p.price || 0;
-  const total = v * unitPrice;
-
-  const amountLabel = totalLabelFor(unitPrice, total);
-  const amountChanged = totalAmount && totalAmount.textContent !== amountLabel;
-  if (totalAmount) totalAmount.textContent = amountLabel;
-
-  totalCalc.textContent = unitPrice === 0
-    ? 'No-fee permit'
-    : `${money(unitPrice)} × ${v} ${p.unit}${v === 1 ? '' : 's'} = ${amountLabel}`;
-  if (amountChanged) animateTotalUpdate();
-  return true;
+  if (!agreeEl.checked) errors.push({ text: 'Agree to the permit terms and the privacy notice.', field: agreeEl });
+  return errors;
 }
 
-function animateTotalUpdate() {
-  if (!totalAmount || prefersReducedMotion) return;
-  totalAmount.classList.remove('is-updating');
-  void totalAmount.offsetWidth;
-  totalAmount.classList.add('is-updating');
-  window.setTimeout(() => totalAmount.classList.remove('is-updating'), 180);
-}
-
-function resetQuantityState() {
-  model.qty = 0;
-  if (totalAmount) totalAmount.textContent = '—';
-  totalCalc.textContent = '';
-  stepState.completed[1] = false;
-  stepState.available[2] = false;
-  stepState.completed[2] = false;
-  stepState.open[2] = false;
-  hideReview();
-  updateStepUI();
-  updateReviewPanels();
-}
-
-function commitQuantity({ showErrors = true } = {}) {
-  const wasCompleted = stepState.completed[1];
-  const msg = getFieldErrorMessage(qtyEl);
-  if (showErrors) {
-    setFieldError(qtyEl, msg);
-  } else {
-    setFieldError(qtyEl, '');
-  }
-
-  if (msg) {
-    resetQuantityState();
-    persistState();
-    return false;
-  }
-
-  const ok = validateQty();
-  stepState.completed[1] = ok;
-  stepState.available[2] = ok;
-  if (ok && !wasCompleted) {
-    stepState.open[2] = true;
-  }
-  updateStepUI();
-  updateReviewPanels();
-  persistState();
-  return ok;
-}
-
-function validatePermitHolder({ touchFields = false } = {}) {
-  const msgs = [];
-  const required = Object.keys(permitHolder);
-  for (const k of required) {
-    const el = permitHolder[k];
-    const msg = getFieldErrorMessage(el);
-    if (msg) msgs.push({ text: msg, field: el });
-    if (touchFields) setFieldError(el, msg);
-  }
-  return msgs;
-}
-
-function setStepOpenState(idx, open, { collapseOthers = false, scroll = false, scrollIfNeeded = false } = {}) {
-  if (!stepState.available[idx]) return;
-
-  if (collapseOthers) {
-    stepState.open = stepState.open.map((_, i) => (i === idx ? open : false));
-  } else {
-    stepState.open[idx] = open;
-  }
-
-  updateStepUI();
-  hideErrors();
-
-  if (open && (scroll || scrollIfNeeded)) {
-    const head = stepSections[idx]?.querySelector('.step-head');
-    if (head) scrollIntoViewSafe(head, { force: scroll });
+function screenErrors(name) {
+  switch (name) {
+    case 'what':
+      if (!catalogReady) return [LOAD_ERROR];
+      return model.productType ? [] : [{ text: 'Select what you are collecting.', field: productTypeGroup }];
+    case 'where':
+      if (!model.state) return [{ text: 'Choose a state.', field: stateEl }];
+      if (!officesFor(model.state).length) return [{ text: noAreasMessage(), field: stateEl }];
+      return getSelectedOffice() ? [] : [{ text: 'Choose an area.', field: areaGroup }];
+    case 'permit': {
+      if (!getProductsForSelection().length) return [noProducts.textContent];
+      if (!model.product) return [{ text: 'Choose a permit.', field: productGroup }];
+      const msg = quantityError(model.product, qtyEl.value);
+      return msg ? [{ text: msg, field: qtyEl }] : [];
+    }
+    case 'details':
+      return validatePermitHolder();
+    case 'review':
+      return reviewErrors();
+    default:
+      return [];
   }
 }
 
-function resetFollowingSteps(startIdx) {
-  for (let i = startIdx + 1; i < stepState.available.length; i++) {
-    stepState.available[i] = false;
-    stepState.completed[i] = false;
-    stepState.open[i] = false;
-  }
-  if (startIdx <= 1) {
-    resetAcknowledgements();
-  }
-  updateStepUI();
-}
-
-function attemptAdvanceFromStep1() {
-  const wasCompleted = stepState.completed[0];
-  validateProductType({ showErrors: false });
-  const ok = validateStep1();
-  stepState.available[1] = ok;
-  if (!ok) {
-    resetFollowingSteps(0);
-    stepState.open = [true, false, false];
-    hideLocationNotice();
-    productListEl.innerHTML = '';
-    qtySection.style.display = 'none';
-    updateReviewPanels();
-    persistState();
+function continueFrom(name) {
+  continuePressedAt = -Infinity;
+  const errors = screenErrors(name);
+  if (name === 'details') Object.values(permitHolder).forEach(validateField);
+  else errors.forEach(error => { if (error?.field) setFieldError(error.field, error.text); });
+  if (errors.length) {
+    showErrors(errors);
     return;
   }
-
-  if (ok && !wasCompleted) {
-    stepState.open[1] = true;
+  hideErrors();
+  if (name === 'review') {
+    confirmCheckout().catch((error) => {
+      console.error(error);
+      showErrors(['We could not prepare your permit. Your entries are still here. Please try again.']);
+    });
+    return;
   }
-  renderProducts();
-
-  updateStepUI();
-
-  updateReviewPanels();
-  persistState();
+  const reviewIndex = SCREENS.indexOf('review');
+  const next = returnToReview && furthestReachable() >= reviewIndex ? 'review' : SCREENS[SCREENS.indexOf(name) + 1];
+  showScreen(next);
 }
 
 function handleProductTypeChange(value) {
+  if (value === model.productType) return;
   setProductType(value);
-  // Keep the location that still applies: the state always does, the office only if it offers the new type.
-  if (model.officeId && !getOfficesForState(model.state).some(office => office.id === model.officeId)) resetOfficeSelection();
-  resetProductSelection();
-  hideReview();
-  hideLocationNotice();
-  resetFollowingSteps(0);
-  stepState.open = [true, false, false];
-  // Treat the kept location as newly completed so step 2 opens for the new type.
-  stepState.completed[0] = false;
-  validateProductType({ showErrors: false });
-  setFieldError(stateEl, '');
-  setFieldError(officeInput, '');
-  syncSelectionAvailability();
-  updateReviewPanels();
+  setFieldError(productTypeGroup, '');
+  // Keep the location that still applies: the state always does, the area only if it offers the new type.
+  if (model.officeId && !getSelectedOffice()) clearOffice();
+  clearProduct();
+  invalidateCheckout();
   persistState();
-  attemptAdvanceFromStep1();
-}
-
-function updateLockNotes() {
-  const humanJoin = (items) => {
-    if (items.length === 0) return '';
-    if (items.length === 1) return items[0];
-    if (items.length === 2) return `${items[0]} and ${items[1]}`;
-    return `${items.slice(0, -1).join(', ')}, and ${items[items.length - 1]}`;
-  };
-
-  if (lockNotes[1]) {
-    const needs = [];
-    if (!model.productType) needs.push('select what you are collecting');
-    if (!model.state) needs.push('choose a state');
-    if (!model.officeId) needs.push('pick a BWL office');
-
-    setLiveText(lockNotes[1], needs.length
-      ? `To unlock Step 2, ${humanJoin(needs)}.`
-      : '');
-  }
-
-  if (lockNotes[2]) {
-    if (!model.product) {
-      setLiveText(lockNotes[2], 'To unlock Step 3, choose a product and enter a quantity.');
-    } else if (!model.qty) {
-      setLiveText(lockNotes[2], 'To unlock Step 3, enter a quantity within the allowed range.');
-    } else {
-      setLiveText(lockNotes[2], '');
-    }
-  }
-}
-
-function evaluateFinalStep({ showErrorsOnFail = false } = {}) {
-  const ackOk = ackRequirementsMet();
-  const selectionOk = validateStep1() && Boolean(model.product && isSaleActive(model.product)) && validateQty();
-  const permitHolderErrors = ackOk ? validatePermitHolder({ touchFields: showErrorsOnFail }) : [];
-  const permitHolderValid = permitHolderErrors.length === 0;
-
-  syncPermitHolderAccess();
-
-  if (!selectionOk || !ackOk || !permitHolderValid) {
-    stepState.completed[2] = false;
-    handoff.style.display = 'none';
-    if (showErrorsOnFail) {
-      const errs = [];
-      if (!ackOk) {
-        if (!ackPrivacy.checked) errs.push({ text: 'You must acknowledge the Privacy Act notification.', field: ackPrivacy });
-        if (!ackTerms.checked) errs.push({ text: 'You must agree to the Terms and Conditions.', field: ackTerms });
-        if (productRequiresEligibility(model.product) && !(ackEligibility && ackEligibility.checked)) {
-          errs.push({ text: 'You must certify you meet the eligibility requirements for this permit.', field: ackEligibility });
-        }
-      }
-      // The summary links into step 3, so it must be open rather than inert.
-      if (stepState.available[2]) stepState.open[2] = true;
-      showErrors(errs.concat(permitHolderErrors));
-    }
-    updateStepUI();
-    updateReviewPanels();
-    persistState();
-    return false;
-  }
-
-  hideErrors();
-  stepState.completed[2] = true;
-  updateStepUI();
-  updateReviewPanels();
-  persistState();
-  return true;
 }
 
 // Events
-stateEl.addEventListener('change', () => {
-  if (!model.productType) {
-    stateEl.value = '';
-    syncSelectionAvailability();
-    return;
-  }
-
-  model.state = stateEl.value;
-
-  resetOfficeSelection();
-  resetProductSelection();
-
-  stepState.completed[0] = false;
-  resetFollowingSteps(0);
-  stepState.open = [true, false, false];
-
-  if (model.state) {
-    officeOptions = filterOfficeOptions('');
-    renderOfficeList(officeOptions, '');
-    setOfficeExpanded(true);
-    activeIndex = officeOptions.length ? 0 : -1;
-  } else {
-    activeIndex = -1;
-  }
-
-  validateField(stateEl);
-  setFieldError(officeInput, '');
-  validateStep1();
-  hideReview();
-  hideLocationNotice();
-  syncSelectionAvailability();
-  updateStepUI();
-  updateReviewPanels();
-  persistState();
-});
-
-stateEl.addEventListener('blur', () => validateField(stateEl));
-
-function openOfficeList() {
-  if (!model.state) return;
-  officeOptions = filterOfficeOptions(officeInput.value);
-  renderOfficeList(officeOptions, officeInput.value);
-  setOfficeExpanded(true);
-  activeIndex = officeOptions.length ? 0 : -1;
-  highlightOffice(activeIndex);
+for (const name of SCREENS) {
+  if (screens[name].tagName !== 'FORM') continue;
+  screens[name].addEventListener('submit', (event) => {
+    event.preventDefault();
+    continueFrom(name);
+  });
 }
 
-officeInput.addEventListener('focus', openOfficeList);
-// Focus stays in the input after choosing an option, so a later click must reopen the list itself.
-officeInput.addEventListener('click', () => {
-  if (officeInput.getAttribute('aria-expanded') !== 'true') openOfficeList();
-});
-
-officeInput.addEventListener('input', () => {
-  if (!model.state) return;
-  const priorOfficeId = model.officeId;
-  const text = officeInput.value.trim();
-  const exact = getOfficesForState(model.state).find(o => o.name.toLowerCase() === text.toLowerCase());
-  if (exact) {
-    officeIdEl.value = exact.id;
-    model.officeId = exact.id;
-    model.officeName = exact.name;
-    setFieldError(officeInput, '');
-  } else {
-    officeIdEl.value = '';
-    model.officeId = '';
-    model.officeName = '';
-  }
-
-  officeOptions = filterOfficeOptions(officeInput.value);
-  renderOfficeList(officeOptions, officeInput.value);
-  setOfficeExpanded(true);
-  activeIndex = officeOptions.length ? 0 : -1;
-  highlightOffice(activeIndex);
-
-  // Rendering products can be expensive; only re-evaluate step gating when selection state changes.
-  if (priorOfficeId !== model.officeId) {
-    resetProductSelection();
-    resetFollowingSteps(0);
-    attemptAdvanceFromStep1();
-  }
-});
-
-officeInput.addEventListener('blur', () => {
-  setTimeout(() => setOfficeExpanded(false), 120);
-  validateField(officeInput);
-});
-
-officeInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    e.preventDefault();
-    setOfficeExpanded(false);
-    activeIndex = -1;
-    officeInput.removeAttribute('aria-activedescendant');
-    return;
-  }
-
-  if (officeInput.getAttribute('aria-expanded') !== 'true') {
-    setOfficeExpanded(true);
-  }
-  if (!officeOptions.length) return;
-
-  if (e.key === 'ArrowDown') {
-    e.preventDefault();
-    activeIndex = Math.min(activeIndex + 1, officeOptions.length - 1);
-    highlightOffice(activeIndex, { scrollPage: true });
-  } else if (e.key === 'ArrowUp') {
-    e.preventDefault();
-    activeIndex = Math.max(activeIndex - 1, 0);
-    highlightOffice(activeIndex, { scrollPage: true });
-  } else if (e.key === 'Enter') {
-    if (officeInput.getAttribute('aria-expanded') === 'true' && activeIndex >= 0) {
-      e.preventDefault();
-      selectOffice(activeIndex);
-    }
-  }
-});
-
-document.addEventListener('click', (e) => {
-  if (!officeCombo.contains(e.target)) setOfficeExpanded(false);
-});
-
-// Keep focus in the input while pressing an option; otherwise blur closes the list before a slow click lands.
-officeList.addEventListener('mousedown', (e) => e.preventDefault());
-
-stepToggles.forEach((btn, idx) => {
-  btn.addEventListener('click', () => {
-    if (!stepState.available[idx]) return;
-    setStepOpenState(idx, !stepState.open[idx], { collapseOthers: false, scrollIfNeeded: !stepState.open[idx] });
-  });
-});
-
-qtyEl.addEventListener('input', () => {
+stateEl.addEventListener('change', () => {
+  if (stateEl.value === model.state) return;
+  model.state = stateEl.value;
+  clearOffice();
+  clearProduct();
   invalidateCheckout();
-  const wasCompleted = stepState.completed[1];
-  setFieldError(qtyEl, '');
-  totalCalc.textContent = '';
-  const ok = validateQty();
-  if (!ok && totalAmount) totalAmount.textContent = '—';
-  stepState.completed[1] = ok;
-  stepState.available[2] = ok;
-  if (ok && !wasCompleted) {
-    stepState.open[2] = true;
-  }
-  stepState.completed[2] = false;
-  clearConfirmation();
-  hideReview();
-  updateLockNotes();
-  updateStepUI();
+  setFieldError(stateEl, '');
+  setFieldError(areaGroup, '');
+  renderAreas();
+  renderLocationNotice();
   persistState();
-  evaluateFinalStep();
 });
 
-qtyEl.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') {
-    e.preventDefault();
-    // Explicit action: allow opening the next step.
-    commitQuantity();
-  } else if (e.key === 'Tab') {
-    // Normal navigation: validate, but do NOT auto-advance or trap focus.
-    commitQuantity({ showErrors: true });
-  }
+backLink.addEventListener('click', (event) => {
+  event.preventDefault();
+  returnToReview = false;
+  showScreen(SCREENS[SCREENS.indexOf(currentScreen) - 1]);
 });
 
-qtyEl.addEventListener('blur', () => {
-  // Leaving the field should not auto-advance or yank focus back.
-  commitQuantity({ showErrors: true });
+// The browser's own Back and Forward buttons move between screens too.
+window.addEventListener('popstate', (event) => {
+  const name = event.state?.screen;
+  if (!SCREENS.includes(name) || name === currentScreen) return;
+  showScreen(name, { history: 'none' });
+  if (currentScreen !== name) history.replaceState({ screen: currentScreen }, '', `#${currentScreen}`);
 });
-
-function onAckChange() { invalidateCheckout(); syncPermitHolderAccess(); evaluateFinalStep(); }
-ackPrivacy.addEventListener('change', onAckChange);
-ackTerms.addEventListener('change', onAckChange);
-if (ackEligibility) ackEligibility.addEventListener('change', onAckChange);
 
 // While Continue is being pressed, an error appearing on blur could push the button out from under the
 // pointer before release and swallow the click. The click reports every error anyway, so those errors wait.
 let continuePressedAt = -Infinity;
-confirmPaygovBtn.addEventListener('pointerdown', () => { continuePressedAt = performance.now(); });
+document.querySelectorAll('.screen button[type="submit"]').forEach((button) => {
+  button.addEventListener('pointerdown', () => { continuePressedAt = performance.now(); });
+});
 const continueBeingPressed = () => performance.now() - continuePressedAt < 1000;
 const showsError = el => el.getAttribute('aria-invalid') === 'true';
+
+function valueChanged(el) {
+  if (lastValues.get(el) === el.value) return false;
+  lastValues.set(el, el.value);
+  return true;
+}
+
+function onQuantityEdit({ committed = false } = {}) {
+  const reveal = committed && !continueBeingPressed();
+  if (reveal || showsError(qtyEl)) validateField(qtyEl);
+  updateTotal();
+  if (!valueChanged(qtyEl)) return;
+  invalidateCheckout();
+  persistState();
+}
+
+qtyEl.addEventListener('input', () => onQuantityEdit());
+qtyEl.addEventListener('change', () => onQuantityEdit({ committed: true }));
+qtyDec.addEventListener('click', () => { if (qtyDec.getAttribute('aria-disabled') !== 'true') stepQuantity(-1); });
+qtyInc.addEventListener('click', () => { if (qtyInc.getAttribute('aria-disabled') !== 'true') stepQuantity(1); });
 
 // Errors appear once an entry is committed (the field is left or a select changes), then follow each keystroke until fixed.
 function onPermitHolderEdit(el, { committed = false } = {}) {
@@ -1551,10 +921,7 @@ function onPermitHolderEdit(el, { committed = false } = {}) {
   // Confirm email is judged against the delivery email, so its message must follow edits to either field.
   const confirmEmail = permitHolder.ConfirmEmail;
   if (el === permitHolder.DeliveryEmail && confirmEmail.value.trim() && (reveal || showsError(confirmEmail))) validateField(confirmEmail);
-  if (holderValues.get(el) === el.value) return;
-  holderValues.set(el, el.value);
-  invalidateCheckout();
-  evaluateFinalStep();
+  if (valueChanged(el)) invalidateCheckout();
 }
 
 Object.values(permitHolder).forEach(el => {
@@ -1564,186 +931,163 @@ Object.values(permitHolder).forEach(el => {
   el.addEventListener('blur', () => { if (!continueBeingPressed()) validateField(el); });
 });
 
-if (permitDownloadBtn) {
-  permitDownloadBtn.addEventListener('click', () => {
-    if (!permitDownloadUrl) return;
-    const ref = permitRefEl ? permitRefEl.textContent.trim() : 'permit';
-    const a = document.createElement('a');
-    a.href = permitDownloadUrl;
-    a.download = `${ref || 'permit'}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+[agreeEl, ackEligibility].forEach((el) => {
+  el.addEventListener('change', () => {
+    invalidateCheckout();
+    if (el.checked) setFieldError(el, '');
   });
-}
+});
+
+permitDownloadBtn.addEventListener('click', () => {
+  if (!issued?.url) return;
+  const a = document.createElement('a');
+  a.href = issued.url;
+  a.download = `${issued.reference}.pdf`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+});
 
 function checkoutSnapshot() {
   return {
     state: model.state, officeId: model.officeId, productId: model.product?.id,
     quantity: model.qty, unitPrice: model.product?.price,
     permitHolder: Object.fromEntries(Object.entries(permitHolder).map(([key, el]) => [key, el.value.trim()])),
-    privacy: ackPrivacy.checked, terms: ackTerms.checked, eligibility: Boolean(ackEligibility?.checked)
+    agreed: agreeEl.checked, eligibility: ackEligibility.checked
   };
+}
+
+function permitLines({ reference, noFee, total }) {
+  const p = model.product;
+  return [
+    'Bureau of Wandering Lands — Forest Product Permit (DEMO)',
+    '',
+    `Permit reference: ${reference}`,
+    `Issued to: ${holderName() || '—'}`,
+    `Mailing address: ${holderAddressLines().join(', ')}`,
+    `Delivery email: ${permitHolder.DeliveryEmail.value.trim() || '—'}`,
+    '',
+    `Area: ${model.officeName || '—'} (${model.officeId || '—'}), ${stateName()}`,
+    `Permit: ${p.name}`,
+    `Quantity: ${quantityLabel(p, model.qty)}`,
+    noFee ? 'Fee: No fee' : `Fee: ${money(total)} (demo: no payment was taken)`,
+    validityText(p),
+    '',
+    'This is a prototype-generated demo permit. Do not use for actual harvesting.'
+  ];
+}
+
+function setCheckoutPending(pending) {
+  checkoutPending = pending;
+  // aria-disabled rather than disabled, so focus stays on the button while the permit is prepared.
+  if (pending) {
+    confirmPaygovBtn.setAttribute('aria-busy', 'true');
+    confirmPaygovBtn.setAttribute('aria-disabled', 'true');
+  } else {
+    confirmPaygovBtn.removeAttribute('aria-busy');
+    confirmPaygovBtn.removeAttribute('aria-disabled');
+  }
 }
 
 async function confirmCheckout() {
   if (checkoutPending) return;
   const current = getProductsForSelection().find(product => product.id === model.product?.id);
-  if (!validateStep1() || !current || current !== model.product || !validateQty()) {
-    resetProductSelection();
-    resetFollowingSteps(0);
-    attemptAdvanceFromStep1();
-    hideReview();
-    showErrors(['This selection is no longer available. Choose an available product and quantity.']);
+  if (!current || current !== model.product || quantityError(model.product, qtyEl.value)) {
+    clearProduct();
+    invalidateCheckout();
+    persistState();
+    showScreen('permit');
+    showErrors(['This permit is no longer available. Choose another permit.']);
     return;
   }
-  const ok = evaluateFinalStep({ showErrorsOnFail: true });
-  if (!ok) return;
-  clearConfirmation();
 
-  const unitPrice = model.product?.price || 0;
-  const quantity = model.qty || 0;
-  const total = unitPrice * quantity;
-  const permitHolderName = [permitHolder.FirstName.value.trim(), permitHolder.MiddleName.value.trim(), permitHolder.LastName.value.trim()].filter(Boolean).join(' ');
-  const permitHolderEmail = permitHolder.DeliveryEmail.value.trim();
+  const unitPrice = model.product.price;
+  const total = unitPrice * model.qty;
+  const noFee = unitPrice === 0;
+  const reference = checkoutIdentity.referenceFor(checkoutSnapshot(), noFee ? 'PERMIT' : 'TX');
   const eligibility = productRequiresEligibility(model.product)
-    ? { certified: Boolean(ackEligibility?.checked), basis: getProductEligibility(model.product).basis }
+    ? { certified: ackEligibility.checked, basis: getProductEligibility(model.product).basis }
     : null;
-
-  if (unitPrice === 0 && total === 0) {
-    const permitReference = checkoutIdentity.referenceFor(checkoutSnapshot(), 'PERMIT');
-
-    const payload = buildCheckoutPayload({ model, holder: readPermitHolder(permitHolder), reference: permitReference, eligibility });
-    const { durationLabel, expirationLabel } = getValidityLabels(model.product);
-
-    const payloadSize = payloadSizeBytes(payload);
-    if (payloadSize > MAX_PAYLOAD_BYTES) {
-      showErrors([`Form data is too large (${payloadSize} bytes). Shorten text entries and try again.`]);
-      return;
-    }
-
-    const lines = [
-      'Bureau of Wandering Lands — Forest Product Permit (DEMO)',
-      '',
-      `Permit reference: ${permitReference}`,
-      `Issued to: ${permitHolderName || '—'}`,
-      `Delivery email: ${permitHolderEmail || '—'}`,
-      '',
-      `Office: ${model.officeName || '—'} (${model.officeId || '—'})`,
-      `Product: ${model.product?.name || '—'}`,
-      `Quantity: ${quantity} ${model.product?.unit || 'unit'}${quantity === 1 ? '' : 's'}`,
-      'Fee: No fee',
-      durationLabel,
-      expirationLabel,
-      '',
-      'This is a prototype-generated demo permit. Do not use for actual harvesting.'
-    ];
-    const revision = checkoutRevision;
-    const snapshot = JSON.stringify(checkoutSnapshot());
-    checkoutPending = true;
-    confirmPaygovBtn.disabled = true;
-    confirmPaygovBtn.setAttribute('aria-busy', 'true');
-    announce('Generating your demo permit. Please wait.');
-    let blob;
-    try {
-      blob = await buildDemoPermitPdf(lines);
-      if (revision !== checkoutRevision || snapshot !== JSON.stringify(checkoutSnapshot())) return;
-    } catch (error) {
-      if (revision === checkoutRevision) showErrors([`We could not generate the demo permit. Your entries are still here. ${error.message}`]);
-      return;
-    } finally {
-      checkoutPending = false;
-      confirmPaygovBtn.removeAttribute('aria-busy');
-      confirmPaygovBtn.disabled = false;
-    }
-    permitDownloadUrl = URL.createObjectURL(blob);
-
-    if (permitRefEl) permitRefEl.textContent = permitReference;
-    if (confirmation) confirmation.style.display = 'flex';
-    if (permitDownloadBtn) permitDownloadBtn.disabled = false;
-
-    renderPayload(handoff, payload, {
-      title: 'Demo issuance payload (no fee)',
-      note: 'In production, the site would request permit issuance from the permitting system and return a signed permit PDF for download.'
-    });
-
-    scrollIntoViewSafe(confirmation || handoff, { force: true });
-    confirmation?.focus({ preventScroll: true });
-    announce('Demo permit generated. The download button is ready.');
-    document.dispatchEvent(new CustomEvent('sfpx:pdf-ready'));
-    return;
-  }
-
-  const transactionReference = checkoutIdentity.referenceFor(checkoutSnapshot(), 'TX');
-
-  const payload = buildCheckoutPayload({ model, holder: readPermitHolder(permitHolder), reference: transactionReference, eligibility });
-
+  const payload = buildCheckoutPayload({ model, holder: readPermitHolder(permitHolder), reference, eligibility });
   const payloadSize = payloadSizeBytes(payload);
   if (payloadSize > MAX_PAYLOAD_BYTES) {
     showErrors([`Form data is too large (${payloadSize} bytes). Shorten text entries and try again.`]);
     return;
   }
 
-  renderPayload(handoff, payload, {
-    title: 'Demo handoff payload',
-    note: 'In production, the site would create a Sale ID and redirect the user to Pay.gov with that transaction context.'
-  });
-  scrollIntoViewSafe(handoff);
+  const revision = checkoutRevision;
+  const snapshot = JSON.stringify(checkoutSnapshot());
+  setCheckoutPending(true);
+  announce('Preparing your permit. Please wait.');
+  let blob;
+  try {
+    blob = await buildDemoPermitPdf(permitLines({ reference, noFee, total }));
+    if (revision !== checkoutRevision || snapshot !== JSON.stringify(checkoutSnapshot())) return;
+  } catch (error) {
+    if (revision === checkoutRevision) showErrors([`We could not create your permit. Your entries are still here. ${error.message}`]);
+    return;
+  } finally {
+    setCheckoutPending(false);
+  }
+
+  clearIssued();
+  issued = { reference, url: URL.createObjectURL(blob), payload, noFee };
+  showScreen('done');
+  document.dispatchEvent(new CustomEvent('sfpx:pdf-ready'));
 }
-
-confirmPaygovBtn.addEventListener('click', () => {
-  continuePressedAt = -Infinity;
-  confirmCheckout().catch((error) => {
-    console.error(error);
-    showErrors(['We could not prepare checkout. Your entries are still here. Please try again.']);
-  });
-});
-
-resetAllBtn.addEventListener('click', () => {
-  clearPermitHolder();
-  resetStateSelection();
-  setProductType('');
-  resetProductSelection();
-  setOfficeExpanded(false);
-  stepState.available = [true, false, false];
-  stepState.completed = [false, false, false];
-  stepState.open = [true, false, false];
-  resetAcknowledgements();
-  hideReview();
-  hideErrors();
-  hideLocationNotice();
-  clearAllFieldErrors();
-  syncSelectionAvailability();
-  updateStepUI();
-  updateReviewPanels();
-  selectionStorage.clear();
-});
 
 function clearPermitHolder() {
-  Object.values(permitHolder).forEach(el => { el.value = ''; holderValues.set(el, ''); });
+  Object.values(permitHolder).forEach(el => { el.value = ''; lastValues.set(el, ''); });
 }
+
+// Firefox restores form values on reload, so an agreement or quantity from before the reload could reappear.
+function clearRestoredFormState() {
+  clearPermitHolder();
+  agreeEl.checked = false;
+  ackEligibility.checked = false;
+  qtyEl.value = '';
+  lastValues.set(qtyEl, '');
+}
+
+function resetAll() {
+  invalidateCheckout();
+  clearPermitHolder();
+  clearAllFieldErrors();
+  setProductType('');
+  model.state = '';
+  stateEl.value = '';
+  clearOffice();
+  clearProduct();
+  agreeEl.checked = false;
+  returnToReview = false;
+  selectionStorage.clear();
+  showScreen('what');
+}
+
+resetAllBtn.addEventListener('click', resetAll);
+startAnotherBtn.addEventListener('click', resetAll);
 
 // Firefox may restore native form values independently of sessionStorage.
 window.addEventListener('pageshow', event => {
-  if (event.persisted) {
-    clearPermitHolder();
-    invalidateCheckout();
-    evaluateFinalStep();
-  }
+  if (!event.persisted) return;
+  clearPermitHolder();
+  agreeEl.checked = false;
+  ackEligibility.checked = false;
+  invalidateCheckout();
+  if (SCREENS.indexOf(currentScreen) > SCREENS.indexOf('details')) showScreen('details', { history: 'replace' });
 });
 
 async function boot() {
   productTypeRadios = renderProductTypes(productTypeOptions, handleProductTypeChange);
-  syncSelectionAvailability();
-  await loadProductData();
-  clearPermitHolder();
   populateUSStates(permitHolder.AddrState);
+  clearRestoredFormState();
+  await loadProductData();
   restoring = true;
   try { restoreState(); } finally { restoring = false; }
-  syncPermitHolderAccess();
-  updateReviewPanels();
-  syncSelectionAvailability();
-  updateStepUI();
+  // A reload keeps the screen when its earlier answers were restored; purchaser details never are.
+  // Other fragments, such as #need-help or the skip link's #main, resume at the furthest screen.
+  const requested = history.state?.screen || location.hash.slice(1);
+  showScreen(SCREENS.includes(requested) ? requested : SCREENS[furthestReachable()], { history: 'replace', focus: false });
   document.documentElement.dataset.appReady = 'true';
   document.dispatchEvent(new CustomEvent('sfpx:ready'));
 }
