@@ -326,9 +326,6 @@
       {
         "id": "AK-JUN",
         "name": "Juneau Harbor Outpost",
-        "haulTags": {
-          "fuelwood": false
-        },
         "products": {
           "fuelwood": [
             {
@@ -2312,6 +2309,9 @@
   },
   "MT": {
     "name": "Montana",
+    "haulTags": {
+      "fuelwood": false
+    },
     "offices": [
       {
         "id": "MT-MILES",
@@ -2624,6 +2624,9 @@
       {
         "id": "MT-BILL",
         "name": "Billings Bison Outpost",
+        "haulTags": {
+          "fuelwood": true
+        },
         "products": {
           "fuelwood": [
             {
@@ -2779,9 +2782,6 @@
   },
   "NV": {
     "name": "Nevada",
-    "haulTags": {
-      "fuelwood": false
-    },
     "offices": [
       {
         "id": "NV-CARS",
@@ -2940,9 +2940,6 @@
       {
         "id": "NV-ELY",
         "name": "Ely Echo District",
-        "haulTags": {
-          "fuelwood": true
-        },
         "products": {
           "fuelwood": [
             {
@@ -3252,10 +3249,6 @@
   },
   "NM": {
     "name": "New Mexico",
-    "haulTags": {
-      "fuelwood": false,
-      "christmas": false
-    },
     "offices": [
       {
         "id": "NM-ROSW",
@@ -3414,9 +3407,6 @@
       {
         "id": "NM-TAOS",
         "name": "Taos Canyon Outpost",
-        "haulTags": {
-          "christmas": true
-        },
         "products": {
           "fuelwood": [
             {
@@ -4207,9 +4197,6 @@
   },
   "UT": {
     "name": "Utah",
-    "haulTags": {
-      "christmas": false
-    },
     "offices": [
       {
         "id": "UT-CCFO",
@@ -4453,8 +4440,7 @@
               "id": "ut-moab-christmas-01",
               "quantityStep": 1,
               "validForDays": 30,
-              "eligibilityRule": null,
-              "haulTags": true
+              "eligibilityRule": null
             },
             {
               "name": "Christmas Tree Permit — Limited",

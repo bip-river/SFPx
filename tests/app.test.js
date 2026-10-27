@@ -150,7 +150,7 @@ test('paid checkout validates holder data, preserves retry identity, and replace
   assert.match(first.permitNumber, /^AK-ANCH-26-\d{6}$/);
   assert.equal(first.haulTags, 2, 'one tag for each half cord');
   assert.match(a.$('#permitCard').textContent, new RegExp(`Permit number ${first.permitNumber}`));
-  assert.match(a.$('#packageHint').textContent, /^PDF, \d+ pages\. Print every page single-sided\.$/);
+  assert.match(a.$('#packageHint').textContent, /^PDF, \d+ pages\.$/);
   await a.goBack(); assert.equal(a.screen(), 'review');
   await a.generate(); assert.equal(a.payload().idempotencyKey, first.idempotencyKey);
   assert.equal(a.payload().permitNumber, first.permitNumber, 'a retry keeps its permit number');
@@ -526,7 +526,8 @@ test('haul tags follow the listing, office and state rules, one per half cord of
   assert.equal(firewood.payload().haulTags, 6);
   assert.equal(tagLine(await reach(structuredClone(catalog), 'christmas', 'AK-ANCH', 0, 2)), 'Includes 2 haul tags, one for each tree');
   assert.equal(tagLine(await reach(structuredClone(catalog), 'fuelwood', 'AK-ANCH', 3)), 'No haul tags needed for this permit', 'a listing can opt out');
-  assert.equal(tagLine(await reach(structuredClone(catalog), 'fuelwood', 'AK-JUN', 0)), 'No haul tags needed for this permit', 'an office can opt out');
+  assert.equal(tagLine(await reach(structuredClone(catalog), 'fuelwood', 'MT-MILES', 0)), 'No haul tags needed for this permit', 'Montana turns firewood tags off statewide');
+  assert.match(tagLine(await reach(structuredClone(catalog), 'fuelwood', 'MT-BILL', 0)), /^Includes \d+ haul tags/, 'the Billings office turns them back on');
   assert.equal(tagLine(await reach(structuredClone(catalog), 'mushrooms', 'AK-ANCH', 0)), '', 'mushroom permits never mention tags');
   const stateOff = structuredClone(catalog); stateOff.AK.haulTags = { fuelwood: false };
   assert.equal(tagLine(await reach(stateOff, 'fuelwood', 'AK-ANCH', 0)), 'No haul tags needed for this permit', 'a state can opt out');

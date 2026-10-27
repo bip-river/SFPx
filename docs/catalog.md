@@ -25,7 +25,7 @@ The start page says permits last "from 7 days to 6 months". `npm test` checks th
 
 ## Haul tags
 
-Firewood and Christmas tree permits can include haul tags; mushroom permits never do. The most specific rule wins: a listing's `haulTags`, then its office's `haulTags.<type>`, then its state's `haulTags.<type>`. Without any rule, tags are required. For example, `"haulTags": { "fuelwood": false }` on a state turns off firewood tags there, and `"haulTags": { "fuelwood": true }` on one of its offices turns them back on. The demo uses this in Nevada and New Mexico (state), Juneau, Ely and Taos (office), and two listings.
+Firewood and Christmas tree permits can include haul tags; mushroom permits never do. The most specific rule wins: a listing's `haulTags`, then its office's `haulTags.<type>`, then its state's `haulTags.<type>`. Without any rule, tags are required. For example, `"haulTags": { "fuelwood": false }` on a state turns off firewood tags there, and `"haulTags": { "fuelwood": true }` on one of its offices turns them back on. The demo turns firewood tags off for all of Montana, back on for the Billings office (`MT-BILL`), and off for one Anchorage listing (Free Use).
 
 A firewood tag covers half a cord and a Christmas tree tag one tree, so the package holds `quantity ÷ 0.5` or `quantity` tags, rounded up.
 

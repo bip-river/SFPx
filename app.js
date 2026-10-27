@@ -615,10 +615,10 @@ function renderDone() {
     line('permit-card-ref', `Permit number ${issued.permitNumber}`)
   );
   permitDownloadBtn.disabled = false;
-  packageHint.textContent = `PDF, ${issued.pageCount} pages. Print every page single-sided.`;
+  packageHint.textContent = `PDF, ${issued.pageCount} pages.`;
 
   const steps = [
-    'Print every page single-sided.',
+    'Print every page.',
     'Sign and date the permit on page 1. It isn’t valid until you sign it.',
     ...(issued.tagCount ? [`Before you load, cut or tear out the month, day and AM or PM on one haul tag for each ${TAG_EACH[model.productType]}, and attach it where it can be seen.`] : []),
     'Check the area notices and maps before your trip.',

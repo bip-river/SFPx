@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { buildPermitPackagePdf, buildSampleDocumentPdf } from '../js/permit-pdf.js';
-import { packageSections, sampleDocumentIds, documentUrl, TAGS_PER_SHEET } from '../js/permit-documents.js';
+import { packageSections, sampleDocumentIds, documentUrl, TAGS_PER_SHEET, TYPE_DOCUMENTS } from '../js/permit-documents.js';
 import { readPdf } from './pdf-text.mjs';
 
 const permit = (overrides = {}) => ({
@@ -18,7 +18,7 @@ const permit = (overrides = {}) => ({
 });
 const pageText = page => page.items.map(item => item.str).join(' ');
 
-test('the package puts the permit and stipulations first, then tag sheets with blank backs, then maps, notices and reference', async () => {
+test('the package puts the permit and stipulations first, then tag sheets backed by load records, then maps, notices and reference', async () => {
   const { blob, pageCount } = await buildPermitPackagePdf(permit());
   const { pages } = await readPdf(blob);
   assert.equal(pages.length, pageCount);
@@ -27,7 +27,7 @@ test('the package puts the permit and stipulations first, then tag sheets with b
     if (/Forest Product Permit/.test(text) && /Permit holder signature/.test(text)) return 'permit';
     if (/Firewood permit stipulations/.test(text)) return 'stipulations';
     if (/FIREWOOD HAUL TAG/.test(text)) return 'tags';
-    if (/Back of a haul tag sheet/.test(text)) return 'blank';
+    if (/Back of haul tags/.test(text) && (text.match(/Load record/g) || []).length === 4) return 'tag back';
     if (/Firewood cutting areas/.test(text)) return 'map';
     if (/Anchorage access map/.test(text)) return 'area map';
     if (/Online notice: https:\/\/example\.org\/notice/.test(text)) return 'notices';
@@ -35,7 +35,8 @@ test('the package puts the permit and stipulations first, then tag sheets with b
     if (/How to measure firewood/.test(text)) return 'reference';
     return 'other';
   });
-  assert.deepEqual(kinds, ['permit', 'stipulations', 'tags', 'blank', 'tags', 'blank', 'map', 'area map', 'notices', 'notice', 'reference']);
+  assert.deepEqual(kinds, ['permit', 'stipulations', 'tags', 'tag back', 'tags', 'tag back', 'map', 'area map', 'notices', 'notice', 'reference']);
+  assert.doesNotMatch(pages.map(pageText).join(' '), /single-sided|Leave this side blank/, 'double-sided printing is safe, so nothing asks for single-sided');
   const tagText = pages.filter((_, i) => kinds[i] === 'tags').map(pageText).join(' ');
   for (let n = 1; n <= 6; n++) assert.match(tagText, new RegExp(`Tag ${n} of 6`));
   assert.equal((tagText.match(/½ CORD/g) || []).length, 6, 'each tag shows the amount it covers');
@@ -48,14 +49,24 @@ test('the package puts the permit and stipulations first, then tag sheets with b
   for (const [index, page] of pages.entries()) assert.ok(page.items.some(item => item.str.includes(`Permit AK-ANCH-26-048213 · Page ${index + 1} of ${pages.length}`)), `footer on page ${index + 1}`);
 });
 
-test('tag sheets start on the front of a sheet whatever length the permit takes', () => {
-  const pageKind = page => (JSON.stringify(page).includes('HAUL TAG') ? 'tags' : JSON.stringify(page).includes('Leave this side blank') ? 'blank' : JSON.stringify(page).includes('tags start on the front') ? 'pad' : 'other');
-  const even = packageSections(permit({ tagCount: 5 }), { frontPageCount: 2 }).tags.map(pageKind);
-  assert.deepEqual(even, ['tags', 'blank', 'tags', 'blank']);
-  const odd = packageSections(permit({ tagCount: 5 }), { frontPageCount: 3 }).tags.map(pageKind);
-  assert.deepEqual(odd, ['pad', 'tags', 'blank', 'tags', 'blank'], 'an odd-length permit gets a blank back first');
+test('tag sheets start on the front of a sheet whatever length the permit takes, with no blank pages', () => {
+  const pageKind = page => {
+    const json = JSON.stringify(page);
+    if (json.includes('Load record')) return 'back';
+    if (json.includes('HAUL TAG')) return 'tags';
+    if (json.includes('Firewood cutting areas')) return 'map';
+    return 'other';
+  };
+  const even = packageSections(permit({ tagCount: 5 }), { frontPageCount: 2 });
+  assert.deepEqual(even.tags.map(pageKind), ['tags', 'back', 'tags', 'back']);
+  assert.equal(pageKind(even.reading[0]), 'map');
+  const odd = packageSections(permit({ tagCount: 5 }), { frontPageCount: 3 });
+  assert.deepEqual(odd.tags.map(pageKind), ['map', 'tags', 'back', 'tags', 'back'], 'the one-page map fills the gap instead of a blank page');
+  assert.ok(!odd.reading.map(pageKind).includes('map'), 'the map is not repeated');
   assert.equal(TAGS_PER_SHEET, 4);
-  assert.deepEqual(packageSections(permit({ tagCount: 0 }), { frontPageCount: 3 }).tags, [], 'no tags means no tag pages or padding');
+  const untagged = packageSections(permit({ tagCount: 0 }), { frontPageCount: 3 });
+  assert.deepEqual(untagged.tags, [], 'no tags means no tag pages or gap');
+  assert.equal(pageKind(untagged.reading[0]), 'map');
 });
 
 test('a package without haul tags has no tag pages', async () => {
@@ -66,7 +77,7 @@ test('a package without haul tags has no tag pages', async () => {
     area: { descriptions: [{ scope: 'Utah', text: 'Statewide notice text.' }], maps: [], notices: [], links: [] }
   });
   const { text, pages } = await readPdf((await buildPermitPackagePdf(mushrooms)).blob);
-  assert.doesNotMatch(text, /HAUL TAG|Back of a haul tag sheet/);
+  assert.doesNotMatch(text, /HAUL TAG|Back of haul tags/);
   assert.match(text, /Not required for this permit/);
   assert.match(text, /Statewide notice text\./);
   assert.equal(pages.length, 5, 'permit, stipulations, collection areas, area notices, foraging guidelines');
@@ -97,5 +108,7 @@ test('the sample documents linked from the site match what the package would pri
     const fresh = await readPdf(await buildSampleDocumentPdf(id));
     assert.equal(committed.text, fresh.text, `${documentUrl(id)} is out of date; run npm run build:documents`);
     assert.match(committed.text, /Sample document/);
+    // A map can fill the gap before the tag sheets only if it stays one page.
+    if (Object.values(TYPE_DOCUMENTS).flat().some(doc => doc.id === id && doc.kind === 'map')) assert.equal(committed.pages.length, 1, id);
   }
 });

@@ -381,7 +381,7 @@ function permitPage(p) {
     ['Issued', p.issued]
   ];
   const steps = [
-    'Print every page of this package single-sided.',
+    'Print every page of this package.',
     'Sign and date this permit. It is not valid until you sign it.',
     ...(p.tagCount ? [`Before loading, cut or tear out the month, day and AM or PM on one haul tag for each ${p.tagEach}, and attach it where it can be seen.`] : []),
     'Carry this signed permit and the maps while collecting, and follow the stipulations.'
@@ -483,22 +483,51 @@ function tagSheet(p, first) {
   ];
 }
 
-// Printed double-sided, a tag sheet's back must stay empty, so tag sheets start on a front page and each is
-// followed by a page that says to leave it blank.
-function blankBack(text) {
-  return [{ text, alignment: 'center', color: MUTED, fontSize: 11, lineHeight: 1.4, margin: [60, 280, 60, 0] }];
+// The page after each tag sheet is its back when printed double-sided, so it holds four identical load
+// records, one behind each tag. Identical cards work whichever way the printer flips the sheet; printed on its
+// own, the page is a load log. The text stays inside the cut-out tabs, so notching a tag does not remove it.
+const fieldLine = label => ({
+  stack: [
+    { text: label, style: 'label', fontSize: 7.5 },
+    { canvas: [{ type: 'line', x1: 0, y1: 16, x2: 186, y2: 16, lineWidth: 0.8, lineColor: BORDER }] }
+  ],
+  margin: [0, 8, 0, 0]
+});
+
+function loadRecordCard(p) {
+  return {
+    margin: [32, 36, 32, 0],
+    stack: [
+      { text: 'BACK OF HAUL TAG', style: 'kicker', fontSize: 6.5 },
+      { text: 'Load record', fontSize: 13, color: GREEN, margin: [0, 3, 0, 1] },
+      { text: `Permit ${p.permitNumber}`, fontSize: 9.5 },
+      fieldLine('Vehicle license plate'),
+      fieldLine('Loaded at (road or area)'),
+      fieldLine('Permit holder initials'),
+      { text: `Attach the tag with its cut-outs facing out, where it can be seen. Use one tag for each ${p.tagEach}.`, fontSize: 7.5, color: MUTED, lineHeight: 1.2, margin: [0, 12, 0, 0] }
+    ]
+  };
 }
 
-const BLANK_BEFORE_TAGS = 'This page is left blank so the haul tags start on the front of a sheet.\nPrint this package single-sided.';
-const BLANK_TAG_BACK = 'Back of a haul tag sheet. Leave this side blank.\nPrint this package single-sided so nothing prints on the back of a tag.';
+function tagBackSheet(p) {
+  const cards = [0, 1, 2, 3].map(() => loadRecordCard(p));
+  return [
+    { columns: [{ text: `Back of haul tags · Permit ${p.permitNumber}`, fontSize: 10, color: INK }, { text: 'Printed on its own, keep it as a load log', fontSize: 9, color: MUTED, alignment: 'right' }], margin: [0, 0, 0, 8] },
+    { table: { widths: ['*', '*'], heights: TAG_HEIGHTS.reduce((sum, height) => sum + height), body: [[cards[0], cards[1]], [cards[2], cards[3]]] }, layout: cutLineLayout }
+  ];
+}
 
-// Each section is a list of pages; every page after the first starts on a new sheet.
+// Each section is a list of pages; every page after the first starts on a new sheet. Tag sheets must start on
+// the front of a sheet: when the permit and stipulations take an odd number of pages, the collection-type map
+// (one page) moves ahead of the tags to fill the gap instead of a blank page.
 export function packageSections(p, { frontPageCount = 0 } = {}) {
   const front = [permitPage(p), documentContent(p.documents.stipulations)];
+  const typeMap = documentContent(p.documents.map);
+  const mapFillsGap = p.tagCount > 0 && frontPageCount % 2 === 1;
   const tags = [];
   if (p.tagCount) {
-    if (frontPageCount % 2 === 1) tags.push(blankBack(BLANK_BEFORE_TAGS));
-    for (let first = 1; first <= p.tagCount; first += TAGS_PER_SHEET) tags.push(tagSheet(p, first), blankBack(BLANK_TAG_BACK));
+    if (mapFillsGap) tags.push(typeMap);
+    for (let first = 1; first <= p.tagCount; first += TAGS_PER_SHEET) tags.push(tagSheet(p, first), tagBackSheet(p));
   }
   // Notice documents already carry their state's or office's description; the summary page holds the rest.
   const notices = p.area.descriptions.length || p.area.links.length
@@ -509,7 +538,7 @@ export function packageSections(p, { frontPageCount = 0 } = {}) {
     ]]
     : [];
   const reading = [
-    documentContent(p.documents.map),
+    ...(mapFillsGap ? [] : [typeMap]),
     ...p.area.maps.map(id => documentContent(id)),
     ...notices,
     ...p.area.notices.map(id => documentContent(id)),
