@@ -256,6 +256,19 @@ test('delivery email edits refresh the confirm-email error in both directions', 
   assert.equal(b.$('#ConfirmEmail').hasAttribute('aria-invalid'), false, 'an untouched confirm field is not flagged early');
 });
 
+test('checkout works without crypto.randomUUID and reports unexpected failures', async t => {
+  const a = await app(t); a.choose(); a.holder();
+  // Insecure origins such as http://192.168.x.x expose getRandomValues but not randomUUID.
+  Object.defineProperty(a.w.crypto, 'randomUUID', { value: undefined, configurable: true });
+  a.$('#confirmPaygov').click(); await new Promise(resolve => setTimeout(resolve, 0));
+  assert.match(a.payload().idempotencyKey, /^TX-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+  a.input('#FirstName', 'Changed');
+  Object.defineProperty(a.w.crypto, 'getRandomValues', { value: undefined, configurable: true });
+  a.$('#confirmPaygov').click(); await new Promise(resolve => setTimeout(resolve, 0));
+  assert.match(a.$('#errorList').textContent, /could not prepare checkout/);
+  assert.equal(a.$('#FirstName').value, 'Changed');
+});
+
 test('back-forward cache return clears browser-retained purchaser information', async t => {
   const a = await app(t); a.choose(); a.holder();
   a.w.dispatchEvent(new a.w.PageTransitionEvent('pageshow', { persisted: true }));

@@ -1543,7 +1543,7 @@ function checkoutSnapshot() {
   };
 }
 
-confirmPaygovBtn.addEventListener('click', async () => {
+async function confirmCheckout() {
   if (checkoutPending) return;
   const current = getProductsForSelection().find(product => product.id === model.product?.id);
   if (!validateStep1() || !current || current !== model.product || !validateQty()) {
@@ -1645,6 +1645,13 @@ confirmPaygovBtn.addEventListener('click', async () => {
     note: 'In production, the site would create a Sale ID and redirect the user to Pay.gov with that transaction context.'
   });
   scrollIntoViewSafe(handoff);
+}
+
+confirmPaygovBtn.addEventListener('click', () => {
+  confirmCheckout().catch((error) => {
+    console.error(error);
+    showErrors(['We could not prepare checkout. Your entries are still here. Please try again.']);
+  });
 });
 
 resetAllBtn.addEventListener('click', () => {
