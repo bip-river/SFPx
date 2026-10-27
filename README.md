@@ -1,6 +1,6 @@
 # Online Forest Product Permits — Prototype
 
-A static, front-end-only prototype for buying a forest product permit. It asks one question per screen:
+A static, front-end-only prototype for buying a forest product permit. A start page says what the service is for, what to have ready, and that the site is a demo. "Start now" then asks one question per screen:
 
 1. What are you collecting?
 2. Where will you collect? (state and area)

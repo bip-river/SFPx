@@ -7,10 +7,11 @@ import { MAX_PAYLOAD_BYTES, createCheckoutIdentity, readPermitHolder, buildCheck
 import { buildDemoPermitPdf } from './js/permit-pdf.js';
 import { renderProductTypes, buildOption, syncSelectedOptions, money, feeLabelForUnit, totalLabelFor, unitLabel, quantityLabel, quantityRangeLabel, shortProductName, formatDate, validityText, buildDocLinks, buildRequiredDocs, renderPayload } from './js/ui.js';
 
-// One question per screen. "done" follows the five numbered steps once a permit has been prepared.
-const SCREENS = ['what', 'where', 'permit', 'details', 'review', 'done'];
+// A start page, then one question per screen. "done" follows the five numbered steps once a permit has been prepared.
+const SCREENS = ['start', 'what', 'where', 'permit', 'details', 'review', 'done'];
 const STEP_COUNT = 5;
-const SERVICE_TITLE = 'Forest product permit | Bureau of Wandering Lands';
+const AGENCY = 'Bureau of Wandering Lands';
+const SERVICE_TITLE = `Forest product permit | ${AGENCY}`;
 const CATALOG_SOURCE = 'products.json';
 const COMING_SOON_DAYS = 15;
 const LOAD_ERROR = 'We could not load available permits right now. Refresh the page to try again.';
@@ -32,6 +33,7 @@ bannerToggle.addEventListener('click', () => {
 
 // Elements
 const screens = Object.fromEntries(SCREENS.map(name => [name, byId(`screen-${name}`)]));
+const startButton = byId('startButton');
 const screenTop = byId('screenTop');
 const backLink = byId('backLink');
 const stepCount = byId('stepCount');
@@ -627,6 +629,7 @@ function renderScreen(name) {
 
 function screenComplete(name) {
   switch (name) {
+    case 'start': return true;
     case 'what': return catalogReady && Boolean(model.productType);
     case 'where': return Boolean(model.state && getSelectedOffice());
     case 'permit': return Boolean(model.product) && !quantityError(model.product, qtyEl.value);
@@ -651,17 +654,20 @@ function showScreen(name, { history: mode = 'push', focus = true } = {}) {
   renderScreen(target);
   for (const [screenName, el] of Object.entries(screens)) el.hidden = screenName !== target;
 
-  const done = target === 'done';
-  screenTop.hidden = done;
-  backLink.hidden = index === 0 || done;
-  if (index > 0) backLink.href = `#${SCREENS[index - 1]}`;
-  stepCount.textContent = `Step ${Math.min(index + 1, STEP_COUNT)} of ${STEP_COUNT}`;
-  progressBar.style.width = `${(Math.min(index + 1, STEP_COUNT) / STEP_COUNT) * 100}%`;
+  // The start page and the finished permit sit outside the numbered steps, so they have no step count or Back link.
+  const numbered = index > 0 && index <= STEP_COUNT;
+  screenTop.hidden = !numbered;
+  backLink.hidden = !numbered;
+  if (numbered) {
+    backLink.href = `#${SCREENS[index - 1]}`;
+    stepCount.textContent = `Step ${index} of ${STEP_COUNT}`;
+    progressBar.style.width = `${(index / STEP_COUNT) * 100}%`;
+  }
 
   const heading = screens[target].querySelector('h1');
-  document.title = done
-    ? `${heading.textContent} – ${SERVICE_TITLE}`
-    : `${heading.textContent} – Step ${index + 1} of ${STEP_COUNT} – ${SERVICE_TITLE}`;
+  if (target === 'start') document.title = `${heading.textContent} | ${AGENCY}`;
+  else if (!numbered) document.title = `${heading.textContent} – ${SERVICE_TITLE}`;
+  else document.title = `${heading.textContent} – Step ${index} of ${STEP_COUNT} – ${SERVICE_TITLE}`;
   if (mode === 'push') history.pushState({ screen: target }, '', `#${target}`);
   else if (mode === 'replace') history.replaceState({ screen: target }, '', `#${target}`);
 
@@ -869,6 +875,11 @@ stateEl.addEventListener('change', () => {
   renderAreas();
   renderLocationNotice();
   persistState();
+});
+
+startButton.addEventListener('click', (event) => {
+  event.preventDefault();
+  showScreen('what');
 });
 
 backLink.addEventListener('click', (event) => {
@@ -1085,9 +1096,12 @@ async function boot() {
   restoring = true;
   try { restoreState(); } finally { restoring = false; }
   // A reload keeps the screen when its earlier answers were restored; purchaser details never are.
-  // Other fragments, such as #need-help or the skip link's #main, resume at the furthest screen.
+  // Without a screen in the URL (a first visit, #need-help, the skip link's #main), a visitor with
+  // restored answers resumes at the furthest screen and everyone else sees the start page.
   const requested = history.state?.screen || location.hash.slice(1);
-  showScreen(SCREENS.includes(requested) ? requested : SCREENS[furthestReachable()], { history: 'replace', focus: false });
+  const furthest = furthestReachable();
+  const resume = furthest > SCREENS.indexOf('what') ? SCREENS[furthest] : 'start';
+  showScreen(SCREENS.includes(requested) ? requested : resume, { history: 'replace', focus: false });
   document.documentElement.dataset.appReady = 'true';
   document.dispatchEvent(new CustomEvent('sfpx:ready'));
 }

@@ -53,7 +53,7 @@
 
   <main id="main">
     <div class="wrap narrow">
-      <div class="screen-top" id="screenTop">
+      <div class="screen-top" id="screenTop" hidden>
         <a class="back-link" id="backLink" href="#what" hidden>
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Back
         </a>
@@ -68,10 +68,35 @@
 
       <div id="stepLiveRegion" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
 
-      <form class="screen" id="screen-what" aria-labelledby="whatTitle" novalidate>
-        <h1 id="whatTitle" tabindex="-1">What are you collecting?</h1>
-        <p class="lede">Get a forest product permit in about 3 minutes. Have your mailing address and email ready.</p>
+      <section class="screen" id="screen-start" aria-labelledby="startTitle">
+        <h1 id="startTitle" tabindex="-1">Get a forest product permit</h1>
+        <p class="lede">Buy a permit online to collect firewood, a Christmas tree or mushrooms on Bureau of Wandering Lands public land.</p>
         <p class="demo-note"><strong>Demo.</strong> Nothing is charged, emailed or issued. Use fictional details.</p>
+        <a class="primary start-button" id="startButton" href="#what">Start now
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13"/><path d="M13 6l6 6-6 6"/></svg>
+        </a>
+        <p class="hint start-time">It takes about 3 minutes.</p>
+        <section class="start-section" aria-labelledby="needTitle">
+          <h2 id="needTitle">You’ll need</h2>
+          <ul class="check-list">
+            <li>Your mailing address. The law requires it on every permit.</li>
+            <li>An email address.</li>
+            <li>A debit or credit card if your permit has a fee. You’ll pay on Pay.gov. Some permits are free.</li>
+          </ul>
+        </section>
+        <section class="start-section" aria-labelledby="knowTitle">
+          <h2 id="knowTitle">Good to know</h2>
+          <ul class="dot-list">
+            <li>Permits last 30 days from the day you buy them, or until the season ends if that’s sooner.</li>
+            <li>Permits are for personal use. All sales are final.</li>
+            <li>Some permits are sold only in person at a local BWL office.</li>
+          </ul>
+        </section>
+      </section>
+
+      <form class="screen" id="screen-what" aria-labelledby="whatTitle" novalidate hidden>
+        <h1 id="whatTitle" tabindex="-1">What are you collecting?</h1>
+        <p class="lede">We’ll show the permits you can buy online.</p>
         <fieldset class="field" id="ptypeGroup">
           <legend class="sr-only">What are you collecting?</legend>
           <div class="choice-list field-input" id="ptypeOptions"></div>
@@ -189,7 +214,7 @@
         <dl class="summary-list" id="reviewSummary"></dl>
         <section class="rules" aria-labelledby="rulesTitle">
           <h2 id="rulesTitle">Before you go</h2>
-          <ul>
+          <ul class="check-list">
             <li>Carry your permit while collecting, printed or on your phone.</li>
             <li>Stay inside your permit area and follow posted closures.</li>
             <li>Personal use only. All sales are final.</li>

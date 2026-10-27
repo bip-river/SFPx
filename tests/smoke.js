@@ -19,7 +19,7 @@ frame.addEventListener('load', () => {
     const screens = [...doc.querySelectorAll('.screen')];
     const checks = [
       ['Catalog loaded', doc.getElementById('state').options.length > 1],
-      ['Six screens present', screens.length === 6],
+      ['Start page and six screens present', screens.length === 7 && !!doc.getElementById('screen-start')],
       ['One screen visible', screens.filter(screen => !screen.hidden).length === 1],
       ['Screens are named by a focusable heading', screens.every(screen => doc.getElementById(screen.getAttribute('aria-labelledby'))?.getAttribute('tabindex') === '-1')],
       ['Three collection types offered', doc.querySelectorAll('input[name="ptype"]').length === 3],
