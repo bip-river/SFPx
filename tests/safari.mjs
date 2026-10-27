@@ -44,9 +44,9 @@ try {
     await new Select(await element('AddrState')).selectByValue('UT');
   };
   await holder(); await accessibility('Safari purchaser fields');
-  const checkoutEnabled = await (await element('confirmPaygov')).isEnabled();
-  if (!checkoutEnabled) console.log('Safari readiness diagnostics:', await driver.executeScript(`return [...document.querySelectorAll('#permitHolderFieldset input, #permitHolderFieldset select')].map(el => ({ id: el.id, value: el.value, disabled: el.disabled, invalid: el.getAttribute('aria-invalid') }));`));
-  assert.equal(checkoutEnabled, true, 'Safari address-state change enables checkout');
+  const checkoutReady = await (await element('status3')).getText() === 'Completed';
+  if (!checkoutReady) console.log('Safari readiness diagnostics:', await driver.executeScript(`return [...document.querySelectorAll('#permitHolderFieldset input, #permitHolderFieldset select')].map(el => ({ id: el.id, value: el.value, disabled: el.disabled, invalid: el.getAttribute('aria-invalid') }));`));
+  assert.equal(checkoutReady, true, 'Safari address-state change completes step 3');
   await (await element('confirmPaygov')).click();
   try { await driver.wait(until.elementLocated(By.css('#handoff .payload-content')), 10000); }
   catch (error) {
@@ -56,7 +56,7 @@ try {
   assert.equal(await driver.executeScript("return JSON.parse(document.querySelector('#handoff .payload-content').textContent).total"), 10);
   await driver.navigate().refresh(); await ready();
   assert.equal(await (await element('FirstName')).getAttribute('value'), '');
-  assert.equal(await (await element('confirmPaygov')).isEnabled(), false);
+  assert.notEqual(await (await element('status3')).getText(), 'Completed', 'purchaser details must be reentered');
   const products = await driver.findElements(By.css('.prod-header')); await products[3].click();
   await fill('qty', '1'); await (await element('qty')).sendKeys(Key.TAB); await holder();
   await (await element('confirmPaygov')).click();

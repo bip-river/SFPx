@@ -68,6 +68,15 @@ try {
     await page.locator('#AddrState').selectOption('UT');
     assert.equal(await page.getByRole('textbox', { name: 'First name', exact: true }).getAttribute('required'), '');
     await checkAccessibility(page, 'completed purchaser fields');
+    // A mistyped confirmation is explained when Continue is pressed, with a link that moves to the field.
+    await page.locator('#ConfirmEmail').fill('typo@example.com');
+    await page.locator('#confirmPaygov').click();
+    await page.locator('#errorBox').waitFor({ state: 'visible' });
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'errorBox', 'the error summary takes focus');
+    await checkAccessibility(page, 'error summary');
+    await page.locator('#errorList a[href="#ConfirmEmail"]').click();
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'ConfirmEmail', 'the summary link moves to its field');
+    await page.locator('#ConfirmEmail').fill('test@example.com');
     await page.locator('#confirmPaygov').click();
     const payload = () => page.locator('#handoff .payload-content').textContent().then(JSON.parse);
     let first;
@@ -82,7 +91,7 @@ try {
     await page.reload(); await page.waitForFunction(() => document.documentElement.dataset.appReady === 'true');
     assert.equal(await page.locator('input[name=product]:checked').count(), 1);
     assert.equal(await page.locator('#FirstName').inputValue(), '');
-    assert.equal(await page.locator('#confirmPaygov').isDisabled(), true);
+    assert.notEqual(await page.locator('#status3').textContent(), 'Completed', 'purchaser details must be reentered');
     // Change to the free-use option, then generate and download a PDF.
     await page.locator('.prod-header').nth(3).click();
     await page.locator('#qty').fill('1'); await page.locator('#qty').press('Tab');
