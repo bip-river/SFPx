@@ -46,6 +46,6 @@ The browser test starts its own temporary local server and includes automated ac
 | `js/checkout.js`, `js/permit-pdf.js` | Checkout identity, payloads, and demo PDF generation |
 | `js/ui.js`, `js/links.js` | Reusable rendering helpers and URL validation |
 | `products.json` | Demo catalog; see [catalog maintenance](docs/catalog.md) |
-| `tests/` | Logic, DOM integration, and Chromium regression checks |
+| `tests/` | Logic, DOM, and PDF tests; Chromium, Firefox, and WebKit browser checks; and installed-Safari checks |
 
-See [testing notes](docs/testing.md), [design notes](docs/design-system-notes.md), and [performance notes](docs/performance-notes.md), and [accessibility checks](docs/accessibility.md).
+See the [testing notes](docs/testing.md), [design notes](docs/design-system-notes.md), [performance notes](docs/performance-notes.md), and [accessibility checks](docs/accessibility.md).
