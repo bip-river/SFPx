@@ -421,13 +421,19 @@ const TAG_TITLES = { fuelwood: 'FIREWOOD HAUL TAG', christmas: 'CHRISTMAS TREE T
 
 // The cut-outs sit on the tag's edges so each can be cut or torn out as a notch without touching another:
 // months along the top, days 1–16 down the left, 17–31 down the right, and AM and PM along the bottom.
-// Row heights add up to the sheet's row height, so the tabs meet the dashed cut line.
-const TAG_HEIGHTS = [22, ...Array(16).fill(16.5), 26];
+// The rows, and the lines between them (which add to a table's height), fill the tag exactly, so the tabs meet
+// the dashed cut line.
+const TAG_WIDTH = 258;
+const TAG_HEIGHT = 312;
+const CUT_LINE = 1;
+const TAB_LINE = 0.7;
+const DAY_ROW = (TAG_HEIGHT - 2 * CUT_LINE - 22 - 26 - 17 * TAB_LINE) / 16;
+const TAG_HEIGHTS = [22, ...Array(16).fill(DAY_ROW), 26];
 const TAB_FILL = '#eef5f0';
 
 const tagLayout = {
-  hLineWidth: (i, node) => (i === 0 || i === node.table.body.length ? 0 : 0.7),
-  vLineWidth: (i, node) => (i === 0 || i === node.table.widths.length ? 0 : 0.7),
+  hLineWidth: (i, node) => (i === 0 || i === node.table.body.length ? 0 : TAB_LINE),
+  vLineWidth: (i, node) => (i === 0 || i === node.table.widths.length ? 0 : TAB_LINE),
   hLineColor: () => BORDER, vLineColor: () => BORDER,
   paddingTop: () => 0, paddingBottom: () => 0, paddingLeft: () => 0, paddingRight: () => 0
 };
@@ -436,7 +442,6 @@ const tab = (text, height, fontSize = 7) => ({ text: String(text), alignment: 'c
 const corner = () => ({ text: '', fillColor: '#ffffff' });
 
 function tagCell(p, index) {
-  if (index > p.tagCount) return { text: 'Not a tag', alignment: 'center', color: LINE, fontSize: 9, margin: [0, 150, 0, 0] };
   const center = {
     colSpan: 12, rowSpan: 16, margin: [9, 7, 9, 0],
     stack: [
@@ -468,24 +473,62 @@ function tagCell(p, index) {
 }
 
 const cutLineLayout = {
-  hLineWidth: () => 1, vLineWidth: () => 1, hLineColor: () => BORDER, vLineColor: () => BORDER,
+  hLineWidth: () => CUT_LINE, vLineWidth: () => CUT_LINE, hLineColor: () => BORDER, vLineColor: () => BORDER,
   hLineStyle: () => ({ dash: { length: 5, space: 3 } }), vLineStyle: () => ({ dash: { length: 5, space: 3 } }),
   paddingTop: () => 0, paddingBottom: () => 0, paddingLeft: () => 0, paddingRight: () => 0
 };
 
-export const TAGS_PER_SHEET = 4;
+// Letter paper in points. Tag sheets are placed by absolute position, so their geometry is exact on the page.
+export const PAGE = { width: 612, height: 792 };
+const GRID = { x: (PAGE.width - 2 * TAG_WIDTH) / 2, y: (PAGE.height - 2 * TAG_HEIGHT) / 2 };
+const SLOTS = {
+  topLeft: { x: GRID.x, y: GRID.y },
+  topRight: { x: GRID.x + TAG_WIDTH, y: GRID.y },
+  bottomLeft: { x: GRID.x, y: GRID.y + TAG_HEIGHT },
+  bottomRight: { x: GRID.x + TAG_WIDTH, y: GRID.y + TAG_HEIGHT },
+  center: { x: (PAGE.width - TAG_WIDTH) / 2, y: (PAGE.height - TAG_HEIGHT) / 2 }
+};
 
-function tagSheet(p, first) {
-  const cells = [0, 1, 2, 3].map(offset => tagCell(p, first + offset));
+// Printed double-sided, a sheet turns over its long edge (left and right swap) or its short edge (top and
+// bottom swap), and the package cannot know which. Each sheet's tags sit where both mirrors land on the same
+// spots, and that is where its load records go: four tags fill the sheet, two sit on a diagonal, and one sits in
+// the centre. No arrangement of three works, so a remainder of three becomes a diagonal pair and a centred tag.
+export const mirrorLongEdge = rect => ({ ...rect, x: PAGE.width - rect.x - rect.width });
+export const mirrorShortEdge = rect => ({ ...rect, y: PAGE.height - rect.y - rect.height });
+
+export function tagSheetLayout(count) {
+  const sheets = [];
+  let number = 1;
+  const add = slots => sheets.push(slots.map(slot => ({ number: number++, ...SLOTS[slot], width: TAG_WIDTH, height: TAG_HEIGHT })));
+  for (let sheet = 0; sheet < Math.floor(count / 4); sheet++) add(['topLeft', 'topRight', 'bottomLeft', 'bottomRight']);
+  if (count % 4 >= 2) add(['topLeft', 'bottomRight']);
+  if (count % 2 === 1) add(['center']);
+  return sheets;
+}
+
+const placed = (content, rect) => ({
+  absolutePosition: { x: rect.x, y: rect.y },
+  table: { widths: [rect.width - 2 * CUT_LINE], heights: [rect.height - 2 * CUT_LINE], body: [[content]] },
+  layout: cutLineLayout
+});
+
+const sheetHeading = (left, right) => ({
+  absolutePosition: { x: GRID.x, y: GRID.y - 22 },
+  columns: [{ text: left, fontSize: 10, color: INK }, { text: right, fontSize: 9, color: MUTED, alignment: 'right' }],
+  width: PAGE.width - 2 * GRID.x
+});
+
+function tagSheet(p, tags) {
   return [
-    { columns: [{ text: `Haul tags · Permit ${p.permitNumber}`, fontSize: 10, color: INK }, { text: 'Cut along the dashed lines', fontSize: 9, color: MUTED, alignment: 'right' }], margin: [0, 0, 0, 8] },
-    { table: { widths: ['*', '*'], heights: TAG_HEIGHTS.reduce((sum, height) => sum + height), body: [[cells[0], cells[1]], [cells[2], cells[3]]] }, layout: cutLineLayout }
+    sheetHeading(`Haul tags · Permit ${p.permitNumber}`, 'Cut along the dashed lines'),
+    ...tags.map(tag => placed(tagCell(p, tag.number), tag))
   ];
 }
 
-// The page after each tag sheet holds four identical load records. Printed double-sided, one lands behind each
-// tag whichever way the printer flips the sheet; printed one-sided, they are a separate sheet of records. The
-// wording fits both, and the text stays inside the cut-out tabs so notching a tag does not remove it.
+// The page after each tag sheet holds one load record for each of its tags, at the mirrored positions. Printed
+// double-sided, a record lands behind every tag whichever way the sheet turns; printed one-sided, the records are
+// a separate sheet. The records are identical, the wording fits both, and the text stays inside the cut-out tabs
+// so notching a tag does not remove it.
 const fieldLine = label => ({
   stack: [
     { text: label, style: 'label', fontSize: 7.5 },
@@ -509,11 +552,10 @@ function loadRecordCard(p) {
   };
 }
 
-function tagBackSheet(p) {
-  const cards = [0, 1, 2, 3].map(() => loadRecordCard(p));
+function loadRecordSheet(p, tags) {
   return [
-    { columns: [{ text: `Load records · Permit ${p.permitNumber}`, fontSize: 10, color: INK }, { text: 'One record for each load', fontSize: 9, color: MUTED, alignment: 'right' }], margin: [0, 0, 0, 8] },
-    { table: { widths: ['*', '*'], heights: TAG_HEIGHTS.reduce((sum, height) => sum + height), body: [[cards[0], cards[1]], [cards[2], cards[3]]] }, layout: cutLineLayout }
+    sheetHeading(`Load records · Permit ${p.permitNumber}`, 'One record for each load'),
+    ...tags.map(mirrorLongEdge).map(rect => placed(loadRecordCard(p), rect))
   ];
 }
 
@@ -527,7 +569,7 @@ export function packageSections(p, { frontPageCount = 0 } = {}) {
   const tags = [];
   if (p.tagCount) {
     if (mapFillsGap) tags.push(typeMap);
-    for (let first = 1; first <= p.tagCount; first += TAGS_PER_SHEET) tags.push(tagSheet(p, first), tagBackSheet(p));
+    for (const sheet of tagSheetLayout(p.tagCount)) tags.push(tagSheet(p, sheet), loadRecordSheet(p, sheet));
   }
   // Notice documents already carry their state's or office's description; the summary page holds the rest.
   const notices = p.area.descriptions.length || p.area.links.length

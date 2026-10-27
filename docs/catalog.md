@@ -29,6 +29,8 @@ Firewood and Christmas tree permits can include haul tags; mushroom permits neve
 
 A firewood tag covers half a cord and a Christmas tree tag one tree, so the package holds `quantity ÷ 0.5` or `quantity` tags, rounded up.
 
+Each tag sheet is followed by a sheet with one load record per tag, placed so that, printed double-sided, a record lands behind every tag whether the printer turns the sheet on its long edge or its short edge. That fixes where tags can go: four fill a sheet, two sit on a diagonal, and one sits in the centre. No arrangement of three works for both turns, so a remainder of three prints as a diagonal pair and a centred tag. Firewood tags come in pairs, so this only affects Christmas trees.
+
 ## Sample documents
 
 Document links in `requiredDocs` and attachments point to `documents/<id>.pdf`. `js/permit-documents.js` defines their content: a stipulations, map and reference document per collection type, and the six state and office notices and maps. `npm run build:documents` writes the files, `npm run check` fails if a linked file is missing, and `npm test` fails if a file no longer matches its content. A new attachment needs an entry in `AREA_DOCUMENTS` to be printed in the permit package; otherwise the package lists its link on the area notices page.
