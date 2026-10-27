@@ -323,6 +323,7 @@ button{border:0; border-radius:var(--radius-input); padding:12px 15px; font-weig
 .error{border-left:4px solid var(--danger); background:#fff1f0; border-radius:var(--radius-card); padding:10px 12px; color:#5a0b0b; margin-top:12px; display:none; box-shadow:var(--shadow-sm);}
 .error[aria-hidden="false"]{display:block}
 .error ul{margin:8px 0 0 18px}
+.error a{color:var(--danger); font-weight:700; text-decoration:underline; text-underline-offset:2px;}
 .field-error{color:var(--danger); font-size:13px; margin-top:6px; display:none;}
 .field-error.active{display:block}
 input[aria-invalid="true"], select[aria-invalid="true"], textarea[aria-invalid="true"]{border-color:var(--danger); box-shadow:0 0 0 1px rgba(219,68,55,.35);}

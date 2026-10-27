@@ -69,7 +69,7 @@ async function app(t, { data = structuredClone(catalog), saved, storageBlocked =
     check('#ackPrivacy'); check('#ackTerms');
     if ($('#eligibilityAgreement').style.display !== 'none') check('#ackEligibility');
     for (const [id, value] of Object.entries({ FirstName: 'Test', MiddleName: '', LastName: 'Purchaser', AddressLine1: '123 Test Street', City: 'Test City', AddrState: 'UT', Zip: '84037', DeliveryEmail: 'test@example.com', ConfirmEmail: 'test@example.com' })) input(`#${id}`, value);
-    assert.equal($('#confirmPaygov').disabled, false, 'checkout enabled');
+    assert.equal($('#status3').textContent, 'Completed', 'checkout ready');
   };
   const payload = () => JSON.parse($('#handoff .payload-content').textContent);
   const generate = async () => {
@@ -88,7 +88,7 @@ const savedFor = (product, extra = {}) => ({ model: { state: 'AK', officeId: 'AK
 
 test('paid checkout validates holder data, preserves retry identity, and replaces it on edits', async t => {
   const a = await app(t); a.choose();
-  assert.equal(a.$('#confirmPaygov').disabled, true);
+  assert.notEqual(a.$('#status3').textContent, 'Completed');
   a.holder(); a.$('#confirmPaygov').click();
   const first = a.payload();
   assert.equal(first.total, 10);
@@ -140,7 +140,7 @@ test('restoration matches active IDs after inactive products and catalog reorder
   assert.equal(a.$('#qty').value, '2');
   assert.equal(a.$('#qtyGuard').textContent, 'Maximum allowed per permit: 6 cords', 'restore shows the same quantity guidance as selection');
   assert.equal(a.$('#FirstName').disabled, false);
-  assert.equal(a.$('#confirmPaygov').disabled, true, 'personal data must be reentered');
+  assert.notEqual(a.$('#status3').textContent, 'Completed', 'personal data must be reentered');
 });
 
 test('expired, removed, and index-only saved products cannot restore another selection', async t => {
@@ -152,7 +152,7 @@ test('expired, removed, and index-only saved products cannot restore another sel
     const a = await app(t, { data, saved });
     assert.equal(a.$('input[name=product]:checked'), null, mode);
     assert.equal(a.$('#ackTerms').checked, false, mode);
-    assert.equal(a.$('#confirmPaygov').disabled, true, mode);
+    assert.notEqual(a.$('#status3').textContent, 'Completed', mode);
   }
 });
 
@@ -164,7 +164,7 @@ test('repeated upstream edits and quantity relocking leave step controls usable'
   }
   a.holder();
   a.input('#officeInput', 'Anchorage Aurora Outpostx');
-  assert.equal(a.$('#confirmPaygov').disabled, true);
+  assert.notEqual(a.$('#status3').textContent, 'Completed');
   a.input('#officeInput', 'Anchorage Aurora Outpost');
   a.$('#prod_0').click(); a.input('#qty', '1'); a.holder();
 });
@@ -241,22 +241,66 @@ test('PDF failure keeps purchaser entries and allows a corrected retry', async t
 
 test('address-state change alone updates checkout readiness', async t => {
   const a = await app(t); a.choose(); a.holder();
-  a.input('#AddrState', ''); assert.equal(a.$('#confirmPaygov').disabled, true);
-  a.change('#AddrState', 'UT'); assert.equal(a.$('#confirmPaygov').disabled, false);
+  a.input('#AddrState', ''); assert.notEqual(a.$('#status3').textContent, 'Completed');
+  a.change('#AddrState', 'UT'); assert.equal(a.$('#status3').textContent, 'Completed');
 });
 
 test('delivery email edits refresh the confirm-email error in both directions', async t => {
   const a = await app(t); a.choose(); a.holder();
   a.input('#DeliveryEmail', 'other@example.com');
-  assert.equal(a.$('#ConfirmEmail').getAttribute('aria-invalid'), 'true', 'mismatch is explained, not only a disabled button');
+  assert.equal(a.$('#ConfirmEmail').hasAttribute('aria-invalid'), false, 'no mismatch error while the delivery email is being typed');
+  a.change('#DeliveryEmail');
+  assert.equal(a.$('#ConfirmEmail').getAttribute('aria-invalid'), 'true', 'mismatch is explained once the delivery email is left');
   assert.match(a.$('#ConfirmEmail-error').textContent, /must match/);
-  assert.equal(a.$('#confirmPaygov').disabled, true);
+  assert.notEqual(a.$('#status3').textContent, 'Completed');
   a.input('#DeliveryEmail', 'test@example.com');
   assert.equal(a.$('#ConfirmEmail').hasAttribute('aria-invalid'), false, 'stale mismatch is cleared');
   assert.equal(a.$('#ConfirmEmail-error').textContent, '');
-  assert.equal(a.$('#confirmPaygov').disabled, false);
+  assert.equal(a.$('#status3').textContent, 'Completed');
   const b = await app(t); b.choose(); b.check('#ackPrivacy'); b.check('#ackTerms'); b.input('#DeliveryEmail', 'test@example.com');
   assert.equal(b.$('#ConfirmEmail').hasAttribute('aria-invalid'), false, 'an untouched confirm field is not flagged early');
+});
+
+test('field errors wait until the field is left, then clear as soon as the entry is fixed', async t => {
+  const a = await app(t); a.choose(); a.check('#ackPrivacy'); a.check('#ackTerms');
+  a.input('#DeliveryEmail', 't');
+  assert.equal(a.$('#DeliveryEmail').hasAttribute('aria-invalid'), false, 'no error on the first keystroke');
+  a.change('#DeliveryEmail');
+  assert.equal(a.$('#DeliveryEmail').getAttribute('aria-invalid'), 'true', 'error once the field is left');
+  a.input('#DeliveryEmail', 'test@example');
+  assert.equal(a.$('#DeliveryEmail').getAttribute('aria-invalid'), 'true', 'a shown error follows each keystroke');
+  a.input('#DeliveryEmail', 'test@example.com');
+  assert.equal(a.$('#DeliveryEmail').hasAttribute('aria-invalid'), false, 'error clears as soon as it is fixed');
+});
+
+test('Continue stays enabled and explains what is missing with links to each field', async t => {
+  const a = await app(t); a.choose();
+  const links = () => [...a.w.document.querySelectorAll('#errorList a')];
+  assert.equal(a.$('#confirmPaygov').disabled, false);
+  a.$('#confirmPaygov').click();
+  assert.equal(a.w.document.activeElement, a.$('#errorBox'));
+  assert.deepEqual(links().map(link => link.getAttribute('href')), ['#ackPrivacy', '#ackTerms']);
+  assert.equal(a.$('#handoff').textContent, '', 'nothing is submitted');
+  a.check('#ackPrivacy'); a.check('#ackTerms'); a.input('#FirstName', 'Test');
+  a.$('#step3 .step-toggle').click();
+  assert.ok(a.$('#step3').classList.contains('collapsed'));
+  a.$('#confirmPaygov').click();
+  assert.ok(!a.$('#step3').classList.contains('collapsed'), 'step 3 opens so the linked fields are reachable');
+  assert.equal(a.$('#LastName').getAttribute('aria-invalid'), 'true', 'inline errors are shown too');
+  links().find(link => link.getAttribute('href') === '#LastName').click();
+  assert.equal(a.w.document.activeElement, a.$('#LastName'));
+});
+
+test('pressing Continue holds back blur-time errors so the button cannot move before the click lands', async t => {
+  const a = await app(t); a.choose(); a.check('#ackPrivacy'); a.check('#ackTerms');
+  a.input('#DeliveryEmail', 'not-an-email');
+  a.$('#confirmPaygov').dispatchEvent(new a.w.Event('pointerdown', { bubbles: true }));
+  a.change('#DeliveryEmail'); a.$('#DeliveryEmail').dispatchEvent(new a.w.Event('blur'));
+  assert.equal(a.$('#DeliveryEmail').hasAttribute('aria-invalid'), false);
+  a.$('#confirmPaygov').click();
+  assert.equal(a.$('#DeliveryEmail').getAttribute('aria-invalid'), 'true', 'the click reports the error');
+  a.$('#DeliveryEmail').dispatchEvent(new a.w.Event('blur'));
+  assert.equal(a.$('#DeliveryEmail').getAttribute('aria-invalid'), 'true', 'later blurs validate normally');
 });
 
 test('checkout works without crypto.randomUUID and reports unexpected failures', async t => {
@@ -366,7 +410,7 @@ test('back-forward cache return clears browser-retained purchaser information', 
   const a = await app(t); a.choose(); a.holder();
   a.w.dispatchEvent(new a.w.PageTransitionEvent('pageshow', { persisted: true }));
   assert.equal(a.$('#FirstName').value, '');
-  assert.equal(a.$('#confirmPaygov').disabled, true);
+  assert.notEqual(a.$('#status3').textContent, 'Completed');
 });
 
 
@@ -380,5 +424,5 @@ test('holder blur and unchanged change events preserve checkout result and butto
   assert.equal(a.$('#handoff').style.display, 'block');
   assert.equal(a.payload().idempotencyKey, reference);
   a.input('#qty', '2');
-  assert.equal(a.$('#confirmPaygov').disabled, false, 'quantity edit reevaluates existing purchaser information');
+  assert.equal(a.$('#status3').textContent, 'Completed', 'quantity edit reevaluates existing purchaser information');
 });

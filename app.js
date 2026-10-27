@@ -666,7 +666,8 @@ function updateReviewPanels() {
   configureCheckoutCopy();
   reviewActions.style.display = 'flex';
   const ready = stepState.completed[2];
-  confirmPaygovBtn.disabled = !ready || checkoutPending;
+  // Continue stays enabled: clicking it explains what is missing, which a disabled button cannot.
+  confirmPaygovBtn.disabled = checkoutPending;
   reviewNotice.style.display = ready ? 'flex' : 'none';
 }
 
@@ -1078,11 +1079,23 @@ function clearAllFieldErrors() {
   });
 }
 
+// Messages are strings, or { text, field } so the summary can link each field error to its control.
 function showErrors(messages) {
   errorList.innerHTML = '';
   for (const m of messages) {
     const li = document.createElement('li');
-    li.textContent = m;
+    if (m?.field) {
+      const link = document.createElement('a');
+      link.href = `#${m.field.id}`;
+      link.textContent = m.text;
+      link.addEventListener('click', (event) => {
+        event.preventDefault();
+        m.field.focus();
+      });
+      li.appendChild(link);
+    } else {
+      li.textContent = m;
+    }
     errorList.appendChild(li);
   }
   errorBox.setAttribute('aria-hidden', 'false');
@@ -1198,7 +1211,7 @@ function validatePermitHolder({ touchFields = false } = {}) {
   for (const k of required) {
     const el = permitHolder[k];
     const msg = getFieldErrorMessage(el);
-    if (msg) msgs.push(msg);
+    if (msg) msgs.push({ text: msg, field: el });
     if (touchFields) setFieldError(el, msg);
   }
   return msgs;
@@ -1319,16 +1332,17 @@ function evaluateFinalStep({ showErrorsOnFail = false } = {}) {
   if (!selectionOk || !ackOk || !permitHolderValid) {
     stepState.completed[2] = false;
     handoff.style.display = 'none';
-    confirmPaygovBtn.disabled = true;
     if (showErrorsOnFail) {
       const errs = [];
       if (!ackOk) {
-        if (!ackPrivacy.checked) errs.push('You must acknowledge the Privacy Act notification.');
-        if (!ackTerms.checked) errs.push('You must agree to the Terms and Conditions.');
+        if (!ackPrivacy.checked) errs.push({ text: 'You must acknowledge the Privacy Act notification.', field: ackPrivacy });
+        if (!ackTerms.checked) errs.push({ text: 'You must agree to the Terms and Conditions.', field: ackTerms });
         if (productRequiresEligibility(model.product) && !(ackEligibility && ackEligibility.checked)) {
-          errs.push('You must certify you meet the eligibility requirements for this permit.');
+          errs.push({ text: 'You must certify you meet the eligibility requirements for this permit.', field: ackEligibility });
         }
       }
+      // The summary links into step 3, so it must be open rather than inert.
+      if (stepState.available[2]) stepState.open[2] = true;
       showErrors(errs.concat(permitHolderErrors));
     }
     updateStepUI();
@@ -1520,10 +1534,20 @@ ackPrivacy.addEventListener('change', onAckChange);
 ackTerms.addEventListener('change', onAckChange);
 if (ackEligibility) ackEligibility.addEventListener('change', onAckChange);
 
-function onPermitHolderEdit(el) {
-  validateField(el);
+// While Continue is being pressed, an error appearing on blur could push the button out from under the
+// pointer before release and swallow the click. The click reports every error anyway, so those errors wait.
+let continuePressedAt = -Infinity;
+confirmPaygovBtn.addEventListener('pointerdown', () => { continuePressedAt = performance.now(); });
+const continueBeingPressed = () => performance.now() - continuePressedAt < 1000;
+const showsError = el => el.getAttribute('aria-invalid') === 'true';
+
+// Errors appear once an entry is committed (the field is left or a select changes), then follow each keystroke until fixed.
+function onPermitHolderEdit(el, { committed = false } = {}) {
+  const reveal = committed && !continueBeingPressed();
+  if (reveal || showsError(el)) validateField(el);
   // Confirm email is judged against the delivery email, so its message must follow edits to either field.
-  if (el === permitHolder.DeliveryEmail && permitHolder.ConfirmEmail.value.trim()) validateField(permitHolder.ConfirmEmail);
+  const confirmEmail = permitHolder.ConfirmEmail;
+  if (el === permitHolder.DeliveryEmail && confirmEmail.value.trim() && (reveal || showsError(confirmEmail))) validateField(confirmEmail);
   if (holderValues.get(el) === el.value) return;
   holderValues.set(el, el.value);
   invalidateCheckout();
@@ -1532,9 +1556,9 @@ function onPermitHolderEdit(el) {
 
 Object.values(permitHolder).forEach(el => {
   el.addEventListener('input', () => onPermitHolderEdit(el));
-  el.addEventListener('change', () => onPermitHolderEdit(el));
+  el.addEventListener('change', () => onPermitHolderEdit(el, { committed: true }));
   // Rebuilding checkout on blur can cancel the pending pointer click in WebKit.
-  el.addEventListener('blur', () => validateField(el));
+  el.addEventListener('blur', () => { if (!continueBeingPressed()) validateField(el); });
 });
 
 if (permitDownloadBtn) {
@@ -1627,7 +1651,7 @@ async function confirmCheckout() {
     } finally {
       checkoutPending = false;
       confirmPaygovBtn.removeAttribute('aria-busy');
-      confirmPaygovBtn.disabled = !stepState.completed[2];
+      confirmPaygovBtn.disabled = false;
     }
     permitDownloadUrl = URL.createObjectURL(blob);
 
@@ -1665,6 +1689,7 @@ async function confirmCheckout() {
 }
 
 confirmPaygovBtn.addEventListener('click', () => {
+  continuePressedAt = -Infinity;
   confirmCheckout().catch((error) => {
     console.error(error);
     showErrors(['We could not prepare checkout. Your entries are still here. Please try again.']);
