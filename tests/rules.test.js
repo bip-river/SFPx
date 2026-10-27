@@ -1,15 +1,16 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { validateCatalog, parseDate, isSaleActive, isSaleComingSoon, calculatePermitValidity } from '../js/catalog.js';
+import { validateCatalog, parseDate, isSaleActive, isSaleComingSoon, calculatePermitValidity, resolveDate, resolveCatalogDates } from '../js/catalog.js';
 import { quantityError } from '../js/validation.js';
 import { sanitizeUrl } from '../js/links.js';
 
 const catalog = JSON.parse(await readFile(new URL('../products.json', import.meta.url), 'utf8'));
 
 test('catalog IDs are globally unique and all explicit product rules validate', () => {
-  assert.equal(validateCatalog(catalog), catalog);
-  const duplicate = structuredClone(catalog);
+  const resolved = resolveCatalogDates(catalog);
+  assert.equal(validateCatalog(resolved), resolved);
+  const duplicate = structuredClone(resolved);
   duplicate.AK.offices[0].products.fuelwood[1].id = duplicate.AK.offices[0].products.fuelwood[0].id;
   assert.throws(() => validateCatalog(duplicate), /duplicate/);
 });
@@ -26,6 +27,28 @@ test('calendar parsing rejects impossible dates and missing sale bounds fail clo
   assert.equal(isSaleActive(product, parseDate('2026-10-23')), false);
   assert.ok(isSaleComingSoon(product, 15, parseDate('2026-10-06')));
   assert.equal(isSaleComingSoon(product, 15, parseDate('2026-10-05')), false);
+});
+
+test('relative sale dates resolve to local calendar days and malformed ones fail closed', () => {
+  const today = parseDate('2026-12-30');
+  assert.equal(resolveDate('today', today), '2026-12-30');
+  assert.equal(resolveDate('today+3', today), '2027-01-02');
+  assert.equal(resolveDate('today-365', today), '2025-12-30');
+  assert.equal(resolveDate('2026-01-01', today), '2026-01-01');
+  for (const malformed of ['today+', 'today+1.5', 'today+1d', 'tomorrow', ' today']) {
+    const data = structuredClone(catalog); data.AK.offices[0].products.fuelwood[0].saleEndDate = malformed;
+    assert.throws(() => validateCatalog(resolveCatalogDates(data, today)), /Invalid sale dates/, malformed);
+  }
+});
+
+test('no shipped product sale ends for future visitors of the long-lived demo', () => {
+  for (const day of ['2026-10-21', '2028-02-03', '2031-06-15', '2040-01-01']) {
+    const today = parseDate(day);
+    const resolved = validateCatalog(resolveCatalogDates(catalog, today));
+    const products = Object.values(resolved).flatMap(state => state.offices.flatMap(office => Object.values(office.products).flat()));
+    assert.deepEqual(products.filter(product => parseDate(product.saleEndDate) < today).map(product => product.id), [], day);
+    assert.ok(products.filter(product => isSaleActive(product, today)).length > 0, day);
+  }
 });
 
 test('shortened validity counts calendar days across a daylight-saving change', t => {

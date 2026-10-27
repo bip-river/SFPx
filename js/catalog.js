@@ -18,6 +18,34 @@ export function getTodayStart() {
   return d;
 }
 
+const RELATIVE_DATE_PATTERN = /^today(?:([+-])(\d{1,5}))?$/;
+
+// The shipped demo writes sale dates as "today", "today+N" or "today-N" days so the live prototype never expires.
+export function resolveDate(value, today = getTodayStart()) {
+  const match = typeof value === 'string' ? RELATIVE_DATE_PATTERN.exec(value) : null;
+  if (!match) return value;
+  const date = new Date(today.getTime());
+  date.setDate(date.getDate() + (match[1] === '-' ? -1 : 1) * Number(match[2] || 0));
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
+// Runs once at load, before validation, so an open tab still reaches each sale's end date.
+export function resolveCatalogDates(catalog, today = getTodayStart()) {
+  const resolved = JSON.parse(JSON.stringify(catalog ?? null));
+  for (const state of Object.values(resolved && typeof resolved === 'object' ? resolved : {})) {
+    for (const office of Array.isArray(state?.offices) ? state.offices : []) {
+      for (const products of Object.values(office?.products && typeof office.products === 'object' ? office.products : {})) {
+        for (const product of Array.isArray(products) ? products : []) {
+          if (!product || typeof product !== 'object') continue;
+          product.saleStartDate = resolveDate(product.saleStartDate, today);
+          product.saleEndDate = resolveDate(product.saleEndDate, today);
+        }
+      }
+    }
+  }
+  return resolved;
+}
+
 export function isSaleActive(product, today = getTodayStart()) {
   const start = parseDate(product?.saleStartDate);
   const end = parseDate(product?.saleEndDate);

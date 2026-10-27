@@ -1,6 +1,6 @@
 import { readdir, readFile } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
-import { validateCatalog } from '../js/catalog.js';
+import { validateCatalog, resolveCatalogDates } from '../js/catalog.js';
 
 for (const directory of ['.', 'js', 'tests', 'scripts', 'vendor']) {
   for (const file of await readdir(directory)) {
@@ -10,7 +10,7 @@ for (const directory of ['.', 'js', 'tests', 'scripts', 'vendor']) {
     if (result.status !== 0) throw new Error(result.stderr || `Cannot parse ${path}`);
   }
 }
-validateCatalog(JSON.parse(await readFile(new URL('../products.json', import.meta.url), 'utf8')));
+validateCatalog(resolveCatalogDates(JSON.parse(await readFile(new URL('../products.json', import.meta.url), 'utf8'))));
 // An undefined var() silently falls back to the inherited value instead of failing.
 const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
 const definedProperties = new Set([...css.matchAll(/(--[\w-]+)\s*:/g)].map(match => match[1]));

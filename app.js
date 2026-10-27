@@ -1,4 +1,4 @@
-import { PRODUCT_TYPE_OPTIONS, validateCatalog, getProductKey, isSaleActive, isSaleComingSoon, parseDate } from './js/catalog.js';
+import { PRODUCT_TYPE_OPTIONS, validateCatalog, resolveCatalogDates, getProductKey, isSaleActive, isSaleComingSoon, parseDate } from './js/catalog.js';
 import { sanitizeUrl } from './js/links.js';
 import { createFieldValidators, quantityError } from './js/validation.js';
 import { getProductEligibility, productRequiresEligibility } from './js/eligibility.js';
@@ -350,7 +350,7 @@ async function loadProductData() {
     if (!res.ok) throw new Error('Unable to load product catalog.');
     const json = await res.json();
 
-    catalogData = validateCatalog(json);
+    catalogData = validateCatalog(resolveCatalogDates(json));
     catalogReady = true;
     populateStates();
     hideErrors();
