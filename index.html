@@ -81,7 +81,7 @@
           <ul class="check-list">
             <li>Your mailing address. The law requires it on every permit.</li>
             <li>An email address.</li>
-            <li>A debit or credit card if your permit has a fee. You’ll pay on Pay.gov. Some permits are free.</li>
+            <li>A debit or credit card, or a checking account, if your permit has a fee. You’ll pay on Pay.gov. Some permits are free.</li>
             <li>A printer. Your permit isn’t valid until you print it and sign it.</li>
           </ul>
         </section>
@@ -151,6 +151,16 @@
           <p class="qty-total" id="totalLine" aria-live="polite" aria-atomic="true"><span class="qty-total-label">Total<span class="sr-only" id="totalFor"></span></span> <strong id="totalAmount">—</strong></p>
           <p class="hint" id="qtyValidity"></p>
           <div id="qtyDocs"></div>
+          <div class="field" id="eligibilityAgreement" hidden>
+            <div class="checkbox field-input">
+              <input type="checkbox" id="ackEligibility" />
+              <label for="ackEligibility" id="eligibilityLabel">I certify that I meet the eligibility requirements for this permit.</label>
+            </div>
+            <details class="disclosure indented" id="eligibilityDetail">
+              <summary>Who qualifies</summary>
+              <div class="disclosure-body" id="eligibilityBody"></div>
+            </details>
+          </div>
         </div>
         <section class="coming-soon" id="comingSoonSection" aria-labelledby="comingSoonTitle" hidden>
           <h2 id="comingSoonTitle">Opening soon</h2>
@@ -161,16 +171,18 @@
 
       <form class="screen" id="screen-details" aria-labelledby="detailsTitle" novalidate hidden>
         <h1 id="detailsTitle" tabindex="-1">Your details</h1>
-        <p class="lede">The permit is issued in this name. This is a demo, so use fictional details.</p>
-        <div class="field-pair">
-          <div class="field">
-            <label for="FirstName">First name</label>
-            <input class="field-input" id="FirstName" type="text" autocomplete="given-name" maxlength="50" required />
-          </div>
-          <div class="field">
-            <label for="LastName">Last name</label>
-            <input class="field-input" id="LastName" type="text" autocomplete="family-name" maxlength="50" required />
-          </div>
+        <p class="lede">The permit is issued in this name. This is a demo, so use fictional details. The Privacy Act notice at the end of this page explains how we use them.</p>
+        <div class="field">
+          <label for="FirstName">First name</label>
+          <input class="field-input" id="FirstName" type="text" autocomplete="given-name" maxlength="50" required />
+        </div>
+        <div class="field">
+          <label for="MiddleName">Middle name <span class="optional">(optional)</span></label>
+          <input class="field-input" id="MiddleName" type="text" autocomplete="additional-name" maxlength="50" />
+        </div>
+        <div class="field">
+          <label for="LastName">Last name</label>
+          <input class="field-input" id="LastName" type="text" autocomplete="family-name" maxlength="50" required />
         </div>
         <fieldset class="field-group" aria-describedby="addressHint">
           <legend>Mailing address</legend>
@@ -208,6 +220,14 @@
           <p class="hint" id="confirmHint">Enter it again so we can catch typos.</p>
           <input class="field-input" id="ConfirmEmail" type="email" autocomplete="email" maxlength="120" aria-describedby="confirmHint" required />
         </div>
+        <section class="privacy-notice" id="privacyNotice" aria-labelledby="privacyTitle">
+          <h2 id="privacyTitle">Privacy Act notice</h2>
+          <p>The Privacy Act of 1974 and applicable regulations require that you be furnished with the following information in connection with information collected for this permit purchase.</p>
+          <p><strong>Authority:</strong> 30 U.S.C. 601 et seq.; 43 U.S.C. 1181a; and 43 CFR 5400 (as applicable).</p>
+          <p><strong>Principal purpose:</strong> The Bureau of Wandering Lands (BWL) uses the information you provide to identify the permittee, document the authorization to remove vegetative materials from public lands, and administer and enforce permit terms.</p>
+          <p><strong>Routine uses:</strong> The BWL may disclose information consistent with published routine uses for the relevant system of records, and as otherwise authorized by law.</p>
+          <p><strong>Effect of not providing information:</strong> Providing the requested information is voluntary; however, failure to provide required information may prevent us from issuing your permit.</p>
+        </section>
         <button class="primary" type="submit">Continue</button>
       </form>
 
@@ -222,42 +242,23 @@
             <li>Personal use only. All sales are final.</li>
           </ul>
         </section>
-        <div class="field" id="eligibilityAgreement" hidden>
-          <div class="checkbox field-input">
-            <input type="checkbox" id="ackEligibility" />
-            <label for="ackEligibility" id="eligibilityLabel">I certify that I meet the eligibility requirements for this permit.</label>
-          </div>
-          <details class="disclosure indented" id="eligibilityDetail">
-            <summary>Who qualifies</summary>
-            <div class="disclosure-body" id="eligibilityBody"></div>
-          </details>
-        </div>
         <div class="field" id="agreeField">
           <div class="checkbox field-input">
             <input type="checkbox" id="agree" required />
-            <label for="agree">I agree to the permit terms and the privacy notice.</label>
+            <label for="agree" id="agreeLabel">I agree to the permit terms and certify that I’m not a minor under the law of the state where I’ll collect.</label>
           </div>
           <details class="disclosure indented" id="termsDetail">
             <summary>Read the permit terms</summary>
             <div class="disclosure-body prose">
               <ul>
                 <li>All purchases are final; no refunds.</li>
+                <li>You certify that you are not a minor under the laws of the state where the permit area is located.</li>
                 <li>Permit is for personal use unless stated otherwise and may be non-transferable.</li>
                 <li>You must comply with all permit stipulations, seasonal restrictions, closures, and area boundaries.</li>
                 <li>The permit is valid only when printed and signed by the permit holder, who must carry it while harvesting/collecting.</li>
                 <li>Violations may result in penalties and/or revocation of privileges.</li>
               </ul>
               <p>These are demo terms. Replace them with the authoritative terms and conditions used by your production system.</p>
-            </div>
-          </details>
-          <details class="disclosure indented" id="privacyDetail">
-            <summary>Read the privacy notice</summary>
-            <div class="disclosure-body prose">
-              <p>The Privacy Act of 1974 and applicable regulations require that you be furnished with the following information in connection with information collected for this permit purchase.</p>
-              <p><strong>Authority:</strong> 30 U.S.C. 601 et seq.; 43 U.S.C. 1181a; and 43 CFR 5400 (as applicable).</p>
-              <p><strong>Principal purpose:</strong> The Bureau of Wandering Lands (BWL) uses the information you provide to identify the permittee, document the authorization to remove vegetative materials from public lands, and administer and enforce permit terms.</p>
-              <p><strong>Routine uses:</strong> The BWL may disclose information consistent with published routine uses for the relevant system of records, and as otherwise authorized by law.</p>
-              <p><strong>Effect of not providing information:</strong> Providing the requested information is voluntary; however, failure to provide required information may prevent us from issuing your permit.</p>
             </div>
           </details>
         </div>

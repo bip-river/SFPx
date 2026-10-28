@@ -2,6 +2,7 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const LENGTH_LIMITS = {
   FirstName: 50,
+  MiddleName: 50,
   LastName: 50,
   AddressLine1: 120,
   AddressLine2: 120,
@@ -31,6 +32,11 @@ export function createFieldValidators({ model, permitHolder }) {
       const val = (el.value || '').trim();
       if (!val) return 'Enter your first name.';
       if (val.length > LENGTH_LIMITS.FirstName) return `First name must be ${LENGTH_LIMITS.FirstName} characters or fewer.`;
+      return '';
+    },
+    MiddleName: (el) => {
+      const val = (el.value || '').trim();
+      if (val.length > LENGTH_LIMITS.MiddleName) return `Middle name must be ${LENGTH_LIMITS.MiddleName} characters or fewer.`;
       return '';
     },
     LastName: (el) => {

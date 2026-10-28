@@ -68,14 +68,17 @@ async function app(t, { data = structuredClone(catalog), saved, storageBlocked =
     change('#state', 'AK'); $('input[name=office][value="AK-ANCH"]').click(); cont();
     $(`#prod_${index}`).click();
   };
-  const choose = (type, index) => { pickPermit(type, index); cont(); assert.equal(screen(), 'details'); };
+  const choose = (type, index) => {
+    pickPermit(type, index);
+    if (!$('#eligibilityAgreement').hidden) check('#ackEligibility');
+    cont(); assert.equal(screen(), 'details');
+  };
   const holder = (values = {}) => {
     for (const [id, value] of Object.entries({ ...HOLDER, ...values })) { input(`#${id}`, value); change(`#${id}`); }
     cont();
   };
   const agree = () => {
     assert.equal(screen(), 'review', 'checkout ready');
-    if (!$('#eligibilityAgreement').hidden) check('#ackEligibility');
     check('#agree');
   };
   const payload = () => JSON.parse($('#handoff .payload-content').textContent);
@@ -146,7 +149,7 @@ test('paid checkout validates holder data, preserves retry identity, and replace
   const first = a.payload();
   assert.equal(first.total, 10);
   assert.equal(first.productId, catalog.AK.offices[0].products.fuelwood[0].id);
-  assert.equal(first.permitHolder.middleName, undefined);
+  assert.equal(first.permitHolder.middleName, '', 'the middle name is optional');
   assert.match(first.permitNumber, /^AK-ANCH-26-\d{6}$/);
   assert.equal(first.haulTags, 2, 'one tag for each half cord');
   assert.match(a.$('#permitCard').textContent, new RegExp(`Permit number ${first.permitNumber}`));
@@ -284,15 +287,47 @@ test('the quantity stepper stays within the permit limits and updates the total'
   assert.equal(a.$('#qtyInc').disabled, false, 'the button keeps focus at the limit');
 });
 
-test('eligibility is driven by catalog rule even if display name changes', async t => {
+test('eligibility is driven by catalog rule even if display name changes, and is certified with the permit', async t => {
   const data = structuredClone(catalog); data.AK.offices[0].products.fuelwood[2].name = 'Renamed no-fee permit';
   const a = await app(t, { data }); a.pickPermit('fuelwood', 2);
   assert.match(a.$('#prod_2_sub').textContent, /Only for eligible subsistence users/);
-  a.cont(); a.holder();
-  assert.equal(a.$('#eligibilityAgreement').hidden, false);
-  a.check('#agree'); a.$('#confirmPaygov').click();
+  assert.equal(a.$('#eligibilityAgreement').hidden, false, 'the certification opens inside the chosen permit');
+  assert.ok(a.$('#qtyPanel').contains(a.$('#ackEligibility')));
+  a.cont();
+  assert.equal(a.screen(), 'permit', 'someone who has not certified stops before entering details');
   assert.deepEqual([...a.w.document.querySelectorAll('#errorList a')].map(link => link.getAttribute('href')), ['#ackEligibility']);
+  a.check('#ackEligibility'); a.cont(); a.holder();
+  assert.match(a.$('#reviewSummary').textContent, /You certified that you qualify for subsistence uses under ANILCA/);
+  assert.equal(a.$('#screen-review #ackEligibility'), null, 'the check screen has only the terms agreement');
   a.agree(); await a.generate(); assert.equal(a.payload().eligibility.certified, true);
+  await a.goBack(); a.$('#reviewSummary a[href="#permit"]').click();
+  assert.equal(a.$('#ackEligibility').checked, true, 'the certification stays with an unchanged permit');
+  a.$('#prod_3').click();
+  assert.equal(a.$('#eligibilityAgreement').hidden, true);
+  a.$('#prod_2').click();
+  assert.equal(a.$('#ackEligibility').checked, false, 'choosing the permit again asks for the certification again');
+});
+
+test('details collect an optional middle name and show the Privacy Act notice without a checkbox', async t => {
+  const a = await app(t); 
+  assert.match(a.$('#screen-start').textContent, /debit or credit card, or a checking account/, 'Pay.gov also takes checking accounts');
+  a.choose();
+  const notice = a.$('#screen-details #privacyNotice');
+  assert.ok(notice, 'the notice is on the screen that collects the information');
+  assert.match(notice.textContent, /Authority:.*Principal purpose:.*Routine uses:.*Effect of not providing information:/s);
+  assert.equal(notice.querySelector('input'), null, 'reading the notice needs no checkbox');
+  assert.equal(a.$('#screen-review').textContent.includes('Privacy Act'), false);
+  assert.equal(a.$('#MiddleName').required, false);
+  assert.equal(a.$('#MiddleName').autocomplete, 'additional-name');
+  a.holder({ MiddleName: 'Quinn' });
+  assert.match(a.$('#reviewSummary').textContent, /Test Quinn Purchaser/);
+  assert.equal(a.$('label[for=agree]').textContent, 'I agree to the permit terms and certify that I’m not a minor under Alaska law.', 'the age certification is visible, not only in the collapsed terms');
+  assert.match(a.$('#termsDetail').textContent, /not a minor under the laws of the state/);
+  a.$('#confirmPaygov').click();
+  assert.equal(a.$('#errorList').textContent, 'Agree to the permit terms and certify that you’re not a minor.');
+  a.agree(); await a.generate();
+  assert.equal(a.payload().permitHolder.middleName, 'Quinn');
+  assert.match(a.$('#permitCard').textContent, /Issued to Test Quinn Purchaser/);
 });
 
 test('checkout rechecks availability after date changes in an open tab', async t => {
