@@ -3,6 +3,7 @@ const ANILCA_ELIGIBILITY = {
   basis: 'ANILCA Title VIII subsistence eligibility (16 U.S.C. § 3113)',
   label: 'I certify that I qualify for subsistence uses under ANILCA (16 U.S.C. § 3113) for this permit.',
   summary: 'Only for eligible subsistence users (ANILCA)',
+  certified: 'You certified that you qualify for subsistence uses under ANILCA',
   intro: 'This permit is available only to eligible subsistence users in Alaska.',
   bullets: [
     'I am eligible for subsistence uses as defined in 16 U.S.C. § 3113.',

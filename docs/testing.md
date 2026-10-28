@@ -12,11 +12,11 @@
 - Reset ("Start over" and "Start another permit") of purchaser fields, saved selections, old transaction references, and payloads.
 - Active-ID restoration with expired products ahead of a selection, a reload returning to its screen, and purchaser details always reentered; missing, expired, and index-only selections.
 - A new area clearing the permit choice.
-- Quantity bounds and increments, the stepper staying within limits without dropping focus, eligibility independent of display names, and open-tab sale expiry.
+- Quantity bounds and increments, the stepper staying within limits without dropping focus, eligibility independent of display names and certified inside the chosen permit before details are entered, and open-tab sale expiry.
 - Malformed catalog data, malformed saved state, blocked storage, and fetch failures.
 - URL normalization and script-protocol rejection.
 - Relative catalog dates (`today±N`), malformed relative dates failing closed, and no shipped product sale ending for future visitors through 2040.
-- Areas listed only when the chosen collection type has a permit on sale or coming soon, a message when a state has none, coming-soon products listed separately and not selectable, the validity shown on screen matching the demo PDF, eligibility certification carried for paid products with a rule, and production-only email promises labelled "In production:".
+- Areas listed only when the chosen collection type has a permit on sale or coming soon, a message when a state has none, coming-soon products listed separately and not selectable, the validity shown on screen matching the demo PDF, eligibility certification carried for paid products with a rule, the Privacy Act notice on the details screen with no checkbox, an optional middle name carried into the summary, payload and permit, and production-only email promises labelled "In production:".
 - Changing the collection type keeps the state, and keeps the area when it offers the new type.
 - Confirm-email errors that follow delivery-email edits, checkout IDs without `crypto.randomUUID` (plain-HTTP device testing), short permit names described by price and limits, quantity guidance after restore, and validity day counts across a DST change.
 - Field errors that appear once a field is left and clear while typing, Continue buttons that open a linked error summary (radio groups link to their first option), and blur-time errors held back while Continue is pressed.

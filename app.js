@@ -93,6 +93,7 @@ const startAnotherBtn = byId('startAnother');
 // Permit holder fields
 const permitHolder = {
   FirstName: byId('FirstName'),
+  MiddleName: byId('MiddleName'),
   LastName: byId('LastName'),
   AddressLine1: byId('AddressLine1'),
   AddressLine2: byId('AddressLine2'),
@@ -213,6 +214,7 @@ function clearProduct() {
   productGroup.after(qtyPanel);
   qtyPanel.hidden = true;
   ackEligibility.checked = false;
+  setFieldError(ackEligibility, '');
 }
 
 // Populate state dropdown
@@ -429,6 +431,7 @@ function configureQuantity(p) {
   qtyInc.setAttribute('aria-label', `More ${units}`);
   qtyValidity.textContent = validityText(p);
   qtyDocs.replaceChildren(buildDocLinks(buildRequiredDocs(p, model.productType), shortProductName(p)));
+  renderEligibilityAgreement(p);
 }
 
 function selectProduct(p, card) {
@@ -441,6 +444,7 @@ function selectProduct(p, card) {
   qtyEl.value = String(p.minQty);
   lastValues.set(qtyEl, qtyEl.value);
   ackEligibility.checked = false;
+  setFieldError(ackEligibility, '');
   setFieldError(qtyEl, '');
   setFieldError(productGroup, '');
   syncSelectedOptions(productListEl);
@@ -482,8 +486,8 @@ function announce(message) {
   requestAnimationFrame(() => { stepLiveRegion.textContent = message; });
 }
 
-function renderEligibilityAgreement() {
-  const required = productRequiresEligibility(model.product);
+function renderEligibilityAgreement(product) {
+  const required = productRequiresEligibility(product);
   eligibilityAgreement.hidden = !required;
   ackEligibility.required = required;
   eligibilityBody.replaceChildren();
@@ -492,7 +496,7 @@ function renderEligibilityAgreement() {
     return;
   }
 
-  const elig = getProductEligibility(model.product);
+  const elig = getProductEligibility(product);
   eligibilityLabel.textContent = elig.label;
   if (elig.intro) {
     const p = document.createElement('p');
@@ -518,7 +522,7 @@ function renderEligibilityAgreement() {
 }
 
 function holderName() {
-  return [permitHolder.FirstName.value.trim(), permitHolder.LastName.value.trim()].filter(Boolean).join(' ');
+  return [permitHolder.FirstName, permitHolder.MiddleName, permitHolder.LastName].map(el => el.value.trim()).filter(Boolean).join(' ');
 }
 
 function holderAddressLines() {
@@ -577,13 +581,12 @@ function renderReview() {
   const noFee = p.price === 0;
   reviewTitle.textContent = noFee ? 'Check and confirm' : 'Check and pay';
   reviewSummary.replaceChildren(
-    summaryRow({ key: 'Permit', lines: [`${typeOption()?.label}: ${shortProductName(p)}`, quantityLabel(p, model.qty), validityText(p), tagSummary(currentTagCount())].filter(Boolean), change: 'permit', changeLabel: 'permit' }),
+    summaryRow({ key: 'Permit', lines: [`${typeOption()?.label}: ${shortProductName(p)}`, quantityLabel(p, model.qty), validityText(p), productRequiresEligibility(p) ? getProductEligibility(p).certified : '', tagSummary(currentTagCount())].filter(Boolean), change: 'permit', changeLabel: 'permit' }),
     summaryRow({ key: 'Where', lines: [model.officeName, stateName()], change: 'where', changeLabel: 'area' }),
     summaryRow({ key: 'Permit holder', lines: [holderName(), ...holderAddressLines(), permitHolder.DeliveryEmail.value.trim()], change: 'details', changeLabel: 'your details' }),
     summaryRow({ key: 'Total', lines: [totalLabelFor(p.price, total)] })
   );
   reviewSummary.lastElementChild.classList.add('summary-total');
-  renderEligibilityAgreement();
 
   const label = noFee ? 'Get my free permit' : `Pay ${money(total)} on Pay.gov`;
   // Rewriting identical text would replace the node a pending click or screen reader is using.
@@ -659,7 +662,7 @@ function screenComplete(name) {
     case 'start': return true;
     case 'what': return catalogReady && Boolean(model.productType);
     case 'where': return Boolean(model.state && getSelectedOffice());
-    case 'permit': return Boolean(model.product) && !quantityError(model.product, qtyEl.value);
+    case 'permit': return Boolean(model.product) && !quantityError(model.product, qtyEl.value) && !eligibilityError();
     case 'details': return Object.values(permitHolder).every(el => !getFieldErrorMessage(el));
     case 'review': return Boolean(issued);
     default: return false;
@@ -816,13 +819,15 @@ function validatePermitHolder() {
     .filter(error => error.text);
 }
 
+// The certification sits with the permit it applies to, so someone who doesn't qualify stops before entering details.
+function eligibilityError() {
+  return productRequiresEligibility(model.product) && !ackEligibility.checked
+    ? { text: 'Confirm that you qualify for this subsistence permit.', field: ackEligibility }
+    : null;
+}
+
 function reviewErrors() {
-  const errors = [];
-  if (productRequiresEligibility(model.product) && !ackEligibility.checked) {
-    errors.push({ text: 'Confirm that you qualify for this subsistence permit.', field: ackEligibility });
-  }
-  if (!agreeEl.checked) errors.push({ text: 'Agree to the permit terms and the privacy notice.', field: agreeEl });
-  return errors;
+  return agreeEl.checked ? [] : [{ text: 'Agree to the permit terms.', field: agreeEl }];
 }
 
 function screenErrors(name) {
@@ -838,7 +843,7 @@ function screenErrors(name) {
       if (!getProductsForSelection().length) return [noProducts.textContent];
       if (!model.product) return [{ text: 'Choose a permit.', field: productGroup }];
       const msg = quantityError(model.product, qtyEl.value);
-      return msg ? [{ text: msg, field: qtyEl }] : [];
+      return [msg ? { text: msg, field: qtyEl } : null, eligibilityError()].filter(Boolean);
     }
     case 'details':
       return validatePermitHolder();

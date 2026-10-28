@@ -1,12 +1,12 @@
 # Online Forest Product Permits — Prototype
 
-A static, front-end-only prototype for buying a forest product permit. A start page says what the service is for, what to have ready, and that the site is a demo. "Start now" then asks one question per screen:
+A static, front-end-only prototype for buying a forest product permit, published at <https://bip-river.github.io/SFPx/>. A start page says what the service is for, what to have ready, and that the site is a demo. "Start now" then asks one question per screen:
 
 1. What are you collecting?
 2. Where will you collect? (state and area)
-3. Which permit, and how much?
-4. Your details (name, mailing address, email entered twice)
-5. Check and pay, with one agreement to the permit terms and privacy notice
+3. Which permit, and how much? A permit with eligibility rules asks for the certification here, inside the chosen permit.
+4. Your details (first, optional middle and last name, mailing address, email entered twice), with the Privacy Act notice on the same screen and no checkbox
+5. Check and pay, with one agreement to the permit terms
 
 A sixth screen shows the finished permit with a download button. Continue, the Back link and the browser's own Back and Forward buttons move between screens; a screen can only be reached once every earlier answer is complete.
 
@@ -15,7 +15,7 @@ A sixth screen shows the finished permit with a download button. Continue, the B
 - Both generate a downloadable permit package as one PDF: the permit to sign, its stipulations, haul tags when the permit uses them (each tag sheet followed by a sheet of load records), maps, area notices, and a reference guide. The permit is valid only when printed and signed. No payments are processed, no email is sent, and no real permits are issued. Use fictional purchaser information.
 - The sample documents in the package are also linked from the site as standalone PDFs in `documents/`.
 - Agency names are fictional. The page does not link to real agency websites and asks search engines not to index it. Pay.gov and the cited U.S. laws are kept because they describe the system this prototype targets.
-- Only selections are saved in `sessionStorage`. Purchaser details, agreements and transaction snapshots stay in memory, so a reload returns to the details screen at most. "Start over" clears everything.
+- Only selections are saved in `sessionStorage`. Purchaser details, agreements, eligibility certifications and transaction snapshots stay in memory, so a reload returns to the details screen at most, or to the permit screen when its permit needs a certification. "Start over" clears everything.
 
 ## Run locally
 

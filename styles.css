@@ -243,6 +243,11 @@ select:disabled { background: var(--color-surface-muted); cursor: not-allowed; }
 .check-list li { position: relative; padding-left: 28px; }
 .check-list li::before { content: ""; position: absolute; left: 4px; top: 5px; width: 6px; height: 11px; border-right: 2.4px solid var(--color-primary); border-bottom: 2.4px solid var(--color-primary); transform: rotate(45deg); }
 .rules li { font-size: 15.5px; }
+.privacy-notice { padding: 16px; border-radius: var(--radius-card); background: var(--color-surface-muted); font-size: 15.5px; color: var(--color-text-secondary); }
+.privacy-notice h2 { font-size: 16px; margin-bottom: 10px; color: var(--color-text); }
+.privacy-notice p { margin: 0 0 8px; }
+.privacy-notice p:last-child { margin-bottom: 0; }
+.privacy-notice strong { color: var(--color-text); }
 #payNote { margin-top: -10px; }
 
 /* Start page */
