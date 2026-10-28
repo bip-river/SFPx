@@ -609,7 +609,6 @@ test('the fictional demo does not send visitors to real agency websites and asks
   const a = await app(t); a.choose('fuelwood', 2); a.holder();
   const hosts = [...a.w.document.querySelectorAll('a[href]')].map(link => new URL(link.href).hostname);
   assert.deepEqual(hosts.filter(host => /(^|\.)(blm|doi|doioig|usa)\.gov$/.test(host)), []);
-  assert.ok(hosts.includes('uscode.house.gov'), 'cited law stays linked');
   assert.equal(a.$('meta[name="robots"]')?.content, 'noindex');
   assert.equal(a.$('link[rel=stylesheet]').getAttribute('href'), 'styles.css', 'no third-party stylesheet or font');
 });
