@@ -371,7 +371,7 @@
               "saleEndDate": "today+449",
               "id": "ak-jun-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 180,
+              "validForDays": 365,
               "eligibilityRule": null
             },
             {
@@ -568,7 +568,7 @@
               "saleEndDate": "today+439",
               "id": "az-strip-fuelwood-01",
               "quantityStep": 1,
-              "validForDays": 180,
+              "validForDays": 365,
               "eligibilityRule": null
             },
             {
@@ -1110,7 +1110,7 @@
               "saleEndDate": "today+440",
               "id": "ca-bish-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 180,
+              "validForDays": 365,
               "eligibilityRule": null
             }
           ],
@@ -1582,7 +1582,7 @@
               "saleEndDate": "today+440",
               "id": "co-gunn-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 180,
+              "validForDays": 365,
               "eligibilityRule": null
             }
           ],
@@ -2203,7 +2203,7 @@
               "saleEndDate": "today+440",
               "id": "id-twin-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 180,
+              "validForDays": 365,
               "eligibilityRule": null
             }
           ],
@@ -2835,7 +2835,7 @@
               "saleEndDate": "today+440",
               "id": "33-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 180,
+              "validForDays": 365,
               "eligibilityRule": null
             }
           ],
@@ -3456,7 +3456,7 @@
               "saleEndDate": "today+440",
               "id": "nm-taos-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 180,
+              "validForDays": 365,
               "eligibilityRule": null
             }
           ],
@@ -3587,7 +3587,7 @@
               "saleEndDate": "today+439",
               "id": "nm-las-fuelwood-01",
               "quantityStep": 1,
-              "validForDays": 180,
+              "validForDays": 365,
               "eligibilityRule": null
             },
             {
@@ -4091,7 +4091,7 @@
               "saleEndDate": "today+440",
               "id": "or-lake-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 180,
+              "validForDays": 365,
               "eligibilityRule": null
             }
           ],
@@ -4569,7 +4569,7 @@
               "saleEndDate": "today+440",
               "id": "wa-spk-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 180,
+              "validForDays": 365,
               "eligibilityRule": null
             }
           ],
@@ -5190,7 +5190,7 @@
               "saleEndDate": "today+440",
               "id": "wy-rock-fuelwood-02",
               "quantityStep": 1,
-              "validForDays": 180,
+              "validForDays": 365,
               "eligibilityRule": null
             }
           ],

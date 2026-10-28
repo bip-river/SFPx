@@ -15,13 +15,13 @@ Each product requires these fields:
 | `price` | Finite nonnegative number; zero means no fee. |
 | `minQty`, `maxQty` | Finite positive minimum and maximum, with maximum at least minimum. |
 | `quantityStep` | Positive increment measured from `minQty`. All current demo products use 1; fractional increments require an explicit catalog change. |
-| `validForDays` | Positive integer, shortened when the sale ends sooner. The demo varies it by type: firewood 30, 60, 90 or 180 days; Christmas trees 14 or 30; mushrooms 7, 14 or 30. |
+| `validForDays` | Positive integer, shortened when the sale ends sooner. The demo varies it by type: firewood 30, 60, 90 or 180 days, or 12 months (365 days) where the sale runs that long; Christmas trees 14 or 30; mushrooms 7, 14 or 30. |
 | `saleStartDate`, `saleEndDate` | `today`, `today+N`, or `today-N` (whole days from the visitor's local date), or a fixed `YYYY-MM-DD` date. Start must be no later than end once resolved. Both dates are included in the sale window. |
 | `eligibilityRule` | `null`, or `anilca-subsistence` to require the existing demo certification. |
 | `requiredDocs` | Optional array of `{ "label": "…", "url": "…" }`. Every listing also links its type's stipulations, map and reference document, so a listing missing one still shows it. |
 | `haulTags` | Optional `true` or `false` for a firewood or Christmas tree listing; overrides its office and state. Not allowed as `true` on mushrooms. |
 
-The start page says permits last "from 7 days to 6 months". `npm test` checks the durations against that range; update the sentence in `index.html` if it changes.
+The start page says permits typically last "from 7 days to 12 months". `npm test` checks the durations against that range; update the sentence in `index.html` if it changes.
 
 ## Haul tags
 

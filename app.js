@@ -513,13 +513,6 @@ function renderEligibilityAgreement(product) {
     });
     eligibilityBody.appendChild(ul);
   }
-  if (elig.citations?.length) {
-    const title = document.createElement('p');
-    title.textContent = 'Read the legal text:';
-    const list = buildLinkList(elig.citations.map(c => ({ label: c.label || 'Legal reference', url: c.url })));
-    list.querySelectorAll('a').forEach((a) => { a.target = '_blank'; a.rel = 'noopener'; });
-    eligibilityBody.append(title, list);
-  }
 }
 
 function holderName() {

@@ -102,7 +102,7 @@ test('haul tag rules cascade from state to office to listing, and mushrooms neve
 });
 
 test('permit durations vary realistically by collection type, and the start page states their range', async () => {
-  const allowed = { fuelwood: [30, 60, 90, 180], christmas: [14, 30], mushrooms: [7, 14, 30] };
+  const allowed = { fuelwood: [30, 60, 90, 180, 365], christmas: [14, 30], mushrooms: [7, 14, 30] };
   const seen = { fuelwood: new Set(), christmas: new Set(), mushrooms: new Set() };
   for (const state of Object.values(catalog)) for (const office of state.offices) for (const [type, products] of Object.entries(office.products)) for (const product of products) {
     assert.ok(allowed[type].includes(product.validForDays), `${product.id}: ${product.validForDays} days`);
@@ -110,7 +110,7 @@ test('permit durations vary realistically by collection type, and the start page
   }
   for (const [type, values] of Object.entries(seen)) assert.deepEqual([...values].sort((a, b) => a - b), allowed[type], type);
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
-  assert.match(html, /Permits last from 7 days to 6 months/, 'update the start page if the range changes');
+  assert.match(html, /Permits typically last from 7 days to 12 months/, 'update the start page if the range changes');
 });
 
 test('permit numbers name the office and year, and a retry of the same checkout keeps its number', () => {
