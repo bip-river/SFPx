@@ -78,6 +78,7 @@ const ackEligibility = byId('ackEligibility');
 const eligibilityLabel = byId('eligibilityLabel');
 const eligibilityBody = byId('eligibilityBody');
 const agreeEl = byId('agree');
+const agreeLabel = byId('agreeLabel');
 const confirmPaygovBtn = byId('confirmPaygov');
 const payNote = byId('payNote');
 const resetAllBtn = byId('resetAll');
@@ -587,6 +588,9 @@ function renderReview() {
     summaryRow({ key: 'Total', lines: [totalLabelFor(p.price, total)] })
   );
   reviewSummary.lastElementChild.classList.add('summary-total');
+  // The age of majority is set by the state where the permit area is, so the certification names it.
+  const agreeText = `I agree to the permit terms and certify that I’m not a minor under ${stateName()} law.`;
+  if (agreeLabel.textContent !== agreeText) agreeLabel.textContent = agreeText;
 
   const label = noFee ? 'Get my free permit' : `Pay ${money(total)} on Pay.gov`;
   // Rewriting identical text would replace the node a pending click or screen reader is using.
@@ -827,7 +831,7 @@ function eligibilityError() {
 }
 
 function reviewErrors() {
-  return agreeEl.checked ? [] : [{ text: 'Agree to the permit terms.', field: agreeEl }];
+  return agreeEl.checked ? [] : [{ text: 'Agree to the permit terms and certify that you’re not a minor.', field: agreeEl }];
 }
 
 function screenErrors(name) {

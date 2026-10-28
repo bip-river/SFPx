@@ -6,7 +6,7 @@ A static, front-end-only prototype for buying a forest product permit, published
 2. Where will you collect? (state and area)
 3. Which permit, and how much? A permit with eligibility rules asks for the certification here, inside the chosen permit.
 4. Your details (first, optional middle and last name, mailing address, email entered twice), with the Privacy Act notice on the same screen and no checkbox
-5. Check and pay, with one agreement to the permit terms
+5. Check and pay, with one agreement to the permit terms that also certifies the purchaser is not a minor under the law of the permit area's state
 
 A sixth screen shows the finished permit with a download button. Continue, the Back link and the browser's own Back and Forward buttons move between screens; a screen can only be reached once every earlier answer is complete.
 

@@ -309,7 +309,9 @@ test('eligibility is driven by catalog rule even if display name changes, and is
 });
 
 test('details collect an optional middle name and show the Privacy Act notice without a checkbox', async t => {
-  const a = await app(t); a.choose();
+  const a = await app(t); 
+  assert.match(a.$('#screen-start').textContent, /debit or credit card, or a checking account/, 'Pay.gov also takes checking accounts');
+  a.choose();
   const notice = a.$('#screen-details #privacyNotice');
   assert.ok(notice, 'the notice is on the screen that collects the information');
   assert.match(notice.textContent, /Authority:.*Principal purpose:.*Routine uses:.*Effect of not providing information:/s);
@@ -319,9 +321,10 @@ test('details collect an optional middle name and show the Privacy Act notice wi
   assert.equal(a.$('#MiddleName').autocomplete, 'additional-name');
   a.holder({ MiddleName: 'Quinn' });
   assert.match(a.$('#reviewSummary').textContent, /Test Quinn Purchaser/);
-  assert.equal(a.$('label[for=agree]').textContent, 'I agree to the permit terms.');
+  assert.equal(a.$('label[for=agree]').textContent, 'I agree to the permit terms and certify that I’m not a minor under Alaska law.', 'the age certification is visible, not only in the collapsed terms');
+  assert.match(a.$('#termsDetail').textContent, /not a minor under the laws of the state/);
   a.$('#confirmPaygov').click();
-  assert.equal(a.$('#errorList').textContent, 'Agree to the permit terms.');
+  assert.equal(a.$('#errorList').textContent, 'Agree to the permit terms and certify that you’re not a minor.');
   a.agree(); await a.generate();
   assert.equal(a.payload().permitHolder.middleName, 'Quinn');
   assert.match(a.$('#permitCard').textContent, /Issued to Test Quinn Purchaser/);
