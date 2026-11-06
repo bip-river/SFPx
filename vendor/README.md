@@ -7,6 +7,8 @@
 - pdfmake: MIT; see `pdfmake-LICENSE.txt` and `pdfmake.js.LEGAL.txt` for bundled notices.
 - DejaVu Sans: Bitstream/Arev font license with DejaVu changes in the public domain; see `DejaVu-LICENSE.txt`.
 
+The same command writes `js/pdf-font-coverage.js`, the font's characters as about 4 KB of ranges, so purchaser fields can reject a character the permit cannot print when the field is left, without downloading the font. `npm run check` fails if it no longer matches `permit-font.js`.
+
 Do not edit the generated modules by hand. After changing these dependencies, regenerate assets and rerun the PDF tests and rendered-page review. DejaVu's Unicode coverage is finite; unsupported glyphs fail explicitly rather than producing replacement boxes.
 
 ## Page font

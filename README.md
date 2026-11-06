@@ -50,15 +50,16 @@ The browser test starts its own temporary local server and includes automated ac
 | `index.html`, `styles.css` | The six screens, styling, and design tokens |
 | `app.js` | Screen navigation and history, form events, and application coordination |
 | `js/catalog.js` | Product identity, catalog validation, sale windows, and validity dates |
-| `js/validation.js` | Quantity increments and purchaser field rules |
+| `js/validation.js`, `js/printable.js` | Quantity increments and purchaser field rules; characters the permit PDF can print, from the generated `js/pdf-font-coverage.js` |
 | `js/eligibility.js` | Explicit eligibility-rule lookup and certification copy |
 | `js/state.js` | Optional saved-selection storage |
 | `js/checkout.js` | Checkout identity, permit numbers, and payloads |
 | `js/permit-documents.js`, `js/permit-pdf.js` | Permit package and sample document content; PDF rendering in page order |
 | `documents/` | Sample documents linked from the site, written by `npm run build:documents` |
 | `js/ui.js`, `js/links.js` | Option cards, labels, and other rendering helpers; URL validation |
+| `js/startup-fallback.js` | A message in place of the start button when JavaScript or `app.js` cannot run |
 | `vendor/` | Self-hosted page font, PDF engine and PDF font; see [vendor notes](vendor/README.md) |
 | `products.json` | Demo catalog; see [catalog maintenance](docs/catalog.md) |
-| `tests/` | Logic, DOM, and PDF tests; Chromium, Firefox, and WebKit browser checks; and installed-Safari checks |
+| `tests/` | Logic, DOM, and PDF tests; Chromium, Firefox, and WebKit browser and failure-path checks; and installed-Safari checks |
 
 See the [testing notes](docs/testing.md), [design notes](docs/design-system-notes.md), [performance notes](docs/performance-notes.md), and [accessibility checks](docs/accessibility.md).

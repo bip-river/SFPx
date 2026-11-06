@@ -267,6 +267,12 @@ a.primary:hover { color: #fff; }
 .error-summary ul { margin: 0; padding-left: 20px; }
 .error-summary li + li { margin-top: 4px; }
 .error-summary a { color: var(--color-danger); font-weight: 600; }
+.error-action { display: block; min-height: 44px; margin-top: 12px; padding: 0 20px; border: 2px solid var(--color-primary); border-radius: 10px; background: var(--color-bg); color: var(--color-primary); font-weight: 700; cursor: pointer; }
+.error-action:hover { background: var(--color-tint); }
+.error-action[aria-busy="true"] { opacity: 0.7; cursor: progress; }
+/* Shown instead of the start button when the page's script cannot run. */
+.startup-error { margin: 0 0 16px; }
+.startup-error p { margin: 0; }
 
 /* Done */
 .done-mark { width: 56px; height: 56px; border-radius: 999px; background: var(--color-tint); color: var(--color-primary); display: grid; place-items: center; margin-top: 12px; }

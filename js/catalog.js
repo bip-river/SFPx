@@ -1,3 +1,5 @@
+import { unprintableCharacters, describeCharacters } from './printable.js';
+
 // The catalog keeps the official "fuelwood" key; visitors see the everyday word.
 export const PRODUCT_TYPE_OPTIONS = [
   { id: 'fuelwood', label: 'Firewood', noun: 'firewood', description: 'Cut and gather wood to heat or cook at home.' },
@@ -96,44 +98,126 @@ export function calculatePermitValidity(product, today = getTodayStart()) {
   return { validForDays, expirationDate, startDate, actualDays, shortened };
 }
 
-export function validateCatalog(catalog) {
-  if (!catalog || typeof catalog !== 'object' || Array.isArray(catalog) || !Object.keys(catalog).length) throw new Error('Catalog must contain states.');
-  const ids = new Set();
-  const checkDocs = (docs = []) => {
-    if (!Array.isArray(docs) || docs.some(doc => !doc || typeof doc.label !== 'string' || typeof doc.url !== 'string')) throw new Error('Invalid catalog attachments.');
-  };
-  const checkTagRules = (rules, where) => {
-    if (rules === undefined) return;
-    if (!rules || typeof rules !== 'object' || Array.isArray(rules) || Object.entries(rules).some(([type, value]) => !HAUL_TAG_TYPES.includes(type) || typeof value !== 'boolean')) throw new Error(`Invalid haul tag rules: ${where}`);
-  };
-  for (const [state, data] of Object.entries(catalog)) {
-    if (!data || typeof data.name !== 'string' || !Array.isArray(data.offices)) throw new Error(`Invalid state: ${state}`);
-    checkDocs(data.attachments);
-    checkTagRules(data.haulTags, state);
-    const officeIds = new Set();
-    for (const office of data.offices) {
-      if (!office || typeof office.id !== 'string' || !office.id || officeIds.has(office.id) || typeof office.name !== 'string' || !office.products || typeof office.products !== 'object' || Array.isArray(office.products)) throw new Error(`Invalid office in ${state}`);
-      // Office IDs start permit numbers (AK-ANCH-26-048213), so they need the state prefix.
-      if (!new RegExp(`^${state}-[A-Z0-9]{2,8}$`).test(office.id)) throw new Error(`Office ID must look like ${state}-CODE: ${office.id}`);
-      officeIds.add(office.id);
-      checkDocs(office.attachments);
-      checkTagRules(office.haulTags, office.id);
-      for (const [type, products] of Object.entries(office.products)) {
-        if (!PRODUCT_TYPE_OPTIONS.some(option => option.id === type) || !Array.isArray(products)) throw new Error(`Invalid product type: ${office.id}/${type}`);
-        for (const product of products) {
-          if (!product || typeof product.id !== 'string' || !product.id || ids.has(product.id)) throw new Error(`Missing or duplicate product ID in ${office.id}`);
-          ids.add(product.id);
-          if (typeof product.name !== 'string' || !product.name.trim() || typeof product.unit !== 'string' || !product.unit.trim()) throw new Error(`Invalid product labels: ${product.id}`);
-          if (!Number.isFinite(product.price) || product.price < 0 || !Number.isFinite(product.minQty) || product.minQty <= 0 || !Number.isFinite(product.maxQty) || product.maxQty < product.minQty || !Number.isFinite(product.quantityStep) || product.quantityStep <= 0 || !Number.isInteger(product.validForDays) || product.validForDays <= 0) throw new Error(`Invalid price, quantity or validity: ${product.id}`);
-          const start = parseDate(product.saleStartDate), end = parseDate(product.saleEndDate);
-          if (!start || !end || start > end) throw new Error(`Invalid sale dates: ${product.id}`);
-          if (product.eligibilityRule !== null && product.eligibilityRule !== 'anilca-subsistence') throw new Error(`Unknown eligibility rule: ${product.id}`);
-          if (product.haulTags !== undefined && (typeof product.haulTags !== 'boolean' || (product.haulTags && !HAUL_TAG_TYPES.includes(type)))) throw new Error(`Invalid haul tag rule: ${product.id}`);
-          checkDocs(product.requiredDocs);
-        }
-      }
-    }
+// Every problem in the catalog, each naming where it is, what is wrong and the value found, so one run of
+// npm run check lists everything to fix. Locations read like AK › AK-ANCH › fuelwood[0] ak-anch-fuelwood-01.
+export class CatalogError extends Error {
+  constructor(problems) {
+    super(`The permit catalog has ${problems.length} problem${problems.length === 1 ? '' : 's'}:\n${problems.map(problem => `- ${problem}`).join('\n')}`);
+    this.name = 'CatalogError';
+    this.problems = problems;
   }
+}
+
+const found = value => {
+  if (value === undefined) return 'it is missing';
+  const text = JSON.stringify(value);
+  return `found ${text.length > 60 ? `${text.slice(0, 57)}...` : text}`;
+};
+const isRecord = value => Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+const isText = value => typeof value === 'string' && value.trim() !== '';
+const DATE_FORMAT = 'a date like 2026-10-01, or "today", "today+30" or "today-7"';
+
+export function catalogProblems(catalog) {
+  const problems = [];
+  const report = (where, message) => problems.push(`${where}: ${message}`);
+  if (!isRecord(catalog) || !Object.keys(catalog).length) {
+    return ['The catalog must be a JSON object with at least one state, like { "AK": { "name": "Alaska", "offices": [] } }.'];
+  }
+  // Text the permit PDF prints must use characters its font has, or the visitor's permit fails at the last step.
+  const printable = (where, field, value) => {
+    const characters = unprintableCharacters(value);
+    if (characters.length) report(where, `${field} uses ${describeCharacters(characters)}, which the permit PDF cannot print`);
+  };
+  const text = (where, owner, field, { optional = false } = {}) => {
+    const value = owner[field];
+    if (optional && value === undefined) return;
+    if (!isText(value)) report(where, `${field} must be ${optional ? 'text when present' : 'non-empty text'} (${found(value)})`);
+    else printable(where, field, value);
+  };
+  const docs = (where, owner, field) => {
+    const list = owner[field];
+    if (list === undefined) return;
+    if (!Array.isArray(list)) { report(where, `${field} must be a list of { "label", "url" } links (${found(list)})`); return; }
+    list.forEach((doc, index) => {
+      const at = `${where} › ${field}[${index}]`;
+      if (!isRecord(doc)) { report(at, `each link must be an object with "label" and "url" (${found(doc)})`); return; }
+      text(at, doc, 'label');
+      if (typeof doc.url !== 'string' || !doc.url.trim()) report(at, `url must be non-empty text (${found(doc.url)})`);
+    });
+  };
+  const tagRules = (where, rules) => {
+    if (rules === undefined) return;
+    if (!isRecord(rules)) { report(where, `haulTags must be an object like { "fuelwood": false } (${found(rules)})`); return; }
+    for (const [type, value] of Object.entries(rules)) {
+      if (!HAUL_TAG_TYPES.includes(type)) report(where, `haulTags can only set ${HAUL_TAG_TYPES.join(' or ')} (${found(type)})`);
+      else if (typeof value !== 'boolean') report(where, `haulTags.${type} must be true or false (${found(value)})`);
+    }
+  };
+  const productIds = new Map();
+  for (const [code, state] of Object.entries(catalog)) {
+    if (!/^[A-Z]{2}$/.test(code)) report(code, 'state keys must be two-letter codes like "AK"');
+    if (!isRecord(state)) { report(code, `each state must be an object with "name" and "offices" (${found(state)})`); continue; }
+    text(code, state, 'name');
+    text(code, state, 'description', { optional: true });
+    docs(code, state, 'attachments');
+    tagRules(code, state.haulTags);
+    if (!Array.isArray(state.offices)) { report(code, `offices must be a list (${found(state.offices)})`); continue; }
+    const officeIds = new Set();
+    state.offices.forEach((office, index) => {
+      const officeAt = `${code} › ${typeof office?.id === 'string' && office.id ? office.id : `offices[${index}]`}`;
+      if (!isRecord(office)) { report(officeAt, `each office must be an object (${found(office)})`); return; }
+      // Office IDs start permit numbers (AK-ANCH-26-048213), so they need the state prefix.
+      if (typeof office.id !== 'string' || !new RegExp(`^${code}-[A-Z0-9]{2,8}$`).test(office.id)) report(officeAt, `id must look like ${code}-CODE, with 2 to 8 capital letters or digits after the dash (${found(office.id)})`);
+      else if (officeIds.has(office.id)) report(officeAt, `office id ${JSON.stringify(office.id)} is used more than once in ${code}`);
+      officeIds.add(office.id);
+      text(officeAt, office, 'name');
+      text(officeAt, office, 'description', { optional: true });
+      docs(officeAt, office, 'attachments');
+      tagRules(officeAt, office.haulTags);
+      if (!isRecord(office.products)) { report(officeAt, `products must be an object keyed by collection type, like { "fuelwood": [] } (${found(office.products)})`); return; }
+      for (const [type, products] of Object.entries(office.products)) {
+        const typeAt = `${officeAt} › ${type}`;
+        if (!PRODUCT_TYPE_OPTIONS.some(option => option.id === type)) { report(typeAt, `unknown collection type; use ${PRODUCT_TYPE_OPTIONS.map(option => option.id).join(', ')}`); continue; }
+        if (!Array.isArray(products)) { report(typeAt, `must be a list of products (${found(products)})`); continue; }
+        products.forEach((product, productIndex) => {
+          // The list position tells two products with the same ID apart.
+          const at = `${typeAt}[${productIndex}]${typeof product?.id === 'string' && product.id ? ` ${product.id}` : ''}`;
+          if (!isRecord(product)) { report(at, `each product must be an object (${found(product)})`); return; }
+          if (!isText(product.id)) report(at, `id must be non-empty text (${found(product.id)})`);
+          else if (productIds.has(product.id)) report(at, `duplicate product id ${JSON.stringify(product.id)}; it is also used at ${productIds.get(product.id)}. Product IDs must be unique across the whole catalog`);
+          else productIds.set(product.id, at);
+          text(at, product, 'name');
+          text(at, product, 'unit');
+          const number = (field, rule, ok) => { if (typeof product[field] !== 'number' || !Number.isFinite(product[field]) || !ok(product[field])) report(at, `${field} must be ${rule} (${found(product[field])})`); };
+          number('price', 'a number of 0 or more, where 0 means no fee', value => value >= 0);
+          number('minQty', 'a number above 0', value => value > 0);
+          number('quantityStep', 'a number above 0', value => value > 0);
+          number('validForDays', 'a whole number of days above 0', value => Number.isInteger(value) && value > 0);
+          if (Number.isFinite(product.minQty)) number('maxQty', `a number of at least minQty (${product.minQty})`, value => value >= product.minQty);
+          else number('maxQty', 'a number above 0', value => value > 0);
+          const start = parseDate(product.saleStartDate), end = parseDate(product.saleEndDate);
+          const dateProblem = (field, value) => RELATIVE_DATE_PATTERN.test(value)
+            ? `${field} ${JSON.stringify(value)} was not resolved to a calendar date; pass the catalog through resolveCatalogDates before validating it`
+            : `${field} must be ${DATE_FORMAT} (${found(value)})`;
+          if (!start) report(at, dateProblem('saleStartDate', product.saleStartDate));
+          if (!end) report(at, dateProblem('saleEndDate', product.saleEndDate));
+          if (start && end && start > end) report(at, `saleStartDate (${product.saleStartDate}) must not be after saleEndDate (${product.saleEndDate})`);
+          if (product.eligibilityRule !== null && product.eligibilityRule !== 'anilca-subsistence') report(at, `eligibilityRule must be null or "anilca-subsistence" (${found(product.eligibilityRule)})`);
+          if (product.haulTags !== undefined) {
+            if (typeof product.haulTags !== 'boolean') report(at, `haulTags must be true or false (${found(product.haulTags)})`);
+            else if (product.haulTags && !HAUL_TAG_TYPES.includes(type)) report(at, `haulTags cannot be true for ${type}; only ${HAUL_TAG_TYPES.join(' and ')} use haul tags`);
+          }
+          docs(at, product, 'requiredDocs');
+        });
+      }
+    });
+  }
+  return problems;
+}
+
+export function validateCatalog(catalog) {
+  const problems = catalogProblems(catalog);
+  if (problems.length) throw new CatalogError(problems);
   return catalog;
 }
 

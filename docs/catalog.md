@@ -35,7 +35,15 @@ Each tag sheet is followed by a sheet with one load record per tag, placed so th
 
 Document links in `requiredDocs` and attachments point to `documents/<id>.pdf`. `js/permit-documents.js` defines their content: a stipulations, map and reference document per collection type, and the six state and office notices and maps. `npm run build:documents` writes the files, `npm run check` fails if a linked file is missing, and `npm test` fails if a file no longer matches its content. A new attachment needs an entry in `AREA_DOCUMENTS` to be printed in the permit package; otherwise the package lists its link on the area notices page.
 
-Run `npm run check` after editing. Invalid catalog data prevents catalog use and shows a load error; technical diagnostics go to the console. Links are restricted to HTTP(S), mail, telephone, and relative URLs. `#` remains a demo placeholder.
+Run `npm run check` after editing. It lists every problem in one run, each with its location, the rule and the value it found, for example:
+
+```text
+products.json: The permit catalog has 2 problems:
+- AK › AK-ANCH › fuelwood[0] ak-anch-fuelwood-01: minQty must be a number above 0 (found 0)
+- AK › AK-ANCH › fuelwood[2] ak-anch-fuelwood-03: name uses “🌲”, which the permit PDF cannot print
+```
+
+The location names the state, office, collection type, then the product's position in its list and its ID. Text printed on the permit (state, office and product names, units, descriptions and link labels) must use characters the embedded PDF font has, so a catalog cannot pass validation and then fail at the visitor's last step. In the browser, invalid catalog data blocks the service with the same visitor-facing load error as a network failure, and the full problem list goes to the console. Links are restricted to HTTP(S), mail, telephone, and relative URLs. `#` remains a demo placeholder.
 
 The shipped demo uses relative dates so the long-lived prototype never runs out of products. They are resolved once when the catalog loads, so an open tab still reaches a sale's end date. Fixed dates remain valid for tests or for reproducing a specific calendar, but `npm test` fails if any shipped product's sale would end for a visitor up to 2040. The current offsets were converted from the earlier fixed dates using 2026-10-21 as `today`, which is also the date the tests pin. Three Anchorage Aurora Outpost products start at `today+7` so the "Opening soon" list is visible on the live demo; keep at least one such product when editing the catalog.
 
