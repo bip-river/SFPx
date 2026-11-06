@@ -155,7 +155,8 @@ try {
     await toReview(page);
     await payOnPayure(page);
     await page.locator('#errorBox').waitFor({ state: 'visible' });
-    assert.equal(await errorText(page), ENGINE_ERROR);
+    assert.match(await errorText(page), /^Your payment of \$10\.00 went through \(Pay\.ure tracking ID PU-[A-Z2-9]{10}\), so you won’t be charged again\. /);
+    assert.ok((await errorText(page)).endsWith(ENGINE_ERROR));
     assert.equal(await screen(page), 'review');
     assert.equal(await page.locator('#agree').isChecked(), true, 'entries are kept');
     assert.equal(await page.locator('#confirmPay').textContent(), 'Get my permit', 'the payment is kept');
@@ -172,7 +173,8 @@ try {
     await toReview(page);
     await payOnPayure(page);
     await page.locator('#errorBox').waitFor({ state: 'visible' });
-    assert.equal(await errorText(page), ENGINE_ERROR);
+    assert.match(await errorText(page), /^Your payment of \$10\.00 went through /);
+    assert.ok((await errorText(page)).endsWith(ENGINE_ERROR));
   });
 
   await scenario('a declined card is explained on Pay.ure, and another card pays', async page => {

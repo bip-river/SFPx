@@ -171,8 +171,8 @@ try {
     assert.match(paidPdf.text, /Tag 2 of 2/, 'one cord of firewood comes with two haul tags');
 
     // The permit replaced the return's history entry, so the browser's Back button goes to Pay.ure, which
-    // will not take the payment again. Its Return button comes back here, where the paid permit is recognized once
-    // the same details are entered again, without a second payment.
+    // will not take the payment again. Its Return button comes back here; with the same details entered again, the
+    // earlier payment is shown and the permit number gets the permit again without a second payment.
     await page.goBack();
     await page.waitForURL(/\/pay-ure\/\?token=/);
     await pageReady();
@@ -182,13 +182,15 @@ try {
     await page.locator('#finishedReturn').click();
     await backFromPayure();
     assert.equal(await screen(), 'details', 'purchaser details must be reentered');
-    assert.match(await page.locator('#flowNotice').textContent(), new RegExp(`^You’ve already paid \\$10\\.00 for permit ${first.permitNumber} `));
+    assert.match(await page.locator('#flowNotice').textContent(), /^You already paid \$10\.00 on Oct 21, 2026 at .+ with Visa ending 1111\./);
     await checkAccessibility(page, 'already-paid notice');
     await fillHolder(); await cont();
     assert.equal(await screen(), 'review');
-    assert.equal(await page.locator('#confirmPay').textContent(), 'Get my permit');
-    await page.locator('label[for=agree]').click();
-    await page.locator('#confirmPay').click();
+    assert.equal(await page.locator('#paidBefore').isVisible(), true);
+    assert.equal(await page.locator('#confirmPay').textContent(), 'Pay $10.00 for another permit');
+    await checkAccessibility(page, 'review with an earlier payment');
+    await page.locator('#paidReference').fill(first.permitNumber);
+    await page.locator('#paidReference').press('Enter');
     await waitForDone();
     assert.equal((await payload()).permitNumber, first.permitNumber, 'the same permit, not a second payment');
     assert.ok(!page.url().includes('pay-ure'));

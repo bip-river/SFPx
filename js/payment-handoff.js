@@ -52,12 +52,13 @@ export function describePayment(result) {
   return `${result.accountType === 'savings' ? 'savings' : 'checking'} account ending ${result.last4}`;
 }
 
-// Permits this tab has paid for, so a paid checkout is never offered for payment again: after the browser's
-// Forward button reloads the page (and the browser refills the form), after Pay.ure's "Return" link on a payment it
-// has already taken, or when the visitor enters the same details again. In production the agency's server would
-// know. Each record holds the payment's token, references, amount, method and last 4 digits, and a one-way
-// fingerprint of the checkout in place of the purchaser's details. The fingerprint is a 53-bit hash (cyrb53): enough
-// to recognize the same entries in one tab, not a cryptographic protection.
+// Permits this tab has paid for, so someone about to pay again is warned first: after the browser's Forward button
+// reloads the page (and the browser refills the form), after Pay.ure's "Return" link on a payment it has already
+// taken, or after Start over. In production the agency's server would know. Each record holds the payment's token,
+// references, amount, method and last 4 digits, and two one-way fingerprints in place of the purchaser's details:
+// `key` for the whole checkout and `looseKey` for the permit and email alone. They are 53-bit hashes (cyrb53): enough
+// to recognize the same entries in one tab, not a cryptographic protection. The records stand in for the agency's
+// server, so they keep the references the visitor must type to get a permit again; the page shows none of them.
 export const PAID_PERMITS_KEY = 'sfp-paid-permits';
 const MAX_PAID_PERMITS = 20;
 
@@ -82,18 +83,17 @@ export function createPaidPermits(getStorage = () => sessionStorage) {
   };
   return {
     list,
-    // By the checkout's fingerprint, or by the Pay.ure token a return carries.
-    find({ key, token }) {
-      return list().find(record => (key && record.key === key) || (token && record.token === token)) || null;
+    // The most recent payment with this checkout fingerprint, permit-and-email fingerprint, or Pay.ure token.
+    find({ key, looseKey, token }) {
+      return list().reverse().find(record => (key && record.key === key) || (looseKey && record.looseKey === looseKey) || (token && record.token === token)) || null;
     },
-    // "Start over" forgets them, so the same details can buy a second permit.
     clear() {
       try { getStorage().removeItem(PAID_PERMITS_KEY); }
       catch { /* Storage can be unavailable in private contexts. */ }
     },
-    remember({ key, token, reference, permitNumber, amount, result, verification }) {
+    remember({ key, looseKey, token, reference, permitNumber, amount, result, verification }) {
       const kept = list().filter(record => record.token !== token).slice(-(MAX_PAID_PERMITS - 1));
-      try { getStorage().setItem(PAID_PERMITS_KEY, JSON.stringify([...kept, { key, token, reference, permitNumber, amount, result, verification }])); }
+      try { getStorage().setItem(PAID_PERMITS_KEY, JSON.stringify([...kept, { key, looseKey, token, reference, permitNumber, amount, result, verification }])); }
       catch { /* Without storage the payment is still remembered in memory for this page. */ }
     }
   };
