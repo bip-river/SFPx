@@ -9,6 +9,8 @@
   <link rel="preload" href="vendor/fonts/atkinson-hyperlegible-next-latin.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" href="images/favicon.ico" />
+  <!-- Without JavaScript the start button cannot work, so the message below replaces it. -->
+  <noscript><style>#startButton, .start-time { display: none; }</style></noscript>
 </head>
 
 <body>
@@ -72,6 +74,8 @@
         <h1 id="startTitle" tabindex="-1">Get a forest product permit</h1>
         <p class="lede">Buy a permit online to collect firewood, a Christmas tree or mushrooms on Bureau of Wandering Lands public land.</p>
         <p class="demo-note"><strong>Demo.</strong> Nothing is charged, emailed or issued. Use fictional details.</p>
+        <noscript><div class="error-summary startup-error"><p>This service needs JavaScript. Turn it on in your browser settings and reload the page, or buy your permit at a local BWL office.</p></div></noscript>
+        <div class="error-summary startup-error" id="startupError" role="alert" hidden><p></p></div>
         <a class="primary start-button" id="startButton" href="#what">Start now
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13"/><path d="M13 6l6 6-6 6"/></svg>
         </a>
@@ -344,5 +348,6 @@
     </div>
   </footer>
   <script src="app.js" type="module"></script>
+  <script src="js/startup-fallback.js"></script>
 </body>
 </html>

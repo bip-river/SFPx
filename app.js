@@ -1,10 +1,11 @@
 import { PRODUCT_TYPE_OPTIONS, validateCatalog, resolveCatalogDates, getProductKey, isSaleActive, isSaleComingSoon, parseDate, getTodayStart, calculatePermitValidity, haulTagCount, HAUL_TAG_UNITS } from './js/catalog.js';
 import { sanitizeUrl } from './js/links.js';
-import { createFieldValidators, quantityError } from './js/validation.js';
+import { createFieldValidators, quantityError, FIELD_LABELS } from './js/validation.js';
+import { unprintableMessage } from './js/printable.js';
 import { getProductEligibility, productRequiresEligibility } from './js/eligibility.js';
 import { createSelectionStorage } from './js/state.js';
 import { MAX_PAYLOAD_BYTES, createCheckoutIdentity, readPermitHolder, buildCheckoutPayload, payloadSizeBytes } from './js/checkout.js';
-import { buildPermitPackagePdf } from './js/permit-pdf.js';
+import { buildPermitPackagePdf, PermitPdfError } from './js/permit-pdf.js';
 import { TYPE_DOCUMENTS, AREA_DOCUMENTS, documentIdFromUrl } from './js/permit-documents.js';
 import { renderProductTypes, buildOption, syncSelectedOptions, money, feeLabelForUnit, totalLabelFor, unitLabel, quantityLabel, quantityRangeLabel, shortProductName, formatDate, validityText, buildDocLinks, buildRequiredDocs, buildDocumentLink, renderPayload } from './js/ui.js';
 
@@ -15,10 +16,19 @@ const AGENCY = 'Bureau of Wandering Lands';
 const SERVICE_TITLE = `Forest product permit | ${AGENCY}`;
 const CATALOG_SOURCE = 'products.json';
 const COMING_SOON_DAYS = 15;
-const LOAD_ERROR = 'We could not load available permits right now. Refresh the page to try again.';
+// A stalled request would otherwise leave the visitor waiting with no message at all.
+const CATALOG_TIMEOUT_MS = 15000;
+const LOAD_ERROR = 'We couldn’t load the permits available online. Check your internet connection, then try again. If it keeps happening, try again later or contact a local BWL office.';
+const LOADING_MESSAGE = 'Permits are still loading. Wait a moment, then select Continue again.';
+const PDF_ENGINE_ERROR = 'We couldn’t create your permit because part of this page didn’t download. Check your internet connection, then try again. Your entries are still here.';
+const PDF_DATA_ERROR = 'We couldn’t create your permit because of a problem with this permit’s details on our side. Your entries are still here. Choose another permit, or buy this one at a local BWL office.';
+const CHECKOUT_ERROR = 'We couldn’t create your permit. Your entries are still here. Try again, and if it keeps happening, try again later or buy your permit at a local BWL office.';
+const PAYLOAD_ERROR = 'Your details are too long to send. Shorten your name, address or email, then try again.';
+const UNEXPECTED_ERROR = 'Something went wrong on this page. Reload the page and try again. Your choices are kept, but you’ll need to enter your details again.';
 
 let catalogData = {};
-let catalogReady = false;
+// 'loading' until products.json is read and validated, then 'ready' or 'failed'. "Try again" returns to 'loading'.
+let catalogStatus = 'loading';
 let restoring = false;
 const selectionStorage = createSelectionStorage();
 const byId = id => document.getElementById(id);
@@ -255,21 +265,58 @@ function populateUSStates(selectEl) {
   }
 }
 
-async function loadProductData() {
+// Each failure says what went wrong in the console; visitors see LOAD_ERROR whatever the cause.
+async function fetchCatalog({ retry = false } = {}) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(new Error(`${CATALOG_SOURCE} did not respond within ${CATALOG_TIMEOUT_MS / 1000} seconds.`)), CATALOG_TIMEOUT_MS);
   try {
-    const res = await fetch(CATALOG_SOURCE);
-    if (!res.ok) throw new Error('Unable to load product catalog.');
-    const json = await res.json();
+    // A retry skips the HTTP cache so a cached bad copy cannot fail again.
+    const res = await fetch(CATALOG_SOURCE, { signal: controller.signal, ...(retry ? { cache: 'no-cache' } : {}) });
+    if (!res.ok) throw new Error(`${CATALOG_SOURCE} responded with HTTP ${res.status}.`);
+    let json;
+    try { json = await res.json(); }
+    catch (error) {
+      if (controller.signal.aborted) throw controller.signal.reason;
+      throw new Error(`${CATALOG_SOURCE} is not valid JSON: ${error.message}`);
+    }
+    return validateCatalog(resolveCatalogDates(json));
+  } catch (error) {
+    throw controller.signal.aborted ? controller.signal.reason : error;
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
-    catalogData = validateCatalog(resolveCatalogDates(json));
-    catalogReady = true;
+async function loadProductData({ retry = false } = {}) {
+  catalogStatus = 'loading';
+  try {
+    catalogData = await fetchCatalog({ retry });
+    catalogStatus = 'ready';
+    stateEl.disabled = false;
     populateStates();
   } catch (err) {
     console.error(err);
-    catalogReady = false;
+    catalogStatus = 'failed';
     stateEl.disabled = true;
-    showErrors([LOAD_ERROR]);
   }
+}
+
+// The load error stays on every screen until the catalog loads, with a button to try again in place.
+function loadErrorMessage() {
+  return { text: LOAD_ERROR, action: { label: 'Try again', busyLabel: 'Trying again…', run: retryCatalog } };
+}
+
+async function retryCatalog() {
+  if (catalogStatus === 'loading') return;
+  await loadProductData({ retry: true });
+  if (catalogStatus !== 'ready') {
+    showErrors([loadErrorMessage()]);
+    return;
+  }
+  hideErrors();
+  // The Try again button has gone, so focus returns to the question on screen.
+  screens[currentScreen].querySelector('h1').focus();
+  announce('Permits loaded. You can continue.');
 }
 
 // Areas are BWL offices that have a permit of the chosen type on sale or coming soon.
@@ -657,7 +704,7 @@ function renderScreen(name) {
 function screenComplete(name) {
   switch (name) {
     case 'start': return true;
-    case 'what': return catalogReady && Boolean(model.productType);
+    case 'what': return catalogStatus === 'ready' && Boolean(model.productType);
     case 'where': return Boolean(model.state && getSelectedOffice());
     case 'permit': return Boolean(model.product) && !quantityError(model.product, qtyEl.value) && !eligibilityError();
     case 'details': return Object.values(permitHolder).every(el => !getFieldErrorMessage(el));
@@ -701,6 +748,7 @@ function showScreen(name, { history: mode = 'push', focus = true } = {}) {
   // Moving focus to the new question tells screen reader users the screen changed; the first load keeps the browser's focus.
   if (focus) {
     hideErrors();
+    if (catalogStatus === 'failed') showErrors([loadErrorMessage()], { focus: false });
     window.scrollTo(0, 0);
     heading.focus({ preventScroll: true });
   }
@@ -763,17 +811,41 @@ function clearAllFieldErrors() {
   });
 }
 
+// A summary link can point to a field on an earlier screen, such as a name the permit cannot print.
 function focusField(field) {
+  const screen = field.closest('.screen');
+  if (screen?.hidden) {
+    const name = screen.id.replace('screen-', '');
+    returnToReview = currentScreen === 'review';
+    showScreen(name, { focus: false });
+    window.scrollTo(0, 0);
+  }
   const target = field.matches('fieldset') ? (field.querySelector('input:checked') || field.querySelector('input')) : field;
   target?.focus();
 }
 
-// Messages are strings, or { text, field } so the summary can link each field error to its control.
-function showErrors(messages) {
+// Messages are strings, { text, field } so the summary can link each field error to its control, or
+// { text, action: { label, busyLabel, run } } for a problem a button can retry.
+function showErrors(messages, { focus = true } = {}) {
   errorList.replaceChildren();
   for (const m of messages) {
     const li = document.createElement('li');
-    if (m?.field) {
+    if (m?.action) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'error-action';
+      button.textContent = m.action.label;
+      button.addEventListener('click', async () => {
+        if (button.getAttribute('aria-disabled') === 'true') return;
+        button.setAttribute('aria-disabled', 'true');
+        button.setAttribute('aria-busy', 'true');
+        button.textContent = m.action.busyLabel || m.action.label;
+        await m.action.run();
+      });
+      const text = document.createElement('span');
+      text.textContent = m.text;
+      li.append(text, ' ', button);
+    } else if (m?.field) {
       const link = document.createElement('a');
       link.href = `#${m.field.id}`;
       link.textContent = m.text;
@@ -788,7 +860,7 @@ function showErrors(messages) {
     errorList.appendChild(li);
   }
   errorBox.hidden = false;
-  errorBox.focus();
+  if (focus) errorBox.focus();
 }
 
 function hideErrors() {
@@ -830,7 +902,8 @@ function reviewErrors() {
 function screenErrors(name) {
   switch (name) {
     case 'what':
-      if (!catalogReady) return [LOAD_ERROR];
+      if (catalogStatus === 'loading') return [LOADING_MESSAGE];
+      if (catalogStatus === 'failed') return [loadErrorMessage()];
       return model.productType ? [] : [{ text: 'Select what you are collecting.', field: productTypeGroup }];
     case 'where':
       if (!model.state) return [{ text: 'Choose a state.', field: stateEl }];
@@ -864,7 +937,7 @@ function continueFrom(name) {
   if (name === 'review') {
     confirmCheckout().catch((error) => {
       console.error(error);
-      showErrors(['We could not prepare your permit. Your entries are still here. Please try again.']);
+      showErrors([CHECKOUT_ERROR]);
     });
     return;
   }
@@ -1080,7 +1153,8 @@ async function confirmCheckout() {
   const payload = buildCheckoutPayload({ model, holder: readPermitHolder(permitHolder), reference, permitNumber, haulTags: tagCount, eligibility });
   const payloadSize = payloadSizeBytes(payload);
   if (payloadSize > MAX_PAYLOAD_BYTES) {
-    showErrors([`Form data is too large (${payloadSize} bytes). Shorten text entries and try again.`]);
+    console.error(`Checkout payload is ${payloadSize} bytes; the limit is ${MAX_PAYLOAD_BYTES}.`);
+    showErrors([PAYLOAD_ERROR]);
     return;
   }
 
@@ -1093,7 +1167,10 @@ async function confirmCheckout() {
     ({ blob, pageCount } = await buildPermitPackagePdf(packageSpec({ permitNumber, noFee, total, tagCount })));
     if (revision !== checkoutRevision || snapshot !== JSON.stringify(checkoutSnapshot())) return;
   } catch (error) {
-    if (revision === checkoutRevision) showErrors([`We could not create your permit. Your entries are still here. ${error.message}`]);
+    if (revision === checkoutRevision) {
+      console.error(error);
+      showErrors([pdfFailureMessage(error)]);
+    }
     return;
   } finally {
     setCheckoutPending(false);
@@ -1103,6 +1180,21 @@ async function confirmCheckout() {
   issued = { reference, permitNumber, url: URL.createObjectURL(blob), payload, noFee, pageCount, tagCount };
   showScreen('done');
   document.dispatchEvent(new CustomEvent('sfpx:pdf-ready'));
+}
+
+// The field checks catch characters the permit cannot print, so one reaching the PDF is either in an entry the
+// checks missed (sent back to that field) or in catalog text (a problem on our side).
+function pdfFailureMessage(error) {
+  if (!(error instanceof PermitPdfError)) return CHECKOUT_ERROR;
+  if (error.code === 'engine-unavailable') return PDF_ENGINE_ERROR;
+  if (error.code === 'unprintable-character') {
+    const [id, field] = Object.entries(permitHolder).find(([, el]) => el.value.normalize('NFC').includes(error.character)) || [];
+    if (!field) return PDF_DATA_ERROR;
+    const text = unprintableMessage(FIELD_LABELS[id], field.value.trim()) || CHECKOUT_ERROR;
+    setFieldError(field, text);
+    return { text, field };
+  }
+  return CHECKOUT_ERROR;
 }
 
 function clearPermitHolder() {
@@ -1151,6 +1243,7 @@ async function boot() {
   populateUSStates(permitHolder.AddrState);
   clearRestoredFormState();
   await loadProductData();
+  if (catalogStatus === 'failed') showErrors([loadErrorMessage()], { focus: false });
   restoring = true;
   try { restoreState(); } finally { restoring = false; }
   // A reload keeps the screen when its earlier answers were restored; purchaser details never are.
@@ -1163,5 +1256,13 @@ async function boot() {
   document.documentElement.dataset.appReady = 'true';
   document.dispatchEvent(new CustomEvent('sfpx:ready'));
 }
+
+// Errors this page's own scripts did not catch would otherwise leave a button that silently does nothing.
+// Errors from browser extensions or other origins are left alone.
+window.addEventListener('error', (event) => {
+  if (document.documentElement.dataset.appReady !== 'true') return;
+  if (!event.filename || new URL(event.filename, location.href).origin !== location.origin) return;
+  showErrors([UNEXPECTED_ERROR]);
+});
 
 export const ready = boot();

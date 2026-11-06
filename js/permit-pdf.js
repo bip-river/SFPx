@@ -1,16 +1,36 @@
 import { PDF_STYLES, documentContent, packageSections, sectionsToContent } from './permit-documents.js';
 
 let enginePromise;
+let engineAttempts = 0;
+
+// The app explains each kind of failure in its own words; `message` keeps the technical detail for the console.
+// code 'engine-unavailable': the PDF engine or font did not download. code 'unprintable-character': `character`
+// is not in the embedded font.
+export class PermitPdfError extends Error {
+  constructor(code, message, details = {}) {
+    super(message, details.cause ? { cause: details.cause } : undefined);
+    this.name = 'PermitPdfError';
+    this.code = code;
+    Object.assign(this, details);
+  }
+}
 
 async function loadPdfEngine() {
   if (!enginePromise) {
-    enginePromise = Promise.all([import('../vendor/pdfmake.js'), import('../vendor/permit-font.js')])
+    // Browsers remember a module that failed to download and fail every later import of the same URL, so a
+    // retry asks for a new one. Both files are self-contained, so a second copy changes nothing else.
+    const retry = engineAttempts++ ? `?attempt=${engineAttempts}` : '';
+    enginePromise = Promise.all([import(`../vendor/pdfmake.js${retry}`), import(`../vendor/permit-font.js${retry}`)])
       .then(([engine, font]) => {
         const pdfMake = engine.default;
         pdfMake.addVirtualFileSystem(font.default);
         pdfMake.addFonts({ DejaVu: { normal: 'DejaVuSans.ttf' } });
         return { pdfMake, supported: new Set(font.codePoints) };
-      }).catch(error => { enginePromise = null; throw error; });
+      }).catch(error => {
+        // A later attempt downloads again (see above), so a dropped connection is not permanent.
+        enginePromise = null;
+        throw new PermitPdfError('engine-unavailable', `The PDF engine or its font did not load: ${error?.message || error}`, { cause: error });
+      });
   }
   return enginePromise;
 }
@@ -29,7 +49,7 @@ function checkGlyphs(content, supported) {
   for (const text of collectText(content)) {
     for (const character of text.normalize('NFC')) {
       if (!['\r', '\n'].includes(character) && !supported.has(character.codePointAt(0))) {
-        throw new Error(`The embedded PDF font does not support U+${character.codePointAt(0).toString(16).toUpperCase()}. The permit has not been generated.`);
+        throw new PermitPdfError('unprintable-character', `The embedded PDF font does not support U+${character.codePointAt(0).toString(16).toUpperCase()}. The permit has not been generated.`, { character });
       }
     }
   }

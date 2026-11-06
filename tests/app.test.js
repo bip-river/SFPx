@@ -10,7 +10,9 @@ const html = await readFile(new URL('index.html', root), 'utf8');
 const catalog = JSON.parse(await readFile(new URL('products.json', root), 'utf8'));
 const HOLDER = { FirstName: 'Test', LastName: 'Purchaser', AddressLine1: '123 Test Street', City: 'Test City', AddrState: 'UT', Zip: '84037', DeliveryEmail: 'test@example.com', ConfirmEmail: 'test@example.com' };
 
-async function app(t, { data = structuredClone(catalog), saved, storageBlocked = false, loadFails = false, hash = '', markup = html } = {}) {
+// `fetch` replaces the catalog request (setFetch swaps it mid-test); `blocked` lists dynamically imported modules that
+// fail to download, like a dropped connection; `fastTimeout` makes the catalog timeout fire at once.
+async function app(t, { data = structuredClone(catalog), saved, storageBlocked = false, loadFails = false, hash = '', markup = html, fetch, waitReady = true, fastTimeout = false } = {}) {
   const dom = new JSDOM(markup, { url: `http://localhost/${hash}`, runScripts: 'outside-only', pretendToBeVisual: true });
   t.after(() => dom.window.close());
   const w = dom.window;
@@ -21,7 +23,10 @@ async function app(t, { data = structuredClone(catalog), saved, storageBlocked =
     static now() { return new NativeDate(now).getTime(); }
   };
   const urls = new Map(), revoked = [];
-  w.fetch = async () => { if (loadFails) throw new Error('test network failure'); return { ok: true, json: async () => data }; };
+  let fetchCatalog = fetch || (async () => { if (loadFails) throw new Error('test network failure'); return { ok: true, json: async () => data }; });
+  w.fetch = (...args) => fetchCatalog(...args);
+  const blocked = new Set();
+  if (fastTimeout) { const native = w.setTimeout; w.setTimeout = (fn, ms, ...rest) => native(fn, ms === 15000 ? 1 : ms, ...rest); }
   w.TextEncoder = TextEncoder;
   w.TextDecoder = TextDecoder;
   w.setImmediate = setImmediate;
@@ -42,6 +47,7 @@ async function app(t, { data = structuredClone(catalog), saved, storageBlocked =
       modules.set(url.href, new SourceTextModule(source, {
         context: dom.getInternalVMContext(), identifier: url.href,
         importModuleDynamically: async (specifier, referencing) => {
+          if ([...blocked].some(path => new URL(specifier, referencing.identifier).href === new URL(path, root).href)) throw new w.TypeError(`Failed to fetch dynamically imported module: ${specifier}`);
           const dependency = await loadModule(new URL(specifier, referencing.identifier));
           if (dependency.status === 'unlinked') await dependency.link((name, parent) => loadModule(new URL(name, parent.identifier)));
           if (dependency.status === 'linked') await dependency.evaluate();
@@ -54,7 +60,7 @@ async function app(t, { data = structuredClone(catalog), saved, storageBlocked =
   const entry = await loadModule(new URL('app.js', root));
   await entry.link((specifier, referencing) => loadModule(new URL(specifier, referencing.identifier)));
   await entry.evaluate();
-  await entry.namespace.ready;
+  if (waitReady) await entry.namespace.ready;
   const $ = selector => w.document.querySelector(selector);
   const input = (selector, value) => { const el = $(selector); el.value = value; el.dispatchEvent(new w.Event('input', { bubbles: true })); };
   const change = (selector, value) => { const el = $(selector); if (value !== undefined) el.value = value; el.dispatchEvent(new w.Event('change', { bubbles: true })); };
@@ -93,7 +99,8 @@ async function app(t, { data = structuredClone(catalog), saved, storageBlocked =
   };
   // The browser's Back button: history traversal fires popstate asynchronously.
   const goBack = () => new Promise(resolve => { w.addEventListener('popstate', () => setTimeout(resolve, 0), { once: true }); w.history.back(); });
-  return { w, $, input, change, check, screen, cont, start, pickPermit, choose, holder, agree, payload, generate, goBack, urls, revoked, setNow(value) { now = value; } };
+  const errors = () => ($('#errorBox').hidden ? '' : $('#errorList').textContent);
+  return { w, $, input, change, check, screen, cont, start, pickPermit, choose, holder, agree, payload, generate, goBack, urls, revoked, blocked, errors, ready: entry.namespace.ready, setNow(value) { now = value; }, setFetch(fn) { fetchCatalog = fn; } };
 }
 
 const savedFor = (product, extra = {}) => ({ model: { state: 'AK', officeId: 'AK-ANCH', productType: 'fuelwood', productKey: product.id, qty: product.minQty, ...extra } });
@@ -347,7 +354,7 @@ test('malformed catalog fails closed with a visible error', async t => {
     assert.equal(a.$('#errorBox').hidden, false);
     a.start(); a.$('#ptype_fuelwood').click(); a.cont();
     assert.equal(a.screen(), 'what');
-    assert.match(a.$('#errorList').textContent, /could not load/);
+    assert.match(a.$('#errorList').textContent, /couldn’t load the permits available online/);
   }
 });
 
@@ -363,7 +370,7 @@ test('unsafe attachment URLs are blocked after browser URL normalization', async
 test('malformed saved state, unavailable storage, and fetch failures are handled', async t => {
   const a = await app(t, { saved: '{broken' }); a.choose();
   const b = await app(t, { storageBlocked: true }); b.choose(); b.holder(); b.agree(); await b.generate(); assert.ok(b.payload().idempotencyKey);
-  const c = await app(t, { loadFails: true }); assert.equal(c.$('#state').disabled, true); assert.match(c.$('#errorList').textContent, /could not load/);
+  const c = await app(t, { loadFails: true }); assert.equal(c.$('#state').disabled, true); assert.match(c.errors(), /couldn’t load the permits available online/);
 });
 
 test('Reset during asynchronous PDF generation cannot publish a stale permit', async t => {
@@ -379,16 +386,141 @@ test('Reset during asynchronous PDF generation cannot publish a stale permit', a
   assert.equal(a.$('#permitDownloadBtn').disabled, true);
 });
 
-test('PDF failure keeps purchaser entries and allows a corrected retry', async t => {
-  const a = await app(t); a.choose('fuelwood', 3); a.holder({ FirstName: '\u{10FFFF}' }); a.agree();
-  await assert.rejects(a.generate(), /does not support/);
+const ENGINE_ERROR = 'We couldn’t create your permit because part of this page didn’t download. Check your internet connection, then try again. Your entries are still here.';
+
+test('a PDF engine that fails to download is explained plainly, keeps entries and works on retry', async t => {
+  const a = await app(t); a.choose('fuelwood', 3); a.holder(); a.agree();
+  a.blocked.add('vendor/pdfmake.js');
+  await assert.rejects(a.generate(), /part of this page didn’t download/);
+  assert.equal(a.errors(), ENGINE_ERROR, 'no file paths or browser error text reach the visitor');
+  assert.equal(a.w.document.activeElement, a.$('#errorBox'));
   assert.equal(a.screen(), 'review');
-  assert.equal(a.$('#FirstName').value, '\u{10FFFF}');
+  assert.equal(a.$('#FirstName').value, 'Test');
+  assert.equal(a.$('#agree').checked, true);
   assert.equal(a.$('#confirmPaygov').hasAttribute('aria-disabled'), false);
   assert.equal(a.$('#permitDownloadBtn').disabled, true);
-  a.$('#reviewSummary a[href="#details"]').click();
-  a.input('#FirstName', 'José'); a.cont(); await a.generate();
-  assert.match((await readPdf([...a.urls.values()].at(-1))).text, /Printed name: José Purchaser/);
+  a.blocked.clear();
+  await a.generate();
+  assert.match((await readPdf([...a.urls.values()].at(-1))).text, /Printed name: Test Purchaser/);
+  const b = await app(t); b.choose(); b.holder(); b.agree();
+  b.blocked.add('vendor/permit-font.js');
+  await assert.rejects(b.generate(), /part of this page didn’t download/);
+});
+
+test('characters the permit cannot print are caught at the field, before checkout', async t => {
+  const a = await app(t); a.choose();
+  a.input('#FirstName', 'Test 🌲');
+  assert.equal(a.$('#FirstName').hasAttribute('aria-invalid'), false, 'not while typing');
+  a.change('#FirstName');
+  assert.equal(a.$('#FirstName-error').textContent, 'First name can’t include “🌲” because the permit can’t print it. Remove it or type it another way.');
+  a.holder({ FirstName: 'Test 🌲', City: '東京' });
+  assert.equal(a.screen(), 'details', 'Continue is blocked');
+  assert.deepEqual([...a.w.document.querySelectorAll('#errorList a')].map(link => [link.getAttribute('href'), link.textContent]), [
+    ['#FirstName', 'First name can’t include “🌲” because the permit can’t print it. Remove it or type it another way.'],
+    ['#City', 'City can’t include “東” or “京” because the permit can’t print them. Remove them or type them another way.']
+  ]);
+  a.input('#FirstName', 'Test');
+  assert.equal(a.$('#FirstName').hasAttribute('aria-invalid'), false, 'fixing it clears the error');
+  a.holder({ FirstName: 'Áłtsé', LastName: 'Ελένη Борис' });
+  assert.equal(a.screen(), 'review', 'Latin, Navajo, Greek and Cyrillic letters the permit prints are accepted');
+});
+
+test('an unprintable entry that reaches the PDF links back to its field, then Continue returns to checkout', async t => {
+  const a = await app(t); a.choose(); a.holder(); a.agree();
+  // A value set without events skips the field check, so only the PDF's own check can catch it.
+  a.$('#City').value = 'Test 東';
+  await assert.rejects(a.generate(), /City can’t include/);
+  const link = a.$('#errorList a');
+  assert.equal(link.getAttribute('href'), '#City');
+  assert.equal(link.textContent, 'City can’t include “東” because the permit can’t print it. Remove it or type it another way.');
+  link.click();
+  assert.equal(a.screen(), 'details', 'the link opens the screen the field is on');
+  assert.equal(a.w.document.activeElement, a.$('#City'));
+  assert.equal(a.$('#City').getAttribute('aria-invalid'), 'true');
+  a.input('#City', 'Test City'); a.cont();
+  assert.equal(a.screen(), 'review', 'Continue returns to the check screen');
+  a.check('#agree'); await a.generate();
+});
+
+test('unexpected script errors are reported, but errors from other origins are not', async t => {
+  const a = await app(t); a.start();
+  a.w.dispatchEvent(new a.w.ErrorEvent('error', { message: 'boom', filename: 'chrome-extension://abc/content.js' }));
+  assert.equal(a.errors(), '');
+  a.w.dispatchEvent(new a.w.ErrorEvent('error', { message: 'boom', filename: 'http://localhost/app.js' }));
+  assert.equal(a.errors(), 'Something went wrong on this page. Reload the page and try again. Your choices are kept, but you’ll need to enter your details again.');
+});
+
+test('an oversized checkout payload asks for shorter entries instead of quoting bytes', async t => {
+  const a = await app(t); a.choose(); a.holder(); a.agree();
+  a.w.TextEncoder = class { encode() { return { length: 5000 }; } };
+  a.$('#confirmPaygov').click();
+  assert.equal(a.errors(), 'Your details are too long to send. Shorten your name, address or email, then try again.');
+  assert.equal(a.urls.size, 0, 'nothing is generated');
+});
+
+const LOAD_ERROR = 'We couldn’t load the permits available online. Check your internet connection, then try again. If it keeps happening, try again later or contact a local BWL office.';
+const until = async (condition, what) => {
+  for (let n = 0; n < 200; n++) { if (condition()) return; await new Promise(resolve => setTimeout(resolve, 5)); }
+  throw new Error(`Timed out waiting for ${what}`);
+};
+
+test('a catalog that fails to load stays explained on every screen, and Try again recovers without a reload', async t => {
+  let attempts = 0;
+  const failing = async () => { attempts++; return { ok: false, status: 503, json: async () => ({}) }; };
+  const a = await app(t, { fetch: failing });
+  const tryAgain = () => a.$('#errorList button');
+  assert.equal(a.screen(), 'start');
+  assert.equal(a.errors(), `${LOAD_ERROR} Try again`);
+  assert.notEqual(a.w.document.activeElement, a.$('#errorBox'), 'the first load leaves focus with the browser');
+  a.start();
+  assert.equal(a.screen(), 'what');
+  assert.equal(a.errors(), `${LOAD_ERROR} Try again`, 'the error is still shown on the first question');
+  assert.equal(a.w.document.activeElement, a.$('#whatTitle'));
+  a.$('#ptype_fuelwood').click(); a.cont();
+  assert.equal(a.screen(), 'what', 'Continue cannot pass a missing catalog');
+  assert.equal(a.w.document.activeElement, a.$('#errorBox'));
+
+  tryAgain().click();
+  assert.equal(tryAgain().textContent, 'Trying again…');
+  assert.equal(tryAgain().getAttribute('aria-busy'), 'true');
+  await until(() => attempts === 2 && !tryAgain()?.hasAttribute('aria-busy'), 'the retry to fail');
+  assert.equal(a.errors(), `${LOAD_ERROR} Try again`, 'a failed retry says the same thing');
+  assert.equal(a.w.document.activeElement, a.$('#errorBox'));
+
+  let retryInit;
+  a.setFetch(async (url, init) => { retryInit = init; return { ok: true, json: async () => structuredClone(catalog) }; });
+  tryAgain().click();
+  await until(() => a.$('#errorBox').hidden, 'the catalog to load');
+  assert.equal(retryInit.cache, 'no-cache', 'a retry does not reuse a cached bad copy');
+  assert.equal(a.w.document.activeElement, a.$('#whatTitle'), 'focus returns to the question');
+  assert.equal(a.$('#state').disabled, false);
+  a.cont(); assert.equal(a.screen(), 'where', 'the chosen collection type is kept');
+  a.change('#state', 'AK'); assert.ok(a.$('input[name=office]'));
+});
+
+test('bad catalog responses and a catalog that never answers all show the load error', async t => {
+  for (const response of [
+    async () => ({ ok: true, json: async () => { throw new SyntaxError('Unexpected token'); } }),
+    async () => ({ ok: false, status: 404, json: async () => ({}) }),
+    async () => ({ ok: true, json: async () => [] })
+  ]) {
+    const a = await app(t, { fetch: response });
+    assert.equal(a.errors(), `${LOAD_ERROR} Try again`);
+  }
+  // A request that stalls is cut off by the timeout instead of leaving the visitor waiting.
+  const stalled = (url, { signal }) => new Promise((resolve, reject) => signal.addEventListener('abort', () => reject(signal.reason)));
+  const b = await app(t, { fetch: stalled, fastTimeout: true });
+  assert.equal(b.errors(), `${LOAD_ERROR} Try again`);
+});
+
+test('Continue while permits are still loading says so, then works once they arrive', async t => {
+  let release;
+  const slow = () => new Promise(resolve => { release = () => resolve({ ok: true, json: async () => structuredClone(catalog) }); });
+  const a = await app(t, { fetch: slow, waitReady: false });
+  a.start(); a.$('#ptype_fuelwood').click(); a.cont();
+  assert.equal(a.errors(), 'Permits are still loading. Wait a moment, then select Continue again.');
+  release(); await a.ready;
+  a.cont(); assert.equal(a.screen(), 'where');
 });
 
 test('address-state change alone updates checkout readiness', async t => {
@@ -472,7 +604,7 @@ test('checkout works without crypto.randomUUID and reports unexpected failures',
   await a.goBack(); a.$('#reviewSummary a[href="#details"]').click(); a.input('#FirstName', 'Changed'); a.cont();
   Object.defineProperty(a.w.crypto, 'getRandomValues', { value: undefined, configurable: true });
   a.$('#confirmPaygov').click(); await new Promise(resolve => setTimeout(resolve, 0));
-  assert.match(a.$('#errorList').textContent, /could not prepare your permit/);
+  assert.equal(a.errors(), 'We couldn’t create your permit. Your entries are still here. Try again, and if it keeps happening, try again later or buy your permit at a local BWL office.');
   assert.equal(a.$('#FirstName').value, 'Changed');
 });
 

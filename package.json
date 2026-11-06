@@ -5,7 +5,7 @@
   "scripts": {
     "test": "node --experimental-vm-modules --test tests/*.test.js",
     "check": "node scripts/check.mjs",
-    "test:browser": "node tests/browser.mjs",
+    "test:browser": "node tests/browser.mjs && node tests/browser-errors.mjs",
     "build:pdf-vendor": "node scripts/build-pdf-vendor.mjs",
     "build:font-vendor": "node scripts/build-font-vendor.mjs",
     "build:documents": "node scripts/build-documents.mjs",
