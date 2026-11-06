@@ -57,6 +57,10 @@
 .demo-details summary { min-height: 32px; cursor: pointer; color: var(--demo-muted); }
 .demo-state { max-height: 260px; overflow: auto; margin: 6px 0 0; padding: 8px; background: #11151a; border-radius: 6px; color: var(--demo-text); font: 12px/1.4 ui-monospace, Menlo, Consolas, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
 
+/* Text on the panel carries the panel's colour itself. WebKit's hit-testing inside this fixed, scrolling panel
+   can skip the panel, so a contrast check would otherwise measure the text against the page underneath. */
+.demo-drawer-body :is(h2, h3, h4, p, label, summary, .demo-switch-label) { background-color: var(--demo-bg); }
+
 /* On a phone the drawer is a bottom sheet over the lower part of the page. */
 @media (max-width: 699px) {
   .demo-drawer { right: 8px; bottom: 8px; }

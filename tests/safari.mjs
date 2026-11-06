@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { Builder, By, Key } from 'selenium-webdriver';
+import { Builder, By, Key, until } from 'selenium-webdriver';
 import { Select } from 'selenium-webdriver/lib/select.js';
 import { readFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
@@ -53,7 +53,11 @@ try {
     await onPage(url => url.includes('/pay-ure/?token='), 'Pay.ure');
     await ready();
     await accessibility('Safari Pay.ure payment step');
-    await driver.findElement(By.css('label[for=method_card]')).click();
+    // Safari can report the new address before the page is laid out; click once step 1 is on view.
+    await driver.wait(() => driver.executeScript("return document.readyState === 'complete' && !document.getElementById('view-pay').hidden"), 10000, 'Pay.ure step 1');
+    const cardMethod = await driver.findElement(By.css('label[for=method_card]'));
+    await driver.wait(until.elementIsVisible(cardMethod), 10000, 'the card option');
+    await cardMethod.click();
     await fill('cardName', 'Test Purchaser'); await fill('cardNumber', '4111 1111 1111 1111'); await fill('cardExpiry', '12/30'); await fill('cardCode', '123');
     await driver.findElement(By.css('#view-pay button[type=submit]')).click();
     await driver.wait(() => driver.executeScript("return !document.getElementById('view-review').hidden"), 10000, 'Pay.ure review step');
