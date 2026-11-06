@@ -1155,7 +1155,9 @@ function setCheckoutPending(pending) {
   }
 }
 
-async function confirmCheckout() {
+// Issuing right after the return from Pay.ure happens without a click. Browsers skip, on Back, an entry that a
+// page added without one, so that issue replaces the history entry instead of adding one.
+async function confirmCheckout({ history: mode = 'push' } = {}) {
   if (checkoutPending) return;
   const current = getProductsForSelection().find(product => product.id === model.product?.id);
   if (!current || current !== model.product || quantityError(model.product, qtyEl.value)) {
@@ -1211,7 +1213,7 @@ async function confirmCheckout() {
 
   clearIssued();
   issued = { reference, permitNumber, url: URL.createObjectURL(blob), payload, noFee, pageCount, tagCount, payment: paid };
-  showScreen('done');
+  showScreen('done', { history: mode });
   document.dispatchEvent(new CustomEvent('sfpx:pdf-ready'));
 }
 
@@ -1306,7 +1308,7 @@ function applyResume(resume, { history: mode, focus }) {
   }
   if (resume.error) showErrors([resume.error], { focus });
   if (resume.issue && currentScreen === 'review') {
-    confirmCheckout().catch((error) => {
+    confirmCheckout({ history: 'replace' }).catch((error) => {
       console.error(error);
       showErrors([CHECKOUT_ERROR]);
     });

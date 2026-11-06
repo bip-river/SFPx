@@ -17,7 +17,13 @@ try {
   const element = id => driver.findElement(By.id(id));
   const ready = () => driver.wait(() => driver.executeScript("return document.documentElement.dataset.appReady === 'true'"), 30000);
   const screen = () => driver.executeScript("return [...document.querySelectorAll('.screen')].find(el => !el.hidden)?.id.replace('screen-', '')");
-  const waitForScreen = (name, timeout = 10000) => driver.wait(async () => (await screen()) === name, timeout, `screen ${name}`);
+  // A timeout says where Safari actually is, which may be the other site.
+  const waitForScreen = async (name, timeout = 10000) => {
+    try { await driver.wait(async () => (await screen()) === name, timeout); }
+    catch (error) {
+      throw new Error(`Waited ${timeout}ms for screen ${name}; at ${await driver.getCurrentUrl()} (“${await driver.getTitle()}”), screen ${await screen()}`, { cause: error });
+    }
+  };
   const cont = async () => driver.findElement(By.css(`#screen-${await screen()} button[type=submit]`)).click();
   const fill = async (id, value) => { const field = await element(id); await field.clear(); await field.sendKeys(value); };
   const payload = () => driver.executeScript("return JSON.parse(document.querySelector('#handoff .payload-content').textContent)");
@@ -88,8 +94,14 @@ try {
   assert.equal((await payload()).total, 10);
   assert.equal((await payload()).payment.last4, '1111');
   await accessibility('Safari done');
-  await driver.navigate().back(); await waitForScreen('review');
-  assert.deepEqual(await driver.executeScript('return window.__testErrors'), []);
+  // The permit replaced the return's history entry, so Back goes to Pay.ure, which will not take the payment again.
+  // Opening the permit service again asks for the purchaser details.
+  await driver.navigate().back();
+  await onPage(url => url.includes('/pay-ure/?token='), 'Pay.ure after Back'); await ready();
+  assert.equal(await driver.getTitle(), 'You’ve already paid – Pay.ure');
+  await accessibility('Safari Pay.ure already paid');
+  await driver.get(server.url); await ready(); await trackErrors();
+  await waitForScreen('details');
   await driver.navigate().refresh(); await ready(); await trackErrors();
   assert.equal(await screen(), 'details', 'purchaser details must be reentered');
   assert.equal(await (await element('FirstName')).getAttribute('value'), '');

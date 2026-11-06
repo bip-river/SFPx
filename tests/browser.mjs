@@ -170,14 +170,17 @@ try {
     assert.match(paidPdf.text, /Printed name: Áłtsé José Muñoz Żółć/);
     assert.match(paidPdf.text, /Tag 2 of 2/, 'one cord of firewood comes with two haul tags');
 
-    // The browser's Back button returns to the check screen; the permit is already paid for.
+    // The permit replaced the return's history entry, so the browser's Back button goes to Pay.ure, which
+    // will not take the payment again. Opening the permit service again asks for the purchaser details.
     await page.goBack();
-    assert.equal(await screen(), 'review');
-    assert.equal(await page.locator('#confirmPay').textContent(), 'Get my permit');
-    await page.locator('#confirmPay').click();
-    await waitForDone();
-    assert.equal((await payload()).idempotencyKey, first.idempotencyKey);
-    assert.equal((await payload()).payment.trackingId, first.payment.trackingId);
+    await page.waitForURL(/\/pay-ure\/\?token=/);
+    await pageReady();
+    assert.equal(await page.title(), 'You’ve already paid – Pay.ure');
+    assert.match(await page.locator('#finishedText').textContent(), new RegExp(`Tracking ID ${first.payment.trackingId}\\.`));
+    await checkAccessibility(page, 'Pay.ure already paid');
+    await page.goto(url);
+    await pageReady();
+    assert.equal(await screen(), 'details', 'purchaser details must be reentered');
 
     await page.reload(); await page.waitForFunction(() => document.documentElement.dataset.appReady === 'true');
     assert.equal(await screen(), 'details', 'purchaser details must be reentered after a reload');

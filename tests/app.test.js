@@ -87,12 +87,16 @@ async function app(t, { data = structuredClone(catalog), saved, storageBlocked =
   };
   // Opens the BWL page again at `url` in the same tab, as a link, the address bar or a Back button would.
   const revisit = async (url) => { await open(url, dumpStorage(page.w)); };
+  // After a return from Pay.ure the permit replaces the check screen's history entry, so Back leaves for Pay.ure.
+  // A visitor still reaches the check screen again in that page, for example when the permit failed and was
+  // retried, so tests that need it there move within the page.
+  const toReview = () => { page.w.dispatchEvent(new page.w.PopStateEvent('popstate', { state: { screen: 'review' } })); assert.equal(screen(), 'review'); };
   // The browser's Back button: history traversal fires popstate asynchronously.
   const goBack = () => new Promise(resolve => { page.w.addEventListener('popstate', () => setTimeout(resolve, 0), { once: true }); page.w.history.back(); });
   const errors = () => ($('#errorBox').hidden ? '' : $('#errorList').textContent);
   return {
     get w() { return page.w; }, get ready() { return page.ready; }, get navigations() { return page.navigations; },
-    $, input, change, check, screen, cont, start, pickPermit, choose, holder, agree, payload, generate, visitPayure, leftFor, revisit, goBack, urls, revoked, blocked, errors,
+    $, input, change, check, screen, cont, start, pickPermit, choose, holder, agree, payload, generate, visitPayure, leftFor, revisit, toReview, goBack, urls, revoked, blocked, errors,
     setNow(value) { now = value; }, setFetch(fn) { fetchCatalog = fn; }
   };
 }
@@ -155,10 +159,10 @@ test('paid checkout validates holder data, preserves retry identity, and replace
   assert.equal(first.haulTags, 2, 'one tag for each half cord');
   assert.match(a.$('#permitCard').textContent, new RegExp(`Permit number ${first.permitNumber}`));
   assert.match(a.$('#packageHint').textContent, /^PDF, \d+ pages\.$/);
-  await a.goBack(); assert.equal(a.screen(), 'review');
+  a.toReview();
   await a.generate(); assert.equal(a.payload().idempotencyKey, first.idempotencyKey);
   assert.equal(a.payload().permitNumber, first.permitNumber, 'a retry keeps its permit number');
-  await a.goBack();
+  a.toReview();
   a.$('#reviewSummary a[href="#details"]').click(); assert.equal(a.screen(), 'details');
   a.input('#FirstName', 'Changed');
   assert.equal(a.$('#handoff').textContent, '');
@@ -212,7 +216,7 @@ test('reset clears personal data, storage, payload, and transaction identity', a
   assert.equal(a.w.sessionStorage.getItem('sfp-demo-transaction-ref'), null);
   assert.equal(a.$('#handoff').textContent, '');
   a.choose(); a.holder(); a.agree(); await a.generate(); assert.notEqual(a.payload().idempotencyKey, first);
-  await a.goBack(); a.$('#resetAll').click();
+  a.toReview(); a.$('#resetAll').click();
   assert.equal(a.screen(), 'what');
   assert.equal(a.$('#FirstName').value, '');
 });
@@ -600,7 +604,7 @@ test('checkout works without crypto.randomUUID and reports unexpected failures',
   Object.defineProperty(a.w.crypto, 'randomUUID', { value: undefined, configurable: true });
   await a.generate();
   assert.match(a.payload().idempotencyKey, /^TX-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
-  await a.goBack(); a.$('#reviewSummary a[href="#details"]').click(); a.input('#FirstName', 'Changed'); a.cont();
+  a.toReview(); a.$('#reviewSummary a[href="#details"]').click(); a.input('#FirstName', 'Changed'); a.cont();
   Object.defineProperty(a.w.crypto, 'getRandomValues', { value: undefined, configurable: true });
   a.$('#confirmPay').click(); await new Promise(resolve => setTimeout(resolve, 0));
   assert.equal(a.errors(), 'We couldn’t create your permit. Your entries are still here. Try again, and if it keeps happening, try again later or buy your permit at a local BWL office.');
@@ -775,7 +779,7 @@ test('form values a browser restores on reload are cleared', async t => {
 test('holder blur and unchanged change events preserve the prepared permit and button text nodes', async t => {
   const a = await app(t); a.choose(); a.holder(); a.agree(); await a.generate();
   const reference = a.payload().idempotencyKey;
-  await a.goBack();
+  a.toReview();
   const labelNode = a.$('#confirmPay').firstChild;
   a.$('#FirstName').dispatchEvent(new a.w.Event('blur'));
   a.$('#FirstName').dispatchEvent(new a.w.Event('change'));
@@ -835,9 +839,9 @@ test('Pay sends the visitor to Pay.ure with a token, and the permit follows the 
   // The fee line wraps in the PDF.
   assert.ok(pdfText.replace(/\s+/g, ' ').includes(`$10.00 paid on Pay.ure, tracking ID ${paid.payment.trackingId} (demo: nothing was charged)`));
 
-  // Back on the check screen, the permit is already paid for.
-  await a.goBack();
-  assert.equal(a.screen(), 'review');
+  assert.equal(a.w.history.length, 1, 'the permit replaced the return’s history entry, so Back goes to Pay.ure');
+  // Back on the check screen (after a failed download, say), the permit is already paid for.
+  a.toReview();
   assert.equal(a.$('#confirmPay').textContent, 'Get my permit');
   assert.equal(a.$('#payNote').textContent, `You’ve paid $10.00 on Pay.ure with Visa ending 1111. Tracking ID ${paid.payment.trackingId}.`);
   const left = a.navigations.length;

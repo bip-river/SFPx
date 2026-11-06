@@ -43,7 +43,7 @@ Both sites share an origin, so the demo's "server calls" are sessionStorage read
 
 | What happened | What the visitor sees |
 | --- | --- |
-| Paid | The finished permit. Back from it shows the check screen with "Get my permit", which issues the permit again without another payment. |
+| Paid | The finished permit, which replaces the return's history entry: browsers skip, on Back, an entry a page adds without a click, so a new entry would behave differently in each browser. Back goes to Pay.ure, which says the payment is complete. If the permit couldn't be prepared after paying (a download failure, say), the check screen offers "Get my permit", which retries without another payment. |
 | Cancelled on Pay.ure | The check screen with every entry kept and "You cancelled your payment on Pay.ure, so nothing was charged." |
 | Browser Back from Pay.ure | The check screen with every entry kept and "You left Pay.ure without paying, so nothing was charged." This works after a reload and from the back-forward cache. |
 | Returned as paid, but Pay.ure has no payment for the token, or it does not match | The check screen and "We couldn't confirm your payment with Pay.ure, so we haven't issued your permit." No permit. |
@@ -55,3 +55,5 @@ Pay.ure itself shows "There's no payment in progress" for a missing or unknown t
 ## Not yet built
 
 Declined cards, insufficient funds and a Pay.ure outage, with test numbers for each, come next, along with a visible verification step on return and fuller handling of a return that has lost its checkout.
+
+Known gap: after Back to Pay.ure, the browser's Forward button reloads the permit service, and Chrome refills the purchaser fields from its own form memory. The check screen then offers to pay again. Recognizing a token that has already been paid for, without keeping purchaser details, is part of that next step.
