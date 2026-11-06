@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-demo-site="bwl">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -361,10 +361,12 @@
         <span>Office of Inspiring Guidance</span>
         <span>URE.gov portal</span>
       </div>
-      <div class="smallprint">Data shown is representative demo content.</div>
+      <div class="smallprint">Data shown is representative demo content. <button type="button" class="demo-tools-toggle" id="demoToolsToggle" aria-pressed="false">Demo tools</button></div>
     </div>
   </footer>
   <script src="app.js" type="module"></script>
+  <!-- Demo tools for facilitators: off unless turned on with the footer button. -->
+  <script src="demo/boot.js" type="module"></script>
   <script src="js/startup-fallback.js"></script>
 </body>
 </html>

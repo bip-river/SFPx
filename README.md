@@ -12,6 +12,7 @@ A sixth screen shows the finished permit with a download button. Continue, the B
 
 - Paid permits go to [Pay.ure](docs/pay-ure.md), a fictional payment site in `pay-ure/` that accepts only listed test card and bank numbers, each with one outcome: approved, declined, insufficient funds, Pay.ure down, or a payment for the wrong amount that the permit service's check on return refuses. After paying, the visitor returns to the finished permit, with the checkout and payment details under "Demo checkout data". Cancelling on Pay.ure, or leaving it with the browser's Back button, returns to the check screen with every entry kept.
 - No-fee permits show the finished permit with the issuance payload.
+- Facilitators and developers can turn on [Demo tools](docs/demo-tools.md) from the footer: fills for every field (including ones that show errors), shortcuts to any screen, and switches that break the catalog, the PDF, storage, Pay.ure or the return on purpose, with a banner while anything is broken. They are off by default.
 - Both generate a downloadable permit package as one PDF: the permit to sign, its stipulations, haul tags when the permit uses them (each tag sheet followed by a sheet of load records), maps, area notices, and a reference guide. The permit is valid only when printed and signed. No money is charged, no email is sent, and no real permits are issued. Use fictional purchaser information.
 - The sample documents in the package are also linked from the site as standalone PDFs in `documents/`.
 - Agency names are fictional. The page does not link to real agency websites and asks search engines not to index it. The cited U.S. laws are kept because they describe the system this prototype targets.
@@ -55,6 +56,7 @@ The browser test starts its own temporary local server and includes automated ac
 | `js/state.js` | Optional saved-selection storage |
 | `js/checkout.js` | Checkout identity, permit numbers, and payloads |
 | `js/payment-handoff.js`, `js/navigate.js` | The checkout kept while the visitor is on Pay.ure, and Pay.ure's return addresses; page navigation |
+| `demo/` | Demo tools for facilitators: the footer toggle, banner, drawer, fills and the switches the app checks; see [Demo tools](docs/demo-tools.md) |
 | `pay-ure/` | The Pay.ure payment site: its page and styles, the collection API both sites call (`js/collections.js`) and the test numbers (`js/test-instruments.js`); see [Pay.ure](docs/pay-ure.md) |
 | `js/permit-documents.js`, `js/permit-pdf.js` | Permit package and sample document content; PDF rendering in page order |
 | `documents/` | Sample documents linked from the site, written by `npm run build:documents` |

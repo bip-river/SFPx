@@ -23,6 +23,8 @@ Each number gives one outcome, so a facilitator can show every path on purpose. 
 | Checking or savings | 551234561 | 2222222222 | Declined |
 | Checking or savings | 551234561 | 3333333333 | Insufficient funds |
 
+Participants find these numbers in Pay.ure's "Demo test numbers" panel. It appears on step 1 once a payment method is chosen, and lists only that method's numbers. Facilitators can also fill them, and every error, from the [Demo tools](demo-tools.md).
+
 A declined attempt is recorded on the collection (method, last 4 digits, reason), and the collection stays open so the visitor can choose another card or account.
 
 No bank can have the routing number 551234561: the first two digits of a routing number name a Federal Reserve district or a special use, and 55 is unassigned. It still passes the routing checksum, so a typo in it is caught as one.

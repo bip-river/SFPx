@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-demo-site="payure">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -47,7 +47,7 @@
   <main id="main">
     <div class="wrap pu-layout">
       <div class="pu-head">
-        <p class="pu-demo"><strong>Demo.</strong> Pay.ure is a practice payment site. Nothing is charged.</p>
+        <p class="pu-demo"><strong>Demo.</strong> Pay.ure is a practice payment site. Nothing is charged. Test numbers appear once you choose how to pay.</p>
         <div class="pu-error-summary" id="errorBox" role="alert" tabindex="-1" hidden>
           <h2>There is a problem</h2>
           <ul id="errorList"></ul>
@@ -81,12 +81,16 @@
         <h2 id="testsTitle">Demo test numbers</h2>
         <p>Pay.ure only accepts these numbers. Don’t enter a real card or bank account.</p>
         <p>Each number gives one outcome, so you can try every path.</p>
-        <h3>Cards</h3>
-        <p class="pu-hint">Use any future expiry date and any 3-digit security code.</p>
-        <ul class="pu-test-list" id="testCards"></ul>
-        <h3>Bank accounts</h3>
-        <p class="pu-hint">Checking or savings.</p>
-        <ul class="pu-test-list" id="testAccounts"></ul>
+        <div id="testCardsSection" hidden>
+          <h3>Cards</h3>
+          <p class="pu-hint">Use any future expiry date and any 3-digit security code.</p>
+          <ul class="pu-test-list" id="testCards"></ul>
+        </div>
+        <div id="testAccountsSection" hidden>
+          <h3>Bank accounts</h3>
+          <p class="pu-hint">Checking or savings.</p>
+          <ul class="pu-test-list" id="testAccounts"></ul>
+        </div>
       </aside>
 
       <form class="pu-view pu-form" id="view-pay" aria-labelledby="title" novalidate hidden>
@@ -193,9 +197,11 @@
         <span>Accessibility</span>
         <span>Privacy</span>
       </div>
-      <div class="pu-smallprint">A demo payment page. It accepts only test numbers, charges nothing and stores no card or account numbers.</div>
+      <div class="pu-smallprint">A demo payment page. It accepts only test numbers, charges nothing and stores no card or account numbers. <button type="button" class="demo-tools-toggle" id="demoToolsToggle" aria-pressed="false">Demo tools</button></div>
     </div>
   </footer>
   <script src="app.js" type="module"></script>
+  <!-- Demo tools for facilitators: off unless turned on with the footer button. -->
+  <script src="../demo/boot.js" type="module"></script>
 </body>
 </html>

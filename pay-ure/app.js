@@ -1,5 +1,7 @@
 import { createCollectionStore, AGENCIES } from './js/collections.js';
 import { navigate } from './js/navigate.js';
+// Demo switches that break things on purpose; see demo/state.js.
+import { demoBreak } from '../demo/state.js';
 import {
   TEST_CARDS, TEST_ROUTING_NUMBERS, TEST_BANK_ACCOUNTS, digitsOnly, groupCardNumber, findTestCard, findTestAccount,
   cardNumberError, expiryError, formatExpiry, securityCodeError, routingNumberError, accountNumberError, confirmAccountError
@@ -236,6 +238,14 @@ function syncMethod() {
   cardFields.hidden = method() !== 'card';
   bankFields.hidden = method() !== 'bank';
   if (method()) setFieldError(methodGroup, '');
+  syncTestPanel();
+}
+
+// The test numbers are needed only while entering details: on step 1, for the method chosen.
+function syncTestPanel() {
+  testPanel.hidden = currentView !== 'pay' || !method();
+  byId('testCardsSection').hidden = method() !== 'card';
+  byId('testAccountsSection').hidden = method() !== 'bank';
 }
 
 function validateField(el) {
@@ -306,7 +316,7 @@ function showView(name, { history: mode = 'none', focus = true } = {}) {
   for (const [viewName, el] of Object.entries(views)) el.hidden = viewName !== name;
   const inProgress = name === 'pay' || name === 'review';
   order.hidden = !inProgress;
-  testPanel.hidden = !inProgress;
+  syncTestPanel();
   demoData.hidden = !collection;
   stepCount.hidden = !inProgress;
   hideErrors();
@@ -374,8 +384,10 @@ async function pay() {
   payButton.textContent = 'Paying…';
   announce('Processing your payment. Don’t close this page.');
   await new Promise(resolve => setTimeout(resolve, PROCESSING_MS));
-  const { outcome, ...details } = paymentDetails();
+  let { outcome, ...details } = paymentDetails();
   const { token, request } = collection;
+  if (demoBreak('payureDown')) outcome = 'unavailable';
+  else if (demoBreak('wrongAmount') && outcome === 'approve') outcome = 'wrong_amount';
   if (outcome === 'decline' || outcome === 'insufficient_funds') {
     collection = store.recordDecline(token, { method: details.method, last4: details.last4, reason: outcome });
     resetPayButton();

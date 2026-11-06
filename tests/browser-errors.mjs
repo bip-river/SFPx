@@ -57,6 +57,7 @@ async function toPayure(page) {
 
 // Enters a test card on Pay.ure's first step, continues, authorizes and presses Pay.
 async function payWithCard(page, ending) {
+  await page.locator('label[for=method_card]').click();
   await page.getByRole('button', { name: `Use Visa test card ending ${ending}` }).click();
   await page.locator('#cardName').fill('Test Purchaser');
   await page.locator('#cardExpiry').fill('12/30');
@@ -221,6 +222,51 @@ try {
     assert.equal(await page.locator('#permitDownloadBtn').isDisabled(), true);
     await checkAccessibility(page, 'wrong amount refused');
   });
+
+  await scenario('demo tools: the catalog switch reloads to break and Fix all reloads to mend', async page => {
+    await open(page);
+    await page.locator('#demoToolsToggle').click();
+    const drawer = page.locator('#demoDrawer');
+    await drawer.waitFor();
+    await checkAccessibility(page, 'demo tools on the start page');
+    await drawer.getByRole('switch', { name: 'Permit catalog fails to load' }).click();
+    await page.waitForLoadState('load'); await ready(page);
+    assert.equal(await errorText(page), `${LOAD_ERROR} Try again`);
+    assert.equal(await page.locator('#demoBanner').isVisible(), true);
+    assert.equal(await drawer.getByRole('switch', { name: 'Permit catalog fails to load' }).getAttribute('aria-checked'), 'true');
+    await checkAccessibility(page, 'demo banner and a broken catalog');
+    await drawer.getByLabel('How it fails').selectOption('data');
+    await page.waitForLoadState('load'); await ready(page);
+    assert.equal(await errorText(page), `${LOAD_ERROR} Try again`);
+    await page.locator('#demoBanner').getByRole('button', { name: 'Fix all' }).click();
+    await page.waitForLoadState('load'); await ready(page);
+    assert.equal(await errorText(page), '');
+    assert.equal(await page.locator('#demoBanner').count(), 0);
+    await drawer.getByRole('button', { name: 'Your details', exact: true }).click();
+    assert.equal(await screen(page), 'details');
+    await drawer.getByRole('button', { name: 'City: Chinese (can’t print) (shows an error)' }).click();
+    assert.equal(await page.locator('#City-error').textContent(), 'City can’t include “東” or “京” because the permit can’t print them. Remove them or type them another way.');
+    await checkAccessibility(page, 'demo fills on the details screen');
+  });
+
+  await scenario('demo tools on a phone: a bottom sheet that follows Pay.ure’s steps', async page => {
+    await open(page);
+    await page.locator('#demoToolsToggle').click();
+    const drawer = page.locator('#demoDrawer');
+    await drawer.getByRole('button', { name: 'Check and pay: paid permit' }).click();
+    await page.locator('#agree').check();
+    await toPayure(page);
+    await drawer.waitFor();
+    assert.equal(await page.locator('#testPanel').isVisible(), false);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, 'no horizontal overflow');
+    await drawer.getByRole('button', { name: 'Everything valid: Card that approves' }).click();
+    assert.equal(await page.locator('#testCardsSection').isVisible(), true);
+    await checkAccessibility(page, 'demo tools as a bottom sheet on Pay.ure');
+    await drawer.getByRole('button', { name: 'Step 2 with a card that approves' }).click();
+    await page.locator('#view-review').waitFor({ state: 'visible' });
+    assert.deepEqual(await drawer.locator('h4').allInnerTexts(), ['Authorization']);
+    await checkAccessibility(page, 'demo tools on Pay.ure step 2');
+  }, { viewport: { width: 390, height: 844 } });
 
   await scenario('unprintable characters are explained when the field is left', async page => {
     await open(page);

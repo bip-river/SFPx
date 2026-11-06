@@ -1,4 +1,5 @@
 import { PDF_STYLES, documentContent, packageSections, sectionsToContent } from './permit-documents.js';
+import { demoBreak } from '../demo/state.js';
 
 let enginePromise;
 let engineAttempts = 0;
@@ -16,6 +17,8 @@ export class PermitPdfError extends Error {
 }
 
 async function loadPdfEngine() {
+  // The demo switch fails the download the way a dropped connection would, every time until it is switched off.
+  if (demoBreak('pdf')) throw new PermitPdfError('engine-unavailable', 'Demo: the PDF engine download was switched off');
   if (!enginePromise) {
     // Browsers remember a module that failed to download and fail every later import of the same URL, so a
     // retry asks for a new one. Both files are self-contained, so a second copy changes nothing else.

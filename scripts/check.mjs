@@ -5,7 +5,7 @@ import { codePoints } from '../vendor/permit-font.js';
 import { COVERAGE_PATH, coverageModule } from './font-coverage.mjs';
 import { sampleDocumentIds, documentUrl } from '../js/permit-documents.js';
 
-for (const directory of ['.', 'js', 'tests', 'scripts', 'vendor', 'pay-ure', 'pay-ure/js']) {
+for (const directory of ['.', 'js', 'tests', 'scripts', 'vendor', 'pay-ure', 'pay-ure/js', 'demo']) {
   for (const file of await readdir(directory)) {
     if (!/\.(m?js)$/.test(file)) continue;
     const path = `${directory}/${file}`;
@@ -35,7 +35,7 @@ for (const path of new Set([...linked, ...sampleDocumentIds().map(documentUrl)])
   catch { fail(`Missing ${path}. Run npm run build:documents.`); }
 }
 // An undefined var() silently falls back to the inherited value instead of failing.
-for (const stylesheet of ['styles.css', 'pay-ure/styles.css']) {
+for (const stylesheet of ['styles.css', 'pay-ure/styles.css', 'demo/demo.css']) {
   const css = await readFile(new URL(`../${stylesheet}`, import.meta.url), 'utf8');
   const definedProperties = new Set([...css.matchAll(/(--[\w-]+)\s*:/g)].map(match => match[1]));
   const undefinedProperties = [...new Set([...css.matchAll(/var\(\s*(--[\w-]+)/g)].map(match => match[1]))].filter(name => !definedProperties.has(name));
