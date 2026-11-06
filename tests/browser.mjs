@@ -26,6 +26,16 @@ try {
   const cont = async () => page.locator(`#screen-${await screen()} button[type=submit]`).click();
   const payload = () => page.locator('#handoff .payload-content').textContent().then(JSON.parse);
   const noOverflow = () => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth);
+  const pageReady = () => page.waitForFunction(() => document.documentElement.dataset.appReady === 'true');
+  const toPayure = async () => {
+    await page.locator('#confirmPay').click();
+    await page.waitForURL(/\/pay-ure\/\?token=/);
+    await pageReady();
+  };
+  const backFromPayure = async () => {
+    await page.waitForURL(address => !address.pathname.includes('/pay-ure/'));
+    await pageReady();
+  };
   const fields = { FirstName: 'Áłtsé José', LastName: 'Muñoz Żółć', AddressLine1: '123 Test Street', City: 'Test City', Zip: '84037', DeliveryEmail: 'test@example.com', ConfirmEmail: 'test@example.com' };
   const fillHolder = async () => {
     for (const [id, value] of Object.entries(fields)) await page.locator(`#${id}`).fill(value);
@@ -40,7 +50,7 @@ try {
   const waitForDone = async () => {
     try { await page.locator('#screen-done').waitFor({ state: 'visible' }); }
     catch (error) {
-      console.log('Browser checkout diagnostics:', engineName, await page.evaluate(() => ({ secure: isSecureContext, uuid: typeof crypto.randomUUID, agreed: document.getElementById('agree').checked, error: document.getElementById('errorList').textContent, button: document.getElementById('confirmPaygov').outerHTML, focus: document.activeElement.id })));
+      console.log('Browser checkout diagnostics:', engineName, await page.evaluate(() => ({ secure: isSecureContext, uuid: typeof crypto.randomUUID, agreed: document.getElementById('agree').checked, error: document.getElementById('errorList').textContent, button: document.getElementById('confirmPay').outerHTML, focus: document.activeElement.id })));
       throw error;
     }
   };
@@ -111,11 +121,47 @@ try {
     assert.equal(await screen(), 'review');
     await checkAccessibility(page, 'review');
     await page.locator('label[for=agree]').click();
-    await page.locator('#confirmPaygov').click();
+
+    // Pay.ure: cancel once, then pay with a test card.
+    await toPayure();
+    assert.equal(await page.title(), 'Pay the Bureau of Wandering Lands – Step 1 of 2 – Pay.ure');
+    assert.equal(await noOverflow(), true, 'Pay.ure: no horizontal overflow');
+    await checkAccessibility(page, 'Pay.ure payment step');
+    await page.locator('#cancelPay').click();
+    await backFromPayure();
+    assert.equal(await screen(), 'review', 'Cancel returns to the check screen');
+    assert.equal(await page.locator('#paymentNotice').textContent(), 'You cancelled your payment on Pay.ure, so nothing was charged. Your entries are still here.');
+    assert.equal(await page.locator('#agree').isChecked(), true, 'entries are kept');
+    await checkAccessibility(page, 'review after cancelling on Pay.ure');
+    await toPayure();
+    await page.locator('#view-pay button[type=submit]').click();
+    await page.locator('#errorBox').waitFor({ state: 'visible' });
+    assert.equal(await focused(), 'errorBox', 'Pay.ure’s error summary takes focus');
+    await page.getByRole('button', { name: 'Use Visa test card ending 1111' }).click();
+    assert.equal(await focused(), 'cardNumber', 'the filled-in field takes focus');
+    assert.equal(await page.locator('#method_card').isChecked(), true);
+    await page.locator('#cardName').fill('Test Purchaser');
+    await page.locator('#cardExpiry').fill('01/25');
+    await page.locator('#cardExpiry').press('Tab');
+    assert.equal(await page.locator('#cardExpiry-error').textContent(), 'This card has expired. Enter a future expiry date.');
+    await checkAccessibility(page, 'Pay.ure card fields with an error');
+    await page.locator('#cardExpiry').fill('12/30');
+    await page.locator('#cardCode').fill('123');
+    await page.locator('#cardCode').press('Enter');
+    await page.locator('#view-review').waitFor({ state: 'visible' });
+    assert.equal(await focused(), 'title');
+    assert.equal(await noOverflow(), true, 'Pay.ure review: no horizontal overflow');
+    await checkAccessibility(page, 'Pay.ure review step');
+    await page.locator('label[for=authorize]').click();
+    await page.locator('#payButton').click();
+    await backFromPayure();
     await waitForDone();
     assert.equal(await focused(), 'doneTitle');
+    assert.ok(!page.url().includes('token='), 'the return address is cleaned up');
     const first = await payload();
     assert.equal(first.total, 10);
+    assert.equal(first.payment.last4, '1111');
+    assert.equal(await page.evaluate(() => sessionStorage.getItem('sfp-payment-handoff')), null, 'purchaser details leave storage on return');
     await page.locator('#handoffDetail summary').click();
     assert.equal(await noOverflow(), true, 'no horizontal overflow with checkout payload');
     await checkAccessibility(page, 'done');
@@ -124,12 +170,17 @@ try {
     assert.match(paidPdf.text, /Printed name: Áłtsé José Muñoz Żółć/);
     assert.match(paidPdf.text, /Tag 2 of 2/, 'one cord of firewood comes with two haul tags');
 
-    // The browser's Back button returns to the check screen; paying again keeps the same reference.
+    // The permit replaced the return's history entry, so the browser's Back button goes to Pay.ure, which
+    // will not take the payment again. Opening the permit service again asks for the purchaser details.
     await page.goBack();
-    assert.equal(await screen(), 'review');
-    await page.locator('#confirmPaygov').click();
-    await waitForDone();
-    assert.equal((await payload()).idempotencyKey, first.idempotencyKey);
+    await page.waitForURL(/\/pay-ure\/\?token=/);
+    await pageReady();
+    assert.equal(await page.title(), 'You’ve already paid – Pay.ure');
+    assert.match(await page.locator('#finishedText').textContent(), new RegExp(`Tracking ID ${first.payment.trackingId}\\.`));
+    await checkAccessibility(page, 'Pay.ure already paid');
+    await page.goto(url);
+    await pageReady();
+    assert.equal(await screen(), 'details', 'purchaser details must be reentered');
 
     await page.reload(); await page.waitForFunction(() => document.documentElement.dataset.appReady === 'true');
     assert.equal(await screen(), 'details', 'purchaser details must be reentered after a reload');
@@ -141,8 +192,8 @@ try {
     await page.locator('label[for=prod_3]').click();
     await cont(); await fillHolder(); await cont();
     await page.locator('label[for=agree]').click();
-    assert.equal(await page.locator('#confirmPaygov').textContent(), 'Get my free permit');
-    await page.locator('#confirmPaygov').click();
+    assert.equal(await page.locator('#confirmPay').textContent(), 'Get my free permit');
+    await page.locator('#confirmPay').click();
     await waitForDone();
     assert.equal((await payload()).total, 0);
     assert.equal(await focused(), 'doneTitle');
@@ -158,7 +209,7 @@ try {
     assert.equal(await page.evaluate(() => sessionStorage.getItem('sfp-demo-state')), null);
     assert.equal(await noOverflow(), true, 'no horizontal overflow');
     assert.deepEqual(errors, []);
-    console.log(`PASS ${engineName}: keyboard, screens, browser Back, checkout, Unicode PDFs, accessibility, focus, reload and reset at ${viewport.width}px`);
+    console.log(`PASS ${engineName}: keyboard, screens, browser Back, Pay.ure cancel and payment, Unicode PDFs, accessibility, focus, reload and reset at ${viewport.width}px`);
   }
   await page.goto(`${url}/tests/smoke.html`);
   await page.waitForFunction(() => document.querySelectorAll('#results .status').length === 8);

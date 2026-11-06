@@ -39,6 +39,12 @@ export function createCheckoutIdentity(makeId = randomId, makeDigits = randomDig
       if (!permit || permit.fingerprint !== fingerprint) permit = { fingerprint, number: createPermitNumber(officeId, date, makeDigits) };
       return permit.number;
     },
+    // After a round trip to Pay.ure the page is new, so the identity sent to pay is put back for the same checkout.
+    restore(snapshot, prefix, reference, permitNumber) {
+      const fingerprint = JSON.stringify(snapshot);
+      current = { fingerprint, prefix, reference };
+      permit = { fingerprint, number: permitNumber };
+    },
     clear() { current = null; permit = null; }
   };
 }
@@ -57,7 +63,7 @@ export function readPermitHolder(fields) {
   };
 }
 
-export function buildCheckoutPayload({ model, holder, reference, permitNumber, haulTags = 0, eligibility = null }) {
+export function buildCheckoutPayload({ model, holder, reference, permitNumber, haulTags = 0, eligibility = null, payment = null }) {
   const unitPrice = model.product.price;
   const total = unitPrice * model.qty;
   const noFee = unitPrice === 0;
@@ -80,12 +86,14 @@ export function buildCheckoutPayload({ model, holder, reference, permitNumber, h
     permitHolder: holder,
     // A certification belongs with any product whose rule requires it, paid or not.
     ...(eligibility ? { eligibility } : noFee ? { eligibility: { certified: false, basis: 'Not required' } } : {}),
+    // What the Pay.ure lookup returned for this checkout's token; present once the permit has been paid for.
+    ...(payment ? { payment } : {}),
     nextStep: noFee
       ? 'Issue permit (no fee) server-side, then present a confirmation page with a download link for the permit PDF.'
-      : 'Redirect to Pay.gov, verify payment status server-side, then return to download the permit with this reference.',
+      : 'Start a Pay.ure collection server to server and send the visitor to Pay.ure with its token. On return, look the collection up by token and issue the permit only if it was paid for this amount and reference.',
     deliveryPlan: noFee
       ? 'Permit is available immediately after confirmation (demo download only; no email is sent).'
-      : 'After Pay.gov returns, use the transaction reference to fetch verified payment status. Retries reuse the same checkout identity.',
+      : 'Permit is available as soon as the paid collection is confirmed (demo download only; no email is sent). Retries reuse the same checkout identity and payment.',
     serverChecks: { verifyEmailMatch: true, enforcePayloadLimitBytes: MAX_PAYLOAD_BYTES }
   };
 }

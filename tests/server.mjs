@@ -5,10 +5,11 @@ import { resolve, extname, sep } from 'node:path';
 
 export async function startServer() {
   const root = fileURLToPath(new URL('../', import.meta.url));
-  const mime = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.ico': 'image/x-icon', '.woff2': 'font/woff2', '.pdf': 'application/pdf' };
+  const mime = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.ico': 'image/x-icon', '.woff2': 'font/woff2', '.pdf': 'application/pdf', '.svg': 'image/svg+xml' };
   const server = createServer(async (request, response) => {
     const pathname = new URL(request.url, 'http://localhost').pathname;
-    const path = resolve(root, `.${pathname === '/' ? '/index.html' : pathname}`);
+    // A folder address such as /pay-ure/ serves its index.html, as GitHub Pages does.
+    const path = resolve(root, `.${pathname.endsWith('/') ? `${pathname}index.html` : pathname}`);
     if (!path.startsWith(root.endsWith(sep) ? root : root + sep)) { response.writeHead(403).end(); return; }
     try {
       const content = await readFile(path);

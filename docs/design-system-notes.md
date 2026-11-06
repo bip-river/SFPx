@@ -22,3 +22,7 @@ Shared classes:
 - `.production-label`: marks production-only promises such as email delivery.
 
 Motion is limited to color and progress-bar transitions and respects `prefers-reduced-motion`. Real screen-reader and contrast audits remain part of manual accessibility verification; these notes do not claim a completed accessibility certification.
+
+## Pay.ure
+
+Pay.ure (`pay-ure/styles.css`) is a separate service, so it looks different on purpose: visitors should notice they have moved from the agency to the payment site. It keeps the shared `.ure` official-site banner, then uses the system font instead of Atkinson Hyperlegible Next, a navy header with a gold rule and mark, indigo actions, 6px corners and a pale grey page. Its tokens are under `:root` with a `--pu-` prefix. On screens 900px and wider, the yellow "Demo test numbers" panel sits beside the form; on a phone it comes before the form. Card and account numbers use a monospace font so digits line up. Fields, errors and the error summary follow the permit service's patterns, so an error looks and behaves the same on both sites.

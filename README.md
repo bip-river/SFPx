@@ -10,12 +10,12 @@ A static, front-end-only prototype for buying a forest product permit, published
 
 A sixth screen shows the finished permit with a download button. Continue, the Back link and the browser's own Back and Forward buttons move between screens; a screen can only be reached once every earlier answer is complete.
 
-- Paid permits skip payment in the demo, then show the finished permit with the Pay.gov handoff payload under "Demo checkout data".
+- Paid permits go to [Pay.ure](docs/pay-ure.md), a fictional payment site in `pay-ure/` that accepts only listed test card and bank numbers. After paying, the visitor returns to the finished permit, with the checkout and payment details under "Demo checkout data". Cancelling on Pay.ure, or leaving it with the browser's Back button, returns to the check screen with every entry kept.
 - No-fee permits show the finished permit with the issuance payload.
-- Both generate a downloadable permit package as one PDF: the permit to sign, its stipulations, haul tags when the permit uses them (each tag sheet followed by a sheet of load records), maps, area notices, and a reference guide. The permit is valid only when printed and signed. No payments are processed, no email is sent, and no real permits are issued. Use fictional purchaser information.
+- Both generate a downloadable permit package as one PDF: the permit to sign, its stipulations, haul tags when the permit uses them (each tag sheet followed by a sheet of load records), maps, area notices, and a reference guide. The permit is valid only when printed and signed. No money is charged, no email is sent, and no real permits are issued. Use fictional purchaser information.
 - The sample documents in the package are also linked from the site as standalone PDFs in `documents/`.
-- Agency names are fictional. The page does not link to real agency websites and asks search engines not to index it. Pay.gov and the cited U.S. laws are kept because they describe the system this prototype targets.
-- Only selections are saved in `sessionStorage`. Purchaser details, agreements, eligibility certifications and transaction snapshots stay in memory, so a reload returns to the details screen at most, or to the permit screen when its permit needs a certification. "Start over" clears everything.
+- Agency names are fictional. The page does not link to real agency websites and asks search engines not to index it. The cited U.S. laws are kept because they describe the system this prototype targets.
+- Only selections are saved in `sessionStorage`. Purchaser details, agreements, eligibility certifications and transaction snapshots stay in memory, so a reload returns to the details screen at most, or to the permit screen when its permit needs a certification. The exception is a trip to Pay.ure: the checkout, purchaser details included, waits in `sessionStorage` while the visitor pays, standing in for the agency's server, and is removed as soon as they are back. Pay.ure keeps its collections there too, with only the last four digits of a card or account. "Start over" clears everything.
 
 ## Run locally
 
@@ -54,12 +54,14 @@ The browser test starts its own temporary local server and includes automated ac
 | `js/eligibility.js` | Explicit eligibility-rule lookup and certification copy |
 | `js/state.js` | Optional saved-selection storage |
 | `js/checkout.js` | Checkout identity, permit numbers, and payloads |
+| `js/payment-handoff.js`, `js/navigate.js` | The checkout kept while the visitor is on Pay.ure, and Pay.ure's return addresses; page navigation |
+| `pay-ure/` | The Pay.ure payment site: its page and styles, the collection API both sites call (`js/collections.js`) and the test numbers (`js/test-instruments.js`); see [Pay.ure](docs/pay-ure.md) |
 | `js/permit-documents.js`, `js/permit-pdf.js` | Permit package and sample document content; PDF rendering in page order |
 | `documents/` | Sample documents linked from the site, written by `npm run build:documents` |
 | `js/ui.js`, `js/links.js` | Option cards, labels, and other rendering helpers; URL validation |
 | `js/startup-fallback.js` | A message in place of the start button when JavaScript or `app.js` cannot run |
 | `vendor/` | Self-hosted page font, PDF engine and PDF font; see [vendor notes](vendor/README.md) |
 | `products.json` | Demo catalog; see [catalog maintenance](docs/catalog.md) |
-| `tests/` | Logic, DOM, and PDF tests; Chromium, Firefox, and WebKit browser and failure-path checks; and installed-Safari checks |
+| `tests/` | Logic, DOM, and PDF tests for both sites; Chromium, Firefox, and WebKit browser and failure-path checks; and installed-Safari checks |
 
 See the [testing notes](docs/testing.md), [design notes](docs/design-system-notes.md), [performance notes](docs/performance-notes.md), and [accessibility checks](docs/accessibility.md).
