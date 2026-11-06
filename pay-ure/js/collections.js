@@ -3,8 +3,9 @@
 // token to learn whether it was paid. This static demo has no servers, so the collections live in the tab's
 // sessionStorage, which both sites can read because they share an origin.
 //
-// A collection holds what the agency sent (amount, description, its own reference and where to return) and,
-// once paid, the tracking ID, payment method and the last four digits. Card and account numbers never are.
+// A collection holds what the agency sent (amount, description, its own reference and where to return), any
+// declined attempts and, once paid, the tracking ID, the amount paid, the payment method and the last four digits.
+// Card and account numbers never are. Status: pending, then success, cancelled or failed (Pay.ure was down).
 
 export const COLLECTIONS_KEY = 'payure-demo-collections';
 // Older collections are dropped so the store cannot grow without limit in a long-lived tab.
@@ -87,11 +88,22 @@ export function createCollectionStore({ getStorage = () => sessionStorage, locat
     },
 
     // Paying twice is impossible: a collection that is no longer pending keeps its first outcome.
+    // `payment` names the amount actually paid, which the agency checks against what it asked for.
     completeCollection(token, payment) {
       return update(token, () => ({
         status: 'success',
         result: { trackingId: makeTrackingId(), completedAt: now().toISOString(), ...payment }
       }));
+    },
+
+    // A declined card or account leaves the collection open, so the visitor can try another.
+    recordDecline(token, attempt) {
+      return update(token, collection => ({ attempts: [...(collection.attempts || []), { ...attempt, declinedAt: now().toISOString() }] }));
+    },
+
+    // Pay.ure could not process the payment. Nothing was charged; the agency starts a new collection to retry.
+    failCollection(token, reason) {
+      return update(token, () => ({ status: 'failed', result: { reason, failedAt: now().toISOString() } }));
     },
 
     cancelCollection(token) {

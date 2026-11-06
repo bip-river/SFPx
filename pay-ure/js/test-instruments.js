@@ -1,10 +1,17 @@
 // Pay.ure is a demo. It accepts only these published test numbers, so a real card or bank account typed into
 // the page is refused before anything else happens. Nothing typed into a payment field is ever stored.
 
+// Each number gives one outcome, so a facilitator can show every path on purpose.
+// approve: paid. decline and insufficient_funds: refused, nothing charged, the visitor can try another method.
+// unavailable: Pay.ure cannot process payments; the visitor is sent back to the agency, not charged.
+// wrong_amount: paid, but Pay.ure reports a tenth of the amount, so the agency's check on return refuses it.
 export const TEST_CARDS = [
   { number: '4111111111111111', brand: 'Visa', outcome: 'approve', label: 'Approves' },
   { number: '5555555555554444', brand: 'Mastercard', outcome: 'approve', label: 'Approves' },
-  { number: '6011111111111117', brand: 'Discover', outcome: 'approve', label: 'Approves' }
+  { number: '4000000000000002', brand: 'Visa', outcome: 'decline', label: 'Declined' },
+  { number: '4000000000009995', brand: 'Visa', outcome: 'insufficient_funds', label: 'Insufficient funds' },
+  { number: '4000000000000119', brand: 'Visa', outcome: 'unavailable', label: 'Pay.ure is down' },
+  { number: '4000000000000259', brand: 'Visa', outcome: 'wrong_amount', label: 'Reports the wrong amount' }
 ];
 
 // No bank has a routing number starting 55: the first two digits name a Federal Reserve district or a special
@@ -12,7 +19,9 @@ export const TEST_CARDS = [
 export const TEST_ROUTING_NUMBERS = ['551234561'];
 
 export const TEST_BANK_ACCOUNTS = [
-  { number: '1234567890', outcome: 'approve', label: 'Approves' }
+  { number: '1234567890', outcome: 'approve', label: 'Approves' },
+  { number: '2222222222', outcome: 'decline', label: 'Declined' },
+  { number: '3333333333', outcome: 'insufficient_funds', label: 'Insufficient funds' }
 ];
 
 export const digitsOnly = value => String(value).replace(/[\s-]/g, '');

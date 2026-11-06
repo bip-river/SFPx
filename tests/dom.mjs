@@ -84,7 +84,7 @@ export async function openPayure(t, url, { storage = {}, now } = {}) {
     el.dispatchEvent(new w.Event('input', { bubbles: true }));
     el.dispatchEvent(new w.Event('change', { bubbles: true }));
   };
-  const view = () => Object.keys({ none: 1, finished: 1, pay: 1, review: 1 }).find(name => !$(`#view-${name}`).hidden);
+  const view = () => ['none', 'finished', 'unavailable', 'pay', 'review'].find(name => !$(`#view-${name}`).hidden);
   const errors = () => ($('#errorBox').hidden ? '' : [...w.document.querySelectorAll('#errorList li')].map(li => li.textContent));
   const enterCard = ({ number = '4111 1111 1111 1111', name = 'Test Purchaser', expiry = '12/30', code = '123' } = {}) => {
     $('#method_card').click();

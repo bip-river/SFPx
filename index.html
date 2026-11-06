@@ -70,6 +70,8 @@
 
       <div id="stepLiveRegion" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
 
+      <p class="notice flow-notice" id="flowNotice" hidden></p>
+
       <section class="screen" id="screen-start" aria-labelledby="startTitle">
         <h1 id="startTitle" tabindex="-1">Get a forest product permit</h1>
         <p class="lede">Buy a permit online to collect firewood, a Christmas tree or mushrooms on Bureau of Wandering Lands public land.</p>
@@ -236,7 +238,21 @@
 
       <form class="screen" id="screen-review" aria-labelledby="reviewTitle" novalidate hidden>
         <h1 id="reviewTitle" tabindex="-1">Check and pay</h1>
-        <p class="notice" id="paymentNotice" hidden></p>
+        <section class="paid-before" id="paidBefore" aria-labelledby="paidBeforeTitle" hidden>
+          <h2 id="paidBeforeTitle">You’ve already paid for this permit</h2>
+          <p id="paidBeforeText"></p>
+          <div class="reissue" id="reissue" hidden>
+            <p>To get it again without paying, enter the Pay.ure tracking ID or the permit number. They’re on the page you saw after paying, on the permit, and in Pay.ure’s receipt.</p>
+            <div class="field">
+              <label for="paidReference">Pay.ure tracking ID or permit number</label>
+              <p class="hint" id="paidReferenceHint">For example, PU-7KQ2M9XT4B or AK-ANCH-26-048213</p>
+              <input class="field-input" id="paidReference" type="text" autocomplete="off" spellcheck="false" maxlength="40" aria-describedby="paidReferenceHint" />
+            </div>
+            <button class="primary" type="button" id="reissueButton">Get my permit again</button>
+            <p class="hint" id="reissueNote"></p>
+          </div>
+          <p id="paidBeforeLoose" hidden>If this is the permit you need, you don’t need to pay again. Change your details back to exactly what you entered before to get it again, or contact your local BWL office.</p>
+        </section>
         <dl class="summary-list" id="reviewSummary"></dl>
         <section class="rules" aria-labelledby="rulesTitle">
           <h2 id="rulesTitle">Before you go</h2>
@@ -310,7 +326,7 @@
         </details>
         <details class="disclosure">
           <summary>I think I was charged twice</summary>
-          <div class="disclosure-body">Contact your local BWL office with your name, email address and permit reference.</div>
+          <div class="disclosure-body">Each Pay.ure payment has its own tracking ID, shown when you pay. <span class="production-label">In production:</span> Pay.ure also emails a receipt with it. Before you pay, this site tells you if you’ve already paid for the same permit in this browser, so you can get it again without paying. If you were charged twice, contact your local BWL office with your name, email address and both tracking IDs.</div>
         </details>
         <details class="disclosure">
           <summary>I can’t download or open my permit</summary>

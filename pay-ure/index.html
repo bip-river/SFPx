@@ -62,6 +62,11 @@
         <p><a href="../">Go to Bureau of Wandering Lands forest product permits</a></p>
       </section>
 
+      <section class="pu-view" id="view-unavailable" hidden>
+        <p>We couldn’t process your payment, and you weren’t charged. Go back to the Bureau of Wandering Lands and try again in 15 minutes.</p>
+        <button class="pu-primary" type="button" id="unavailableReturn">Return to Bureau of Wandering Lands</button>
+      </section>
+
       <section class="pu-view" id="view-finished" hidden>
         <p id="finishedText"></p>
         <button class="pu-primary" type="button" id="finishedReturn">Return to Bureau of Wandering Lands</button>
@@ -75,6 +80,7 @@
       <aside class="pu-tests" id="testPanel" aria-labelledby="testsTitle" hidden>
         <h2 id="testsTitle">Demo test numbers</h2>
         <p>Pay.ure only accepts these numbers. Don’t enter a real card or bank account.</p>
+        <p>Each number gives one outcome, so you can try every path.</p>
         <h3>Cards</h3>
         <p class="pu-hint">Use any future expiry date and any 3-digit security code.</p>
         <ul class="pu-test-list" id="testCards"></ul>

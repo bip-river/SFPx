@@ -53,9 +53,16 @@ test('the payment step shows what is being paid, the test numbers and the collec
   assert.deepEqual([...p.w.document.querySelectorAll('#testCards li')].map(li => li.textContent), [
     '4111 1111 1111 1111Visa · ApprovesUse Visa test card ending 1111',
     '5555 5555 5555 4444Mastercard · ApprovesUse Mastercard test card ending 4444',
-    '6011 1111 1111 1117Discover · ApprovesUse Discover test card ending 1117'
+    '4000 0000 0000 0002Visa · DeclinedUse Visa test card ending 0002',
+    '4000 0000 0000 9995Visa · Insufficient fundsUse Visa test card ending 9995',
+    '4000 0000 0000 0119Visa · Pay.ure is downUse Visa test card ending 0119',
+    '4000 0000 0000 0259Visa · Reports the wrong amountUse Visa test card ending 0259'
   ]);
-  assert.equal(p.$('#testAccounts li').textContent, '551234561 / 1234567890Routing / account · ApprovesUse test bank account ending 7890');
+  assert.deepEqual([...p.w.document.querySelectorAll('#testAccounts li')].map(li => li.textContent), [
+    '551234561 / 1234567890Routing / account · ApprovesUse test bank account ending 7890',
+    '551234561 / 2222222222Routing / account · DeclinedUse test bank account ending 2222',
+    '551234561 / 3333333333Routing / account · Insufficient fundsUse test bank account ending 3333'
+  ]);
   assert.equal(p.$('#cardFields').hidden, true, 'no fields until a method is chosen');
   assert.equal(p.$('#bankFields').hidden, true);
   assert.equal(JSON.parse(p.$('#demoData pre').textContent).token, p.token);
@@ -143,8 +150,9 @@ test('paying needs authorization, stores only the last four digits and returns w
   assert.deepEqual(p.navigations, [{ url: `${AGENCY}?payure=success&token=${p.token}#review`, replace: true }], 'one payment, one return');
   const { status, result } = p.collection();
   assert.equal(status, 'success');
-  assert.deepEqual(Object.keys(result).sort(), ['cardBrand', 'completedAt', 'last4', 'method', 'trackingId']);
+  assert.deepEqual(Object.keys(result).sort(), ['amount', 'cardBrand', 'completedAt', 'last4', 'method', 'trackingId']);
   assert.equal(result.last4, '1111');
+  assert.equal(result.amount, 12.5);
   const stored = p.w.sessionStorage.getItem(COLLECTIONS_KEY);
   for (const secret of ['4111111111111111', '4111 1111', 'Test Purchaser', '12/30']) assert.ok(!stored.includes(secret), secret);
   assert.equal(p.$('#cardNumber').value, '', 'payment fields are emptied');
@@ -154,7 +162,7 @@ test('a bank account payment records the account type and routing number, not th
   const p = await payure(t);
   p.enterBank({ type: 'savings' }); p.cont();
   await p.pay();
-  assert.deepEqual({ ...p.collection().result, trackingId: '', completedAt: '' }, { method: 'bank', accountType: 'savings', routingNumber: '551234561', last4: '7890', trackingId: '', completedAt: '' });
+  assert.deepEqual({ ...p.collection().result, trackingId: '', completedAt: '' }, { method: 'bank', accountType: 'savings', routingNumber: '551234561', last4: '7890', amount: 12.5, trackingId: '', completedAt: '' });
   assert.ok(!p.w.sessionStorage.getItem(COLLECTIONS_KEY).includes('1234567890'));
 });
 
@@ -212,4 +220,74 @@ test('the published test numbers are well formed and none is a real bank routing
   assert.deepEqual(parseExpiry('0829'), { month: 8, year: 2029 });
   assert.equal(expiryError('10/26', new Date(2026, 9, 31)), '');
   assert.equal(expiryError('10/26', new Date(2026, 10, 1)), 'This card has expired. Enter a future expiry date.');
+});
+
+// Authorizes and pays on the review step when no return to the agency is expected.
+async function payAndStay(p) {
+  p.$('#authorize').click();
+  p.$('#payButton').click();
+  for (let n = 0; n < 200 && p.view() === 'review'; n++) await sleep(5);
+}
+
+test('a declined card or account returns to step 1 with the reason, nothing charged, and another method can pay', async t => {
+  const cases = [
+    ['card', '4000 0000 0000 0002', '#cardNumber', 'Your card was declined, so nothing was charged. Use another card, or pay from a bank account.'],
+    ['card', '4000 0000 0000 9995', '#cardNumber', 'Your card was declined because there isn’t enough money or credit available, so nothing was charged. Use another card, or pay from a bank account.'],
+    ['bank', '2222222222', '#accountNumber', 'Your bank declined this payment, so nothing was charged. Check the account details, or use another account or a card.'],
+    ['bank', '3333333333', '#accountNumber', 'This account doesn’t have enough money for this payment, so nothing was charged. Use another account, or pay by card.']
+  ];
+  for (const [method, number, field, message] of cases) {
+    const p = await payure(t);
+    if (method === 'card') p.enterCard({ number }); else p.enterBank({ account: number });
+    p.cont();
+    await payAndStay(p);
+    assert.equal(p.view(), 'pay', number);
+    assert.deepEqual(links(p), [[field, message]], number);
+    assert.equal(p.$(`${field}-error`).textContent, message);
+    assert.equal(p.w.document.activeElement, p.$('#errorBox'));
+    assert.equal(p.$('#payButton').hasAttribute('aria-busy'), false);
+    assert.equal(p.navigations.length, 0, 'the visitor stays on Pay.ure');
+    const collection = p.collection();
+    assert.equal(collection.status, 'pending');
+    assert.deepEqual(collection.attempts.map(({ declinedAt, ...attempt }) => attempt), [{ method, last4: number.slice(-4), reason: number.endsWith('0002') || number === '2222222222' ? 'decline' : 'insufficient_funds' }]);
+    assert.ok(!p.w.sessionStorage.getItem(COLLECTIONS_KEY).includes(number.replace(/ /g, '')), 'the declined number is not stored');
+    assert.equal(JSON.parse(p.$('#demoData pre').textContent).attempts.length, 1, 'the demo data shows the attempt');
+  }
+  const p = await payure(t);
+  p.enterCard({ number: '4000 0000 0000 0002' }); p.cont();
+  await payAndStay(p);
+  p.$('#testCards button').click();
+  p.cont();
+  const back = await p.pay();
+  assert.match(back.url, /\?payure=success&token=/);
+  assert.equal(p.collection().status, 'success');
+  assert.equal(p.collection().attempts.length, 1, 'the earlier decline stays on record');
+});
+
+test('when Pay.ure is down, nothing is charged and the visitor returns to the agency to try again', async t => {
+  const p = await payure(t);
+  p.enterCard({ number: '4000 0000 0000 0119' }); p.cont();
+  await payAndStay(p);
+  assert.equal(p.view(), 'unavailable');
+  assert.equal(p.w.document.title, 'Pay.ure isn’t working right now – Pay.ure');
+  assert.equal(p.$('#view-unavailable p').textContent, 'We couldn’t process your payment, and you weren’t charged. Go back to the Bureau of Wandering Lands and try again in 15 minutes.');
+  assert.equal(p.w.document.activeElement, p.$('#title'));
+  assert.equal(p.$('#testPanel').hidden, true);
+  assert.equal(p.$('#cardNumber').value, '');
+  assert.deepEqual({ status: p.collection().status, reason: p.collection().result.reason }, { status: 'failed', reason: 'unavailable' });
+  p.$('#unavailableReturn').click();
+  assert.deepEqual(p.navigations, [{ url: `${AGENCY}?payure=cancel&token=${p.token}#review`, replace: true }]);
+  const again = await payure(t, { change: (store, token) => store.failCollection(token, 'unavailable') });
+  assert.equal(again.view(), 'finished');
+  assert.equal(again.$('#title').textContent, 'This payment didn’t go through');
+  assert.equal(again.$('#finishedText').textContent, 'Pay.ure couldn’t process this payment, and you weren’t charged. To pay, go back to the agency’s website and try again.');
+});
+
+test('the wrong-amount card pays, but Pay.ure reports a tenth of the amount', async t => {
+  const p = await payure(t);
+  p.enterCard({ number: '4000 0000 0000 0259' }); p.cont();
+  await p.pay();
+  assert.equal(p.collection().status, 'success');
+  assert.equal(p.collection().result.amount, 1.25);
+  assert.equal(p.collection().request.amount, 12.5);
 });

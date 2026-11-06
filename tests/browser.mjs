@@ -130,7 +130,7 @@ try {
     await page.locator('#cancelPay').click();
     await backFromPayure();
     assert.equal(await screen(), 'review', 'Cancel returns to the check screen');
-    assert.equal(await page.locator('#paymentNotice').textContent(), 'You cancelled your payment on Pay.ure, so nothing was charged. Your entries are still here.');
+    assert.equal(await page.locator('#flowNotice').textContent(), 'You cancelled your payment on Pay.ure, so nothing was charged. Your entries are still here.');
     assert.equal(await page.locator('#agree').isChecked(), true, 'entries are kept');
     await checkAccessibility(page, 'review after cancelling on Pay.ure');
     await toPayure();
@@ -171,16 +171,29 @@ try {
     assert.match(paidPdf.text, /Tag 2 of 2/, 'one cord of firewood comes with two haul tags');
 
     // The permit replaced the return's history entry, so the browser's Back button goes to Pay.ure, which
-    // will not take the payment again. Opening the permit service again asks for the purchaser details.
+    // will not take the payment again. Its Return button comes back here; with the same details entered again, the
+    // earlier payment is shown and the permit number gets the permit again without a second payment.
     await page.goBack();
     await page.waitForURL(/\/pay-ure\/\?token=/);
     await pageReady();
     assert.equal(await page.title(), 'You’ve already paid – Pay.ure');
     assert.match(await page.locator('#finishedText').textContent(), new RegExp(`Tracking ID ${first.payment.trackingId}\\.`));
     await checkAccessibility(page, 'Pay.ure already paid');
-    await page.goto(url);
-    await pageReady();
+    await page.locator('#finishedReturn').click();
+    await backFromPayure();
     assert.equal(await screen(), 'details', 'purchaser details must be reentered');
+    assert.match(await page.locator('#flowNotice').textContent(), /^You already paid \$10\.00 on Oct 21, 2026 at .+ with Visa ending 1111\./);
+    await checkAccessibility(page, 'already-paid notice');
+    await fillHolder(); await cont();
+    assert.equal(await screen(), 'review');
+    assert.equal(await page.locator('#paidBefore').isVisible(), true);
+    assert.equal(await page.locator('#confirmPay').textContent(), 'Pay $10.00 for another permit');
+    await checkAccessibility(page, 'review with an earlier payment');
+    await page.locator('#paidReference').fill(first.permitNumber);
+    await page.locator('#paidReference').press('Enter');
+    await waitForDone();
+    assert.equal((await payload()).permitNumber, first.permitNumber, 'the same permit, not a second payment');
+    assert.ok(!page.url().includes('pay-ure'));
 
     await page.reload(); await page.waitForFunction(() => document.documentElement.dataset.appReady === 'true');
     assert.equal(await screen(), 'details', 'purchaser details must be reentered after a reload');

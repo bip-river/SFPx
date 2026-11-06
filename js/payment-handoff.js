@@ -51,3 +51,50 @@ export function describePayment(result) {
   if (result.method === 'card') return `${result.cardBrand} ending ${result.last4}`;
   return `${result.accountType === 'savings' ? 'savings' : 'checking'} account ending ${result.last4}`;
 }
+
+// Permits this tab has paid for, so someone about to pay again is warned first: after the browser's Forward button
+// reloads the page (and the browser refills the form), after Pay.ure's "Return" link on a payment it has already
+// taken, or after Start over. In production the agency's server would know. Each record holds the payment's token,
+// references, amount, method and last 4 digits, and two one-way fingerprints in place of the purchaser's details:
+// `key` for the whole checkout and `looseKey` for the permit and email alone. They are 53-bit hashes (cyrb53): enough
+// to recognize the same entries in one tab, not a cryptographic protection. The records stand in for the agency's
+// server, so they keep the references the visitor must type to get a permit again; the page shows none of them.
+export const PAID_PERMITS_KEY = 'sfp-paid-permits';
+const MAX_PAID_PERMITS = 20;
+
+export function checkoutKey(text) {
+  let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+    h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36);
+}
+
+export function createPaidPermits(getStorage = () => sessionStorage) {
+  const list = () => {
+    try {
+      const value = JSON.parse(getStorage().getItem(PAID_PERMITS_KEY) || '[]');
+      return Array.isArray(value) ? value.filter(record => record && typeof record === 'object') : [];
+    } catch { return []; }
+  };
+  return {
+    list,
+    // The most recent payment with this checkout fingerprint, permit-and-email fingerprint, or Pay.ure token.
+    find({ key, looseKey, token }) {
+      return list().reverse().find(record => (key && record.key === key) || (looseKey && record.looseKey === looseKey) || (token && record.token === token)) || null;
+    },
+    clear() {
+      try { getStorage().removeItem(PAID_PERMITS_KEY); }
+      catch { /* Storage can be unavailable in private contexts. */ }
+    },
+    remember({ key, looseKey, token, reference, permitNumber, amount, result, verification }) {
+      const kept = list().filter(record => record.token !== token).slice(-(MAX_PAID_PERMITS - 1));
+      try { getStorage().setItem(PAID_PERMITS_KEY, JSON.stringify([...kept, { key, looseKey, token, reference, permitNumber, amount, result, verification }])); }
+      catch { /* Without storage the payment is still remembered in memory for this page. */ }
+    }
+  };
+}

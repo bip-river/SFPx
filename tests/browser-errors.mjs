@@ -49,20 +49,33 @@ async function open(page) {
   await ready(page);
 }
 
-// Pays on Pay.ure with a test card and waits for the BWL page to load again.
-async function payOnPayure(page) {
+async function toPayure(page) {
   await page.locator('#confirmPay').click();
   await page.waitForURL(/\/pay-ure\/\?token=/);
   await ready(page);
-  await page.getByRole('button', { name: 'Use Visa test card ending 1111' }).click();
+}
+
+// Enters a test card on Pay.ure's first step, continues, authorizes and presses Pay.
+async function payWithCard(page, ending) {
+  await page.getByRole('button', { name: `Use Visa test card ending ${ending}` }).click();
   await page.locator('#cardName').fill('Test Purchaser');
   await page.locator('#cardExpiry').fill('12/30');
   await page.locator('#cardCode').fill('123');
   await page.locator('#view-pay button[type=submit]').click();
   await page.locator('label[for=authorize]').click();
   await page.locator('#payButton').click();
+}
+
+const backFromPayure = async (page) => {
   await page.waitForURL(address => !address.pathname.includes('/pay-ure/'));
   await ready(page);
+};
+
+// Pays on Pay.ure with a test card and waits for the BWL page to load again.
+async function payOnPayure(page, ending = '1111') {
+  await toPayure(page);
+  await payWithCard(page, ending);
+  await backFromPayure(page);
 }
 
 async function toReview(page) {
@@ -142,7 +155,8 @@ try {
     await toReview(page);
     await payOnPayure(page);
     await page.locator('#errorBox').waitFor({ state: 'visible' });
-    assert.equal(await errorText(page), ENGINE_ERROR);
+    assert.match(await errorText(page), /^Your payment of \$10\.00 went through \(Pay\.ure tracking ID PU-[A-Z2-9]{10}\), so you won’t be charged again\. /);
+    assert.ok((await errorText(page)).endsWith(ENGINE_ERROR));
     assert.equal(await screen(page), 'review');
     assert.equal(await page.locator('#agree').isChecked(), true, 'entries are kept');
     assert.equal(await page.locator('#confirmPay').textContent(), 'Get my permit', 'the payment is kept');
@@ -159,7 +173,53 @@ try {
     await toReview(page);
     await payOnPayure(page);
     await page.locator('#errorBox').waitFor({ state: 'visible' });
-    assert.equal(await errorText(page), ENGINE_ERROR);
+    assert.match(await errorText(page), /^Your payment of \$10\.00 went through /);
+    assert.ok((await errorText(page)).endsWith(ENGINE_ERROR));
+  });
+
+  await scenario('a declined card is explained on Pay.ure, and another card pays', async page => {
+    await open(page);
+    await toReview(page);
+    await toPayure(page);
+    await payWithCard(page, '0002');
+    await page.locator('#errorBox').waitFor({ state: 'visible' });
+    assert.equal(await errorText(page), 'Your card was declined, so nothing was charged. Use another card, or pay from a bank account.');
+    assert.equal(await focused(page), 'errorBox');
+    assert.equal(await page.locator('#cardNumber-error').textContent(), 'Your card was declined, so nothing was charged. Use another card, or pay from a bank account.');
+    await checkAccessibility(page, 'Pay.ure declined card');
+    await page.getByRole('button', { name: 'Use Visa test card ending 1111' }).click();
+    await page.locator('#view-pay button[type=submit]').click();
+    await page.locator('label[for=authorize]').click();
+    await page.locator('#payButton').click();
+    await backFromPayure(page);
+    await page.locator('#screen-done').waitFor({ state: 'visible' });
+  });
+
+  await scenario('Pay.ure is down: nothing charged, and the check screen says so', async page => {
+    await open(page);
+    await toReview(page);
+    await toPayure(page);
+    await payWithCard(page, '0119');
+    await page.locator('#view-unavailable').waitFor({ state: 'visible' });
+    assert.equal(await page.title(), 'Pay.ure isn’t working right now – Pay.ure');
+    await checkAccessibility(page, 'Pay.ure unavailable');
+    await page.locator('#unavailableReturn').click();
+    await backFromPayure(page);
+    assert.equal(await screen(page), 'review');
+    assert.equal(await page.locator('#flowNotice').textContent(), 'Pay.ure couldn’t take your payment, so nothing was charged. Wait a few minutes, then try again. Your entries are still here.');
+    assert.equal(await page.locator('#agree').isChecked(), true, 'entries are kept');
+    await checkAccessibility(page, 'check screen after Pay.ure was down');
+  });
+
+  await scenario('a payment for the wrong amount is refused on return', async page => {
+    await open(page);
+    await toReview(page);
+    await payOnPayure(page, '0259');
+    await page.locator('#errorBox').waitFor({ state: 'visible' });
+    assert.match(await errorText(page), /^Pay\.ure reports a payment of \$1\.00, but this permit costs \$10\.00, so we haven’t issued it\. Don’t pay again\./);
+    assert.equal(await screen(page), 'review');
+    assert.equal(await page.locator('#permitDownloadBtn').isDisabled(), true);
+    await checkAccessibility(page, 'wrong amount refused');
   });
 
   await scenario('unprintable characters are explained when the field is left', async page => {
