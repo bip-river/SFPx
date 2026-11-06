@@ -79,6 +79,15 @@ async function payOnPayure(page, ending = '1111') {
   await backFromPayure(page);
 }
 
+// Runs an action that reloads the page, and waits for the new page. Waiting on the load state alone would
+// return at once, because the old page has already loaded.
+async function reloadAfter(page, action) {
+  const loaded = page.waitForEvent('load');
+  await action();
+  await loaded;
+  await ready(page);
+}
+
 async function toReview(page) {
   await page.locator('#startButton').click();
   await page.locator('label[for=ptype_fuelwood]').click(); await cont(page);
@@ -229,17 +238,14 @@ try {
     const drawer = page.locator('#demoDrawer');
     await drawer.waitFor();
     await checkAccessibility(page, 'demo tools on the start page');
-    await drawer.getByRole('switch', { name: 'Permit catalog fails to load' }).click();
-    await page.waitForLoadState('load'); await ready(page);
+    await reloadAfter(page, () => drawer.getByRole('switch', { name: 'Permit catalog fails to load' }).click());
     assert.equal(await errorText(page), `${LOAD_ERROR} Try again`);
     assert.equal(await page.locator('#demoBanner').isVisible(), true);
     assert.equal(await drawer.getByRole('switch', { name: 'Permit catalog fails to load' }).getAttribute('aria-checked'), 'true');
     await checkAccessibility(page, 'demo banner and a broken catalog');
-    await drawer.getByLabel('How it fails').selectOption('data');
-    await page.waitForLoadState('load'); await ready(page);
+    await reloadAfter(page, () => drawer.getByLabel('How it fails').selectOption('data'));
     assert.equal(await errorText(page), `${LOAD_ERROR} Try again`);
-    await page.locator('#demoBanner').getByRole('button', { name: 'Fix all' }).click();
-    await page.waitForLoadState('load'); await ready(page);
+    await reloadAfter(page, () => page.locator('#demoBanner').getByRole('button', { name: 'Fix all' }).click());
     assert.equal(await errorText(page), '');
     assert.equal(await page.locator('#demoBanner').count(), 0);
     await drawer.getByRole('button', { name: 'Your details', exact: true }).click();
