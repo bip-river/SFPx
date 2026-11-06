@@ -1,71 +1,44 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { JSDOM } from 'jsdom';
-import { SourceTextModule } from 'node:vm';
 import { readPdf } from './pdf-text.mjs';
+import { root, loadPage, dumpStorage, openPayure, sleep } from './dom.mjs';
 
-const root = new URL('../', import.meta.url);
 const html = await readFile(new URL('index.html', root), 'utf8');
 const catalog = JSON.parse(await readFile(new URL('products.json', root), 'utf8'));
 const HOLDER = { FirstName: 'Test', LastName: 'Purchaser', AddressLine1: '123 Test Street', City: 'Test City', AddrState: 'UT', Zip: '84037', DeliveryEmail: 'test@example.com', ConfirmEmail: 'test@example.com' };
 
 // `fetch` replaces the catalog request (setFetch swaps it mid-test); `blocked` lists dynamically imported modules that
 // fail to download, like a dropped connection; `fastTimeout` makes the catalog timeout fire at once.
+// Paying opens Pay.ure and then the BWL page again, as new page loads in the same tab; `a.w` and the helpers always
+// refer to the page the visitor is on now.
 async function app(t, { data = structuredClone(catalog), saved, storageBlocked = false, loadFails = false, hash = '', markup = html, fetch, waitReady = true, fastTimeout = false } = {}) {
-  const dom = new JSDOM(markup, { url: `http://localhost/${hash}`, runScripts: 'outside-only', pretendToBeVisual: true });
-  t.after(() => dom.window.close());
-  const w = dom.window;
   let now = '2026-10-21T12:00:00';
-  const NativeDate = w.Date;
-  w.Date = class extends NativeDate {
-    constructor(...args) { super(...(args.length ? args : [now])); }
-    static now() { return new NativeDate(now).getTime(); }
-  };
   const urls = new Map(), revoked = [];
   let fetchCatalog = fetch || (async () => { if (loadFails) throw new Error('test network failure'); return { ok: true, json: async () => data }; });
-  w.fetch = (...args) => fetchCatalog(...args);
   const blocked = new Set();
-  if (fastTimeout) { const native = w.setTimeout; w.setTimeout = (fn, ms, ...rest) => native(fn, ms === 15000 ? 1 : ms, ...rest); }
-  w.TextEncoder = TextEncoder;
-  w.TextDecoder = TextDecoder;
-  w.setImmediate = setImmediate;
-  w.Blob = Blob;
-  w.matchMedia = () => ({ matches: true });
-  w.scrollTo = () => {};
-  w.HTMLElement.prototype.scrollIntoView = function () {};
-  w.URL.createObjectURL = blob => { const url = `blob:test/${urls.size}`; urls.set(url, blob); return url; };
-  w.URL.revokeObjectURL = url => revoked.push(url);
-  w.console.error = () => {};
-  w.console.warn = () => {};
-  if (saved) w.sessionStorage.setItem('sfp-demo-state', typeof saved === 'string' ? saved : JSON.stringify(saved));
-  if (storageBlocked) Object.defineProperty(w, 'sessionStorage', { get() { throw new Error('storage blocked'); } });
-  const modules = new Map();
-  async function loadModule(url) {
-    if (!modules.has(url.href)) {
-      const source = await readFile(url, 'utf8');
-      modules.set(url.href, new SourceTextModule(source, {
-        context: dom.getInternalVMContext(), identifier: url.href,
-        importModuleDynamically: async (specifier, referencing) => {
-          if ([...blocked].some(path => new URL(specifier, referencing.identifier).href === new URL(path, root).href)) throw new w.TypeError(`Failed to fetch dynamically imported module: ${specifier}`);
-          const dependency = await loadModule(new URL(specifier, referencing.identifier));
-          if (dependency.status === 'unlinked') await dependency.link((name, parent) => loadModule(new URL(name, parent.identifier)));
-          if (dependency.status === 'linked') await dependency.evaluate();
-          return dependency;
-        }
-      }));
-    }
-    return modules.get(url.href);
+  let page;
+  async function open(url, storage, first = false) {
+    page = await loadPage(t, {
+      url, markup, storage, blocked, now: () => now,
+      setup: (w) => {
+        w.fetch = (...args) => fetchCatalog(...args);
+        if (fastTimeout) { const native = w.setTimeout; w.setTimeout = (fn, ms, ...rest) => native(fn, ms === 15000 ? 1 : ms, ...rest); }
+        w.URL.createObjectURL = blob => { const url = `blob:test/${urls.size}`; urls.set(url, blob); return url; };
+        w.URL.revokeObjectURL = url => revoked.push(url);
+        if (first && saved) w.sessionStorage.setItem('sfp-demo-state', typeof saved === 'string' ? saved : JSON.stringify(saved));
+        if (first && storageBlocked) Object.defineProperty(w, 'sessionStorage', { get() { throw new Error('storage blocked'); } });
+      }
+    });
+    if (waitReady || !first) await page.ready;
   }
-  const entry = await loadModule(new URL('app.js', root));
-  await entry.link((specifier, referencing) => loadModule(new URL(specifier, referencing.identifier)));
-  await entry.evaluate();
-  if (waitReady) await entry.namespace.ready;
-  const $ = selector => w.document.querySelector(selector);
-  const input = (selector, value) => { const el = $(selector); el.value = value; el.dispatchEvent(new w.Event('input', { bubbles: true })); };
-  const change = (selector, value) => { const el = $(selector); if (value !== undefined) el.value = value; el.dispatchEvent(new w.Event('change', { bubbles: true })); };
+  await open(`http://localhost/${hash}`, {}, true);
+
+  const $ = selector => page.w.document.querySelector(selector);
+  const input = (selector, value) => { const el = $(selector); el.value = value; el.dispatchEvent(new page.w.Event('input', { bubbles: true })); };
+  const change = (selector, value) => { const el = $(selector); if (value !== undefined) el.value = value; el.dispatchEvent(new page.w.Event('change', { bubbles: true })); };
   const check = selector => { const el = $(selector); if (!el.checked) el.click(); };
-  const screen = () => [...w.document.querySelectorAll('.screen')].filter(el => !el.hidden).map(el => el.id.replace('screen-', '')).join(',');
+  const screen = () => [...page.w.document.querySelectorAll('.screen')].filter(el => !el.hidden).map(el => el.id.replace('screen-', '')).join(',');
   const cont = () => $(`#screen-${screen()} button[type=submit]`).click();
   const start = () => $('#startButton').click();
   // Stops on the permit screen with a permit selected; its quantity starts at the minimum.
@@ -88,19 +61,40 @@ async function app(t, { data = structuredClone(catalog), saved, storageBlocked =
     check('#agree');
   };
   const payload = () => JSON.parse($('#handoff .payload-content').textContent);
+  // The page the visitor went to last, such as Pay.ure after Pay.
+  const leftFor = () => page.navigations.at(-1)?.url;
+  // Opens Pay.ure where the BWL page sent the visitor; `act` pays or cancels there. Then the BWL page opens again
+  // at the address Pay.ure returned to.
+  const visitPayure = async (act = p => { p.enterCard(); p.cont(); return p.pay(); }) => {
+    assert.match(leftFor(), /^http:\/\/localhost\/pay-ure\/\?token=[0-9a-f-]+$/);
+    const payure = await openPayure(t, leftFor(), { storage: dumpStorage(page.w), now: () => now });
+    const back = await act(payure);
+    assert.equal(back.replace, true, 'returning replaces the Pay.ure step in the history');
+    await open(back.url, dumpStorage(payure.w));
+    return payure;
+  };
+  // Presses Pay (or Get my permit), pays on Pay.ure with a test card when sent there, then waits for the permit.
   const generate = async () => {
-    $('#confirmPaygov').click();
+    const from = page, before = page.navigations.length;
+    $('#confirmPay').click();
     for (let attempt = 0; attempt < 500; attempt++) {
+      if (page === from && from.navigations.length > before) await visitPayure();
       if (screen() === 'done') return;
       if (!$('#errorBox').hidden) throw new Error($('#errorList').textContent);
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await sleep(10);
     }
     throw new Error('Permit generation timed out');
   };
+  // Opens the BWL page again at `url` in the same tab, as a link, the address bar or a Back button would.
+  const revisit = async (url) => { await open(url, dumpStorage(page.w)); };
   // The browser's Back button: history traversal fires popstate asynchronously.
-  const goBack = () => new Promise(resolve => { w.addEventListener('popstate', () => setTimeout(resolve, 0), { once: true }); w.history.back(); });
+  const goBack = () => new Promise(resolve => { page.w.addEventListener('popstate', () => setTimeout(resolve, 0), { once: true }); page.w.history.back(); });
   const errors = () => ($('#errorBox').hidden ? '' : $('#errorList').textContent);
-  return { w, $, input, change, check, screen, cont, start, pickPermit, choose, holder, agree, payload, generate, goBack, urls, revoked, blocked, errors, ready: entry.namespace.ready, setNow(value) { now = value; }, setFetch(fn) { fetchCatalog = fn; } };
+  return {
+    get w() { return page.w; }, get ready() { return page.ready; }, get navigations() { return page.navigations; },
+    $, input, change, check, screen, cont, start, pickPermit, choose, holder, agree, payload, generate, visitPayure, leftFor, revisit, goBack, urls, revoked, blocked, errors,
+    setNow(value) { now = value; }, setFetch(fn) { fetchCatalog = fn; }
+  };
 }
 
 const savedFor = (product, extra = {}) => ({ model: { state: 'AK', officeId: 'AK-ANCH', productType: 'fuelwood', productKey: product.id, qty: product.minQty, ...extra } });
@@ -151,7 +145,7 @@ test('paid checkout validates holder data, preserves retry identity, and replace
   assert.equal(a.screen(), 'details', 'missing details keep the visitor on the details screen');
   a.holder(); a.agree();
   assert.equal(a.$('#reviewTitle').textContent, 'Check and pay');
-  assert.equal(a.$('#confirmPaygov').textContent, 'Pay $10.00 on Pay.gov');
+  assert.equal(a.$('#confirmPay').textContent, 'Pay $10.00 on Pay.ure');
   await a.generate();
   const first = a.payload();
   assert.equal(first.total, 10);
@@ -179,7 +173,7 @@ test('paid checkout validates holder data, preserves retry identity, and replace
 
 test('no-fee checkout retries reuse identity and edits revoke stale PDFs', async t => {
   const a = await app(t); a.choose('fuelwood', 3); a.holder(); a.agree();
-  assert.equal(a.$('#confirmPaygov').textContent, 'Get my free permit');
+  assert.equal(a.$('#confirmPay').textContent, 'Get my free permit');
   await a.generate();
   const first = a.payload(), originalUrl = [...a.urls.keys()].at(-1);
   assert.equal(first.total, 0);
@@ -317,7 +311,7 @@ test('eligibility is driven by catalog rule even if display name changes, and is
 
 test('details collect an optional middle name and show the Privacy Act notice without a checkbox', async t => {
   const a = await app(t); 
-  assert.match(a.$('#screen-start').textContent, /debit or credit card, or a checking account/, 'Pay.gov also takes checking accounts');
+  assert.match(a.$('#screen-start').textContent, /debit or credit card, or a checking or savings account/, 'Pay.ure also takes bank accounts');
   a.choose();
   const notice = a.$('#screen-details #privacyNotice');
   assert.ok(notice, 'the notice is on the screen that collects the information');
@@ -330,7 +324,7 @@ test('details collect an optional middle name and show the Privacy Act notice wi
   assert.match(a.$('#reviewSummary').textContent, /Test Quinn Purchaser/);
   assert.equal(a.$('label[for=agree]').textContent, 'I agree to the permit terms and certify that I’m not a minor under Alaska law.', 'the age certification is visible, not only in the collapsed terms');
   assert.match(a.$('#termsDetail').textContent, /not a minor under the laws of the state/);
-  a.$('#confirmPaygov').click();
+  a.$('#confirmPay').click();
   assert.equal(a.$('#errorList').textContent, 'Agree to the permit terms and certify that you’re not a minor.');
   a.agree(); await a.generate();
   assert.equal(a.payload().permitHolder.middleName, 'Quinn');
@@ -340,7 +334,7 @@ test('details collect an optional middle name and show the Privacy Act notice wi
 test('checkout rechecks availability after date changes in an open tab', async t => {
   const data = structuredClone(catalog); data.AK.offices[0].products.fuelwood[0].saleEndDate = '2026-10-21';
   const a = await app(t, { data }); a.choose(); a.holder(); a.agree(); a.setNow('2026-10-22T12:00:00');
-  a.$('#confirmPaygov').click();
+  a.$('#confirmPay').click();
   assert.equal(a.screen(), 'permit');
   assert.equal(a.$('#handoff').textContent, '');
   assert.match(a.$('#errorList').textContent, /no longer available/);
@@ -369,18 +363,23 @@ test('unsafe attachment URLs are blocked after browser URL normalization', async
 
 test('malformed saved state, unavailable storage, and fetch failures are handled', async t => {
   const a = await app(t, { saved: '{broken' }); a.choose();
-  const b = await app(t, { storageBlocked: true }); b.choose(); b.holder(); b.agree(); await b.generate(); assert.ok(b.payload().idempotencyKey);
+  const b = await app(t, { storageBlocked: true }); b.choose('fuelwood', 3); b.holder(); b.agree(); await b.generate(); assert.ok(b.payload().idempotencyKey, 'a free permit needs no storage');
+  // Paying leaves the page, and the checkout can only wait for the return in storage.
+  const d = await app(t, { storageBlocked: true }); d.choose(); d.holder(); d.agree();
+  await assert.rejects(d.generate(), /blocking this site from saving data/);
+  assert.equal(d.errors(), 'We couldn’t take you to Pay.ure because your browser is blocking this site from saving data. Allow cookies and site data for this site, then try again. Your entries are still here.');
+  assert.equal(d.navigations.length, 0, 'the visitor stays here');
   const c = await app(t, { loadFails: true }); assert.equal(c.$('#state').disabled, true); assert.match(c.errors(), /couldn’t load the permits available online/);
 });
 
 test('Reset during asynchronous PDF generation cannot publish a stale permit', async t => {
   const a = await app(t); a.choose('fuelwood', 3); a.holder(); a.agree();
-  a.$('#confirmPaygov').click();
-  assert.equal(a.$('#confirmPaygov').getAttribute('aria-busy'), 'true');
-  assert.equal(a.$('#confirmPaygov').disabled, false, 'the busy button keeps focus');
+  a.$('#confirmPay').click();
+  assert.equal(a.$('#confirmPay').getAttribute('aria-busy'), 'true');
+  assert.equal(a.$('#confirmPay').disabled, false, 'the busy button keeps focus');
   a.$('#resetAll').click();
-  for (let n = 0; n < 500 && a.$('#confirmPaygov').hasAttribute('aria-busy'); n++) await new Promise(resolve => setTimeout(resolve, 10));
-  assert.equal(a.$('#confirmPaygov').hasAttribute('aria-busy'), false);
+  for (let n = 0; n < 500 && a.$('#confirmPay').hasAttribute('aria-busy'); n++) await new Promise(resolve => setTimeout(resolve, 10));
+  assert.equal(a.$('#confirmPay').hasAttribute('aria-busy'), false);
   assert.equal(a.urls.size, 0);
   assert.equal(a.screen(), 'what');
   assert.equal(a.$('#permitDownloadBtn').disabled, true);
@@ -397,7 +396,7 @@ test('a PDF engine that fails to download is explained plainly, keeps entries an
   assert.equal(a.screen(), 'review');
   assert.equal(a.$('#FirstName').value, 'Test');
   assert.equal(a.$('#agree').checked, true);
-  assert.equal(a.$('#confirmPaygov').hasAttribute('aria-disabled'), false);
+  assert.equal(a.$('#confirmPay').hasAttribute('aria-disabled'), false);
   assert.equal(a.$('#permitDownloadBtn').disabled, true);
   a.blocked.clear();
   await a.generate();
@@ -426,7 +425,7 @@ test('characters the permit cannot print are caught at the field, before checkou
 });
 
 test('an unprintable entry that reaches the PDF links back to its field, then Continue returns to checkout', async t => {
-  const a = await app(t); a.choose(); a.holder(); a.agree();
+  const a = await app(t); a.choose('fuelwood', 3); a.holder(); a.agree();
   // A value set without events skips the field check, so only the PDF's own check can catch it.
   a.$('#City').value = 'Test 東';
   await assert.rejects(a.generate(), /City can’t include/);
@@ -453,7 +452,7 @@ test('unexpected script errors are reported, but errors from other origins are n
 test('an oversized checkout payload asks for shorter entries instead of quoting bytes', async t => {
   const a = await app(t); a.choose(); a.holder(); a.agree();
   a.w.TextEncoder = class { encode() { return { length: 5000 }; } };
-  a.$('#confirmPaygov').click();
+  a.$('#confirmPay').click();
   assert.equal(a.errors(), 'Your details are too long to send. Shorten your name, address or email, then try again.');
   assert.equal(a.urls.size, 0, 'nothing is generated');
 });
@@ -576,7 +575,7 @@ test('Continue explains what is missing with links to each field', async t => {
   assert.equal(a.$('#LastName').getAttribute('aria-invalid'), 'true', 'inline errors are shown too');
   links().find(link => link.getAttribute('href') === '#LastName').click();
   assert.equal(a.w.document.activeElement, a.$('#LastName'));
-  a.holder(); a.$('#confirmPaygov').click();
+  a.holder(); a.$('#confirmPay').click();
   assert.deepEqual(links().map(link => link.getAttribute('href')), ['#agree']);
   assert.equal(a.$('#handoff').textContent, '', 'nothing is submitted');
 });
@@ -603,7 +602,7 @@ test('checkout works without crypto.randomUUID and reports unexpected failures',
   assert.match(a.payload().idempotencyKey, /^TX-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
   await a.goBack(); a.$('#reviewSummary a[href="#details"]').click(); a.input('#FirstName', 'Changed'); a.cont();
   Object.defineProperty(a.w.crypto, 'getRandomValues', { value: undefined, configurable: true });
-  a.$('#confirmPaygov').click(); await new Promise(resolve => setTimeout(resolve, 0));
+  a.$('#confirmPay').click(); await new Promise(resolve => setTimeout(resolve, 0));
   assert.equal(a.errors(), 'We couldn’t create your permit. Your entries are still here. Try again, and if it keeps happening, try again later or buy your permit at a local BWL office.');
   assert.equal(a.$('#FirstName').value, 'Changed');
 });
@@ -777,7 +776,7 @@ test('holder blur and unchanged change events preserve the prepared permit and b
   const a = await app(t); a.choose(); a.holder(); a.agree(); await a.generate();
   const reference = a.payload().idempotencyKey;
   await a.goBack();
-  const labelNode = a.$('#confirmPaygov').firstChild;
+  const labelNode = a.$('#confirmPay').firstChild;
   a.$('#FirstName').dispatchEvent(new a.w.Event('blur'));
   a.$('#FirstName').dispatchEvent(new a.w.Event('change'));
   a.$('#agree').dispatchEvent(new a.w.Event('blur'));
@@ -785,7 +784,151 @@ test('holder blur and unchanged change events preserve the prepared permit and b
   assert.equal(a.screen(), 'done', 'the permit is still valid for the current entries');
   assert.equal(a.payload().idempotencyKey, reference);
   a.w.dispatchEvent(new a.w.PopStateEvent('popstate', { state: { screen: 'review' } }));
-  assert.equal(a.$('#confirmPaygov').firstChild, labelNode);
+  assert.equal(a.$('#confirmPay').firstChild, labelNode);
   a.input('#qty', '2');
   assert.equal(a.$('#permitDownloadBtn').disabled, true, 'a quantity edit discards the prepared permit');
+});
+
+const until2 = async (condition, what) => {
+  for (let n = 0; n < 500; n++) { if (condition()) return; await sleep(10); }
+  throw new Error(`Timed out waiting for ${what}`);
+};
+const HANDOFF = 'sfp-payment-handoff';
+const COLLECTIONS = 'payure-demo-collections';
+
+test('Pay sends the visitor to Pay.ure with a token, and the permit follows the confirmed payment', async t => {
+  const a = await app(t); a.choose(); a.holder(); a.agree();
+  assert.match(a.$('#payNote').textContent, /You’ll pay on Pay\.ure, then come back here for your permit/);
+  a.$('#confirmPay').click();
+  assert.equal(a.navigations.length, 1);
+  assert.equal(a.navigations[0].replace, false, 'leaving for Pay.ure adds a history entry, so Back returns here');
+  const token = new URL(a.leftFor()).searchParams.get('token');
+  const handoff = JSON.parse(a.w.sessionStorage.getItem(HANDOFF));
+  assert.equal(handoff.token, token);
+  assert.equal(handoff.holder.FirstName, 'Test', 'the agency side keeps the checkout while the visitor pays');
+  const collection = JSON.parse(a.w.sessionStorage.getItem(COLLECTIONS))[token];
+  assert.deepEqual({ ...collection.request }, {
+    agencyId: 'BWL-SFP', agencyName: 'Bureau of Wandering Lands', amount: 10, currency: 'USD',
+    description: 'Firewood permit: Anchorage North, 1 cord', transactionReference: handoff.reference,
+    successUrl: 'http://localhost/?payure=success#review', cancelUrl: 'http://localhost/?payure=cancel#review'
+  });
+  assert.ok(!a.w.sessionStorage.getItem(COLLECTIONS).includes('Purchaser'), 'Pay.ure is not given the permit holder’s details');
+
+  await a.visitPayure();
+  await until2(() => a.screen() === 'done', 'the permit after paying');
+  assert.equal(a.w.location.href, 'http://localhost/#done', 'the return address is cleaned up');
+  assert.equal(a.w.sessionStorage.getItem(HANDOFF), null, 'purchaser details leave storage once the visitor is back');
+  assert.ok(!a.w.sessionStorage.getItem(COLLECTIONS).includes('4111111111111111'), 'the card number is never stored');
+  const paid = a.payload();
+  assert.equal(paid.idempotencyKey, handoff.reference);
+  assert.equal(paid.permitNumber, handoff.permitNumber, 'the permit number chosen before paying is kept');
+  assert.deepEqual(Object.keys(paid.payment).sort(), ['amount', 'cardBrand', 'completedAt', 'last4', 'method', 'processor', 'status', 'token', 'trackingId']);
+  assert.equal(paid.payment.processor, 'Pay.ure');
+  assert.equal(paid.payment.token, token);
+  assert.equal(paid.payment.status, 'success');
+  assert.equal(paid.payment.cardBrand, 'Visa');
+  assert.equal(paid.payment.last4, '1111');
+  assert.match(paid.payment.trackingId, /^PU-[A-HJ-NP-Z2-9]{10}$/);
+  assert.equal(a.$('#doneNote').textContent, `You paid $10.00 on Pay.ure with Visa ending 1111. Tracking ID ${paid.payment.trackingId}. This was a demo, so nothing was charged. In production: we’d also email the package to test@example.com.`);
+  assert.match(a.$('#handoff .hint').textContent, /look the collection up by token before issuing the permit/);
+  const pdfText = (await readPdf([...a.urls.values()].at(-1))).text;
+  // The fee line wraps in the PDF.
+  assert.ok(pdfText.replace(/\s+/g, ' ').includes(`$10.00 paid on Pay.ure, tracking ID ${paid.payment.trackingId} (demo: nothing was charged)`));
+
+  // Back on the check screen, the permit is already paid for.
+  await a.goBack();
+  assert.equal(a.screen(), 'review');
+  assert.equal(a.$('#confirmPay').textContent, 'Get my permit');
+  assert.equal(a.$('#payNote').textContent, `You’ve paid $10.00 on Pay.ure with Visa ending 1111. Tracking ID ${paid.payment.trackingId}.`);
+  const left = a.navigations.length;
+  await a.generate();
+  assert.equal(a.navigations.length, left, 'no second trip to Pay.ure');
+  assert.equal(a.payload().payment.trackingId, paid.payment.trackingId);
+});
+
+test('a bank account payment is described by its type and last four digits', async t => {
+  const a = await app(t); a.choose(); a.holder(); a.agree();
+  a.$('#confirmPay').click();
+  await a.visitPayure(p => { p.enterBank({ type: 'savings' }); p.cont(); return p.pay(); });
+  await until2(() => a.screen() === 'done', 'the permit after paying');
+  assert.equal(a.payload().payment.method, 'bank');
+  assert.equal(a.payload().payment.accountType, 'savings');
+  assert.equal(a.payload().payment.last4, '7890');
+  assert.match(a.$('#doneNote').textContent, /^You paid \$10\.00 on Pay\.ure with savings account ending 7890\./);
+});
+
+test('cancelling on Pay.ure returns to the check screen with every entry kept', async t => {
+  const a = await app(t); a.choose(); a.holder({ MiddleName: 'Quinn' }); a.agree();
+  a.$('#confirmPay').click();
+  const reference = JSON.parse(a.w.sessionStorage.getItem(HANDOFF)).reference;
+  const payure = await a.visitPayure((p) => { p.$('#cancelPay').click(); return p.navigations.at(-1); });
+  assert.equal(JSON.parse(payure.w.sessionStorage.getItem(COLLECTIONS))[payure.w.location.search.slice(7)].status, 'cancelled');
+  assert.equal(a.screen(), 'review');
+  assert.equal(a.w.location.href, 'http://localhost/#review');
+  assert.equal(a.$('#paymentNotice').hidden, false);
+  assert.equal(a.$('#paymentNotice').textContent, 'You cancelled your payment on Pay.ure, so nothing was charged. Your entries are still here.');
+  assert.equal(a.$('#MiddleName').value, 'Quinn');
+  assert.equal(a.$('#agree').checked, true);
+  assert.equal(a.$('#confirmPay').textContent, 'Pay $10.00 on Pay.ure');
+  assert.equal(a.w.sessionStorage.getItem(HANDOFF), null);
+  assert.equal(a.errors(), '');
+  await a.generate();
+  assert.equal(a.payload().idempotencyKey, reference, 'paying after a cancel keeps the checkout’s reference');
+  assert.equal(a.$('#paymentNotice').hidden, true, 'the notice goes once the visitor moves on');
+});
+
+test('leaving Pay.ure with the Back button returns to the check screen, from a reload or the back-forward cache', async t => {
+  const a = await app(t); a.choose(); a.holder(); a.agree();
+  a.$('#confirmPay').click();
+  await a.revisit('http://localhost/#review');
+  assert.equal(a.screen(), 'review');
+  assert.equal(a.$('#paymentNotice').textContent, 'You left Pay.ure without paying, so nothing was charged. Your entries are still here.');
+  assert.equal(a.$('#FirstName').value, 'Test');
+  assert.equal(a.w.sessionStorage.getItem(HANDOFF), null);
+
+  const b = await app(t); b.choose(); b.holder({ FirstName: 'Cached' }); b.agree();
+  b.$('#confirmPay').click();
+  b.w.dispatchEvent(new b.w.PageTransitionEvent('pageshow', { persisted: true }));
+  assert.equal(b.screen(), 'review');
+  assert.equal(b.$('#FirstName').value, 'Cached');
+  assert.equal(b.w.document.activeElement, b.$('#reviewTitle'));
+  assert.equal(b.$('#paymentNotice').hidden, false);
+});
+
+test('a return that cannot be matched to a paid checkout never issues a permit', async t => {
+  // Paid, but this tab no longer has the checkout (another tab, or cleared site data).
+  const lost = await app(t, { hash: '?payure=success&token=0b0b0b0b-0000-4000-8000-000000000000#review' });
+  assert.equal(lost.screen(), 'start');
+  assert.equal(lost.errors(), 'We couldn’t find the permit you were paying for, so we can’t issue it here. If Pay.ure says you paid, contact your local BWL office with your name and email address. Otherwise, start again.');
+  // Cancelled without the checkout: nothing to say.
+  const gone = await app(t, { hash: '?payure=cancel&token=0b0b0b0b-0000-4000-8000-000000000000#review' });
+  assert.equal(gone.errors(), '');
+  // The success address was opened, but Pay.ure has no payment for the token.
+  const a = await app(t); a.choose(); a.holder(); a.agree();
+  a.$('#confirmPay').click();
+  const token = new URL(a.leftFor()).searchParams.get('token');
+  await a.revisit(`http://localhost/?payure=success&token=${token}#review`);
+  assert.equal(a.screen(), 'review');
+  assert.equal(a.errors(), 'We couldn’t confirm your payment with Pay.ure, so we haven’t issued your permit. Try paying again. If Pay.ure says you paid, contact your local BWL office with your name, email address and permit reference.');
+  assert.equal(a.$('#confirmPay').textContent, 'Pay $10.00 on Pay.ure');
+  assert.equal(a.urls.size, 0);
+});
+
+test('Pay checks every entry again before leaving, so no one pays for a permit that cannot be issued', async t => {
+  const a = await app(t); a.choose(); a.holder(); a.agree();
+  // A value set without events skips the field check.
+  a.$('#City').value = 'Test 東';
+  a.$('#confirmPay').click();
+  assert.equal(a.navigations.length, 0);
+  assert.equal(a.$('#errorList a').getAttribute('href'), '#City');
+  assert.equal(a.$('#errorList a').textContent, 'City can’t include “東” because the permit can’t print it. Remove it or type it another way.');
+  assert.equal(a.w.sessionStorage.getItem(HANDOFF), null);
+});
+
+test('Start over forgets a checkout waiting for Pay.ure', async t => {
+  const a = await app(t); a.choose(); a.holder(); a.agree();
+  a.$('#confirmPay').click();
+  assert.ok(a.w.sessionStorage.getItem(HANDOFF));
+  a.$('#resetAll').click();
+  assert.equal(a.w.sessionStorage.getItem(HANDOFF), null);
 });

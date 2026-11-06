@@ -8,6 +8,10 @@ import { MAX_PAYLOAD_BYTES, createCheckoutIdentity, readPermitHolder, buildCheck
 import { buildPermitPackagePdf, PermitPdfError } from './js/permit-pdf.js';
 import { TYPE_DOCUMENTS, AREA_DOCUMENTS, documentIdFromUrl } from './js/permit-documents.js';
 import { renderProductTypes, buildOption, syncSelectedOptions, money, feeLabelForUnit, totalLabelFor, unitLabel, quantityLabel, quantityRangeLabel, shortProductName, formatDate, validityText, buildDocLinks, buildRequiredDocs, buildDocumentLink, renderPayload } from './js/ui.js';
+import { createPaymentHandoff, paymentReturnUrls, readPaymentReturn, describePayment, PAYMENT_AGENCY_ID } from './js/payment-handoff.js';
+import { navigate } from './js/navigate.js';
+// Pay.ure's collection API, which an agency's server would call. See pay-ure/js/collections.js.
+import { createCollectionStore, CollectionError } from './pay-ure/js/collections.js';
 
 // A start page, then one question per screen. "done" follows the five numbered steps once a permit has been prepared.
 const SCREENS = ['start', 'what', 'where', 'permit', 'details', 'review', 'done'];
@@ -25,12 +29,22 @@ const PDF_DATA_ERROR = 'We couldn’t create your permit because of a problem wi
 const CHECKOUT_ERROR = 'We couldn’t create your permit. Your entries are still here. Try again, and if it keeps happening, try again later or buy your permit at a local BWL office.';
 const PAYLOAD_ERROR = 'Your details are too long to send. Shorten your name, address or email, then try again.';
 const UNEXPECTED_ERROR = 'Something went wrong on this page. Reload the page and try again. Your choices are kept, but you’ll need to enter your details again.';
+const PAYURE_PAGE = 'pay-ure/';
+const STORAGE_ERROR = 'We couldn’t take you to Pay.ure because your browser is blocking this site from saving data. Allow cookies and site data for this site, then try again. Your entries are still here.';
+const PAYMENT_LOST_ERROR = 'We couldn’t find the permit you were paying for, so we can’t issue it here. If Pay.ure says you paid, contact your local BWL office with your name and email address. Otherwise, start again.';
+const PAYMENT_UNCONFIRMED_ERROR = 'We couldn’t confirm your payment with Pay.ure, so we haven’t issued your permit. Try paying again. If Pay.ure says you paid, contact your local BWL office with your name, email address and permit reference.';
+const PAYMENT_NOTICES = {
+  cancel: 'You cancelled your payment on Pay.ure, so nothing was charged. Your entries are still here.',
+  left: 'You left Pay.ure without paying, so nothing was charged. Your entries are still here.'
+};
 
 let catalogData = {};
 // 'loading' until products.json is read and validated, then 'ready' or 'failed'. "Try again" returns to 'loading'.
 let catalogStatus = 'loading';
 let restoring = false;
 const selectionStorage = createSelectionStorage();
+const paymentHandoff = createPaymentHandoff();
+const collections = createCollectionStore();
 const byId = id => document.getElementById(id);
 
 // Banner toggle
@@ -89,8 +103,9 @@ const eligibilityLabel = byId('eligibilityLabel');
 const eligibilityBody = byId('eligibilityBody');
 const agreeEl = byId('agree');
 const agreeLabel = byId('agreeLabel');
-const confirmPaygovBtn = byId('confirmPaygov');
+const payButton = byId('confirmPay');
 const payNote = byId('payNote');
+const paymentNotice = byId('paymentNotice');
 const resetAllBtn = byId('resetAll');
 
 const doneNote = byId('doneNote');
@@ -136,8 +151,15 @@ let returnToReview = false;
 const checkoutIdentity = createCheckoutIdentity();
 let checkoutRevision = 0;
 let checkoutPending = false;
-// The permit package prepared for the current entries: { reference, permitNumber, url, payload, noFee, pageCount, tagCount }.
+// The permit package prepared for the current entries: { reference, permitNumber, url, payload, noFee, pageCount, tagCount, payment }.
 let issued = null;
+// A payment Pay.ure confirmed: { fingerprint, reference, permitNumber, token, amount, result }. It pays for the
+// checkout it was made for, so going back from the permit and continuing again does not ask for a second payment.
+let payment = null;
+
+function paidForCurrentCheckout() {
+  return payment && payment.fingerprint === JSON.stringify(checkoutSnapshot()) ? payment : null;
+}
 
 function clearIssued() {
   if (issued?.url) {
@@ -177,8 +199,7 @@ function persistState() {
   });
 }
 
-function restoreState() {
-  const saved = selectionStorage.read()?.model;
+function restoreState(saved = selectionStorage.read()?.model) {
   if (!saved || typeof saved !== 'object') return;
 
   setProductType(saved.productType || saved.ptype || '');
@@ -632,18 +653,22 @@ function renderReview() {
   const agreeText = `I agree to the permit terms and certify that I’m not a minor under ${stateName()} law.`;
   if (agreeLabel.textContent !== agreeText) agreeLabel.textContent = agreeText;
 
-  const label = noFee ? 'Get my free permit' : `Pay ${money(total)} on Pay.gov`;
+  const paid = !noFee && paidForCurrentCheckout();
+  const label = noFee ? 'Get my free permit' : paid ? 'Get my permit' : `Pay ${money(total)} on Pay.ure`;
   // Rewriting identical text would replace the node a pending click or screen reader is using.
-  if (confirmPaygovBtn.textContent !== label) confirmPaygovBtn.textContent = label;
+  if (payButton.textContent !== label) payButton.textContent = label;
   payNote.replaceChildren();
   if (noFee) payNote.textContent = 'No payment is needed. You can download your permit package right away.';
-  else appendProductionNote(payNote, 'you’ll pay on Pay.gov, then come back here for your permit. This demo skips payment.');
+  else if (paid) payNote.textContent = `You’ve paid ${money(paid.amount)} on Pay.ure with ${describePayment(paid.result)}. Tracking ID ${paid.result.trackingId}.`;
+  else payNote.textContent = 'You’ll pay on Pay.ure, then come back here for your permit. In this demo, Pay.ure takes only test card and bank numbers and charges nothing.';
 }
 
 function renderDone() {
   if (!issued) return;
   const p = model.product;
-  doneNote.replaceChildren(issued.noFee ? 'No payment was needed. ' : 'This demo skipped payment, so nothing was charged. ');
+  doneNote.replaceChildren(issued.noFee
+    ? 'No payment was needed. '
+    : `You paid ${money(issued.payment.amount)} on Pay.ure with ${describePayment(issued.payment.result)}. Tracking ID ${issued.payment.result.trackingId}. This was a demo, so nothing was charged. `);
   appendProductionNote(doneNote, `we’d also email the package to ${permitHolder.DeliveryEmail.value.trim()}.`);
 
   const line = (className, text) => {
@@ -684,7 +709,7 @@ function renderDone() {
   renderPayload(handoff, issued.payload, {
     note: issued.noFee
       ? 'In production, the site would request permit issuance from the permitting system and return a signed permit PDF for download.'
-      : 'In production, the site would create a Sale ID and redirect the visitor to Pay.gov with this transaction context, then issue the permit after verifying payment.'
+      : 'In production, the site would start the Pay.ure collection server to server, send the visitor to Pay.ure with its token, then look the collection up by token before issuing the permit. In this demo both calls run in the browser.'
   });
 }
 
@@ -725,6 +750,7 @@ function showScreen(name, { history: mode = 'push', focus = true } = {}) {
   const target = SCREENS[index];
   currentScreen = target;
   if (target === 'review') returnToReview = false;
+  else paymentNotice.hidden = true;
   renderScreen(target);
   for (const [screenName, el] of Object.entries(screens)) el.hidden = screenName !== target;
 
@@ -1071,7 +1097,7 @@ function checkoutSnapshot() {
 }
 
 // Everything the permit package shows. Area documents come from the catalog's state and office attachments.
-function packageSpec({ permitNumber, noFee, total, tagCount }) {
+function packageSpec({ permitNumber, noFee, total, tagCount, paid }) {
   const p = model.product;
   const office = getSelectedOffice();
   const stateData = catalogData[model.state];
@@ -1094,7 +1120,7 @@ function packageSpec({ permitNumber, noFee, total, tagCount }) {
     validFrom: formatDate(startDate),
     validUntil: formatDate(expirationDate),
     validDays: shortened ? actualDays : validForDays,
-    fee: noFee ? 'No fee' : `${money(total)} (demo: no payment was taken)`,
+    fee: noFee ? 'No fee' : `${money(total)} paid on Pay.ure, tracking ID ${paid.result.trackingId} (demo: nothing was charged)`,
     tagCount,
     tagLine: tagCount ? `${tagCount} included, one for each ${TAG_EACH[model.productType]}` : 'Not required for this permit',
     tagEach: TAG_EACH[model.productType],
@@ -1121,11 +1147,11 @@ function setCheckoutPending(pending) {
   checkoutPending = pending;
   // aria-disabled rather than disabled, so focus stays on the button while the permit is prepared.
   if (pending) {
-    confirmPaygovBtn.setAttribute('aria-busy', 'true');
-    confirmPaygovBtn.setAttribute('aria-disabled', 'true');
+    payButton.setAttribute('aria-busy', 'true');
+    payButton.setAttribute('aria-disabled', 'true');
   } else {
-    confirmPaygovBtn.removeAttribute('aria-busy');
-    confirmPaygovBtn.removeAttribute('aria-disabled');
+    payButton.removeAttribute('aria-busy');
+    payButton.removeAttribute('aria-disabled');
   }
 }
 
@@ -1142,29 +1168,36 @@ async function confirmCheckout() {
   }
 
   const unitPrice = model.product.price;
-  const total = unitPrice * model.qty;
+  const total = Math.round(unitPrice * model.qty * 100) / 100;
   const noFee = unitPrice === 0;
+  const paid = noFee ? null : paidForCurrentCheckout();
+  // A paid checkout keeps the reference and permit number it was paid with.
+  if (paid) checkoutIdentity.restore(checkoutSnapshot(), 'TX', paid.reference, paid.permitNumber);
   const reference = checkoutIdentity.referenceFor(checkoutSnapshot(), noFee ? 'PERMIT' : 'TX');
   const permitNumber = checkoutIdentity.permitNumberFor(checkoutSnapshot(), model.officeId, getTodayStart());
   const tagCount = currentTagCount();
   const eligibility = productRequiresEligibility(model.product)
     ? { certified: ackEligibility.checked, basis: getProductEligibility(model.product).basis }
     : null;
-  const payload = buildCheckoutPayload({ model, holder: readPermitHolder(permitHolder), reference, permitNumber, haulTags: tagCount, eligibility });
+  const payload = buildCheckoutPayload({ model, holder: readPermitHolder(permitHolder), reference, permitNumber, haulTags: tagCount, eligibility, payment: paid ? paymentPayload(paid) : null });
   const payloadSize = payloadSizeBytes(payload);
   if (payloadSize > MAX_PAYLOAD_BYTES) {
     console.error(`Checkout payload is ${payloadSize} bytes; the limit is ${MAX_PAYLOAD_BYTES}.`);
     showErrors([PAYLOAD_ERROR]);
     return;
   }
+  if (!noFee && !paid) {
+    startPayment({ reference, permitNumber, total });
+    return;
+  }
 
   const revision = checkoutRevision;
   const snapshot = JSON.stringify(checkoutSnapshot());
   setCheckoutPending(true);
-  announce('Preparing your permit package. Please wait.');
+  announce(paid ? 'Payment received. Preparing your permit package. Please wait.' : 'Preparing your permit package. Please wait.');
   let blob, pageCount;
   try {
-    ({ blob, pageCount } = await buildPermitPackagePdf(packageSpec({ permitNumber, noFee, total, tagCount })));
+    ({ blob, pageCount } = await buildPermitPackagePdf(packageSpec({ permitNumber, noFee, total, tagCount, paid })));
     if (revision !== checkoutRevision || snapshot !== JSON.stringify(checkoutSnapshot())) return;
   } catch (error) {
     if (revision === checkoutRevision) {
@@ -1177,9 +1210,107 @@ async function confirmCheckout() {
   }
 
   clearIssued();
-  issued = { reference, permitNumber, url: URL.createObjectURL(blob), payload, noFee, pageCount, tagCount };
+  issued = { reference, permitNumber, url: URL.createObjectURL(blob), payload, noFee, pageCount, tagCount, payment: paid };
   showScreen('done');
   document.dispatchEvent(new CustomEvent('sfpx:pdf-ready'));
+}
+
+function paymentPayload({ token, amount, result }) {
+  return { processor: 'Pay.ure', token, status: 'success', amount, ...result };
+}
+
+function paymentDescription() {
+  return `${typeOption().label} permit: ${shortProductName(model.product)}, ${quantityLabel(model.product, model.qty)}`;
+}
+
+// Leaves for Pay.ure. Everything that can stop the permit is checked first, so no one pays for a permit we then
+// refuse: the field checks run again here because a value can change without the events that check it.
+function startPayment({ reference, permitNumber, total }) {
+  const holderErrors = validatePermitHolder();
+  if (holderErrors.length) {
+    holderErrors.forEach(error => setFieldError(error.field, error.text));
+    showErrors(holderErrors);
+    return;
+  }
+  const { successUrl, cancelUrl } = paymentReturnUrls(location.href);
+  let token;
+  try {
+    token = collections.startCollection({ agencyId: PAYMENT_AGENCY_ID, amount: total, description: paymentDescription(), transactionReference: reference, successUrl, cancelUrl });
+    paymentHandoff.save({
+      token, reference, permitNumber,
+      fingerprint: JSON.stringify(checkoutSnapshot()),
+      model: { productType: model.productType, state: model.state, officeId: model.officeId, officeName: model.officeName, productKey: model.productKey, qty: model.qty },
+      holder: Object.fromEntries(Object.entries(permitHolder).map(([id, el]) => [id, el.value])),
+      agreed: agreeEl.checked,
+      eligibility: ackEligibility.checked
+    });
+  } catch (error) {
+    console.error(error);
+    showErrors([error instanceof CollectionError ? CHECKOUT_ERROR : STORAGE_ERROR]);
+    return;
+  }
+  paymentNotice.hidden = true;
+  persistState();
+  navigate(new URL(`${PAYURE_PAGE}?token=${encodeURIComponent(token)}`, location.href).href);
+}
+
+// Puts back the checkout that was sent to Pay.ure. It must match exactly, or the payment cannot be tied to it.
+function restoreCheckout(handoff) {
+  restoring = true;
+  try { restoreState(handoff.model); } finally { restoring = false; }
+  for (const [id, el] of Object.entries(permitHolder)) {
+    el.value = typeof handoff.holder?.[id] === 'string' ? handoff.holder[id] : '';
+    lastValues.set(el, el.value);
+  }
+  agreeEl.checked = handoff.agreed === true;
+  ackEligibility.checked = handoff.eligibility === true;
+  persistState();
+  const snapshot = checkoutSnapshot();
+  if (JSON.stringify(snapshot) !== handoff.fingerprint) return false;
+  checkoutIdentity.restore(snapshot, 'TX', handoff.reference, handoff.permitNumber);
+  return true;
+}
+
+// The server-to-server lookup: only a paid collection for this checkout's reference and amount counts.
+function confirmedPayment(handoff, collection) {
+  if (collection?.status !== 'success') return null;
+  const total = Math.round(model.product.price * model.qty * 100) / 100;
+  if (collection.request.transactionReference !== handoff.reference || collection.request.amount !== total) return null;
+  return { fingerprint: handoff.fingerprint, reference: handoff.reference, permitNumber: handoff.permitNumber, token: collection.token, amount: collection.request.amount, result: collection.result };
+}
+
+// Called when the page opens after Pay.ure, or is shown again by the browser's Back button. The handoff is read
+// once and removed, so purchaser details do not stay in storage. Returns what the page should do next.
+function resumeAfterPayure(paymentReturn) {
+  const handoff = paymentHandoff.read();
+  if (!handoff && !paymentReturn) return null;
+  paymentHandoff.clear();
+  const matches = handoff && (!paymentReturn || paymentReturn.token === handoff.token);
+  if (!matches || catalogStatus !== 'ready' || !restoreCheckout(handoff)) {
+    return paymentReturn?.outcome === 'success' ? { error: PAYMENT_LOST_ERROR } : null;
+  }
+  const collection = collections.getCollection(handoff.token);
+  if (collection?.status === 'success') {
+    payment = confirmedPayment(handoff, collection);
+    return payment ? { screen: 'review', issue: true } : { screen: 'review', error: PAYMENT_UNCONFIRMED_ERROR };
+  }
+  if (paymentReturn?.outcome === 'success') return { screen: 'review', error: PAYMENT_UNCONFIRMED_ERROR };
+  return { screen: 'review', notice: paymentReturn?.outcome === 'cancel' ? PAYMENT_NOTICES.cancel : PAYMENT_NOTICES.left };
+}
+
+function applyResume(resume, { history: mode, focus }) {
+  if (resume.screen) showScreen(resume.screen, { history: mode, focus });
+  if (resume.notice && currentScreen === 'review') {
+    paymentNotice.textContent = resume.notice;
+    paymentNotice.hidden = false;
+  }
+  if (resume.error) showErrors([resume.error], { focus });
+  if (resume.issue && currentScreen === 'review') {
+    confirmCheckout().catch((error) => {
+      console.error(error);
+      showErrors([CHECKOUT_ERROR]);
+    });
+  }
 }
 
 // The field checks catch characters the permit cannot print, so one reaching the PDF is either in an entry the
@@ -1221,7 +1352,9 @@ function resetAll() {
   clearProduct();
   agreeEl.checked = false;
   returnToReview = false;
+  payment = null;
   selectionStorage.clear();
+  paymentHandoff.clear();
   showScreen('what');
 }
 
@@ -1229,13 +1362,16 @@ resetAllBtn.addEventListener('click', resetAll);
 startAnotherBtn.addEventListener('click', resetAll);
 
 // Firefox may restore native form values independently of sessionStorage.
+// The Back button from Pay.ure can also restore this page from that cache, with the checkout waiting in the handoff.
 window.addEventListener('pageshow', event => {
   if (!event.persisted) return;
   clearPermitHolder();
   agreeEl.checked = false;
   ackEligibility.checked = false;
   invalidateCheckout();
-  if (SCREENS.indexOf(currentScreen) > SCREENS.indexOf('details')) showScreen('details', { history: 'replace' });
+  const resume = resumeAfterPayure(null);
+  if (resume) applyResume(resume, { history: 'replace', focus: true });
+  else if (SCREENS.indexOf(currentScreen) > SCREENS.indexOf('details')) showScreen('details', { history: 'replace' });
 });
 
 async function boot() {
@@ -1246,13 +1382,22 @@ async function boot() {
   if (catalogStatus === 'failed') showErrors([loadErrorMessage()], { focus: false });
   restoring = true;
   try { restoreState(); } finally { restoring = false; }
-  // A reload keeps the screen when its earlier answers were restored; purchaser details never are.
-  // Without a screen in the URL (a first visit, #need-help, the skip link's #main), a visitor with
-  // restored answers resumes at the furthest screen and everyone else sees the start page.
-  const requested = history.state?.screen || location.hash.slice(1);
-  const furthest = furthestReachable();
-  const resume = furthest > SCREENS.indexOf('what') ? SCREENS[furthest] : 'start';
-  showScreen(SCREENS.includes(requested) ? requested : resume, { history: 'replace', focus: false });
+  // Pay.ure's return address carries ?payure=…&token=…; once read, it comes off the address bar.
+  const paymentReturn = readPaymentReturn(location.href);
+  const afterPayure = resumeAfterPayure(paymentReturn);
+  if (paymentReturn) history.replaceState(null, '', `${location.pathname}${afterPayure?.screen ? '#review' : ''}`);
+  if (afterPayure?.screen) {
+    applyResume(afterPayure, { history: 'replace', focus: false });
+  } else {
+    // A reload keeps the screen when its earlier answers were restored; purchaser details never are.
+    // Without a screen in the URL (a first visit, #need-help, the skip link's #main), a visitor with
+    // restored answers resumes at the furthest screen and everyone else sees the start page.
+    const requested = history.state?.screen || location.hash.slice(1);
+    const furthest = furthestReachable();
+    const resume = furthest > SCREENS.indexOf('what') ? SCREENS[furthest] : 'start';
+    showScreen(SCREENS.includes(requested) ? requested : resume, { history: 'replace', focus: false });
+    if (afterPayure?.error) showErrors([afterPayure.error], { focus: false });
+  }
   document.documentElement.dataset.appReady = 'true';
   document.dispatchEvent(new CustomEvent('sfpx:ready'));
 }

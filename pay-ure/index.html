@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- A demo payment page with fictional agency names should not appear in search results. -->
+  <meta name="robots" content="noindex" />
+  <title>Pay.ure</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <section class="ure-banner" aria-label="Official site of the United Regions of Elsewhere">
+    <div class="wrap">
+      <div class="ure-banner-row">
+        <img class="flag" src="../logos/URE_flag.png" alt="" />
+        <span>An official site of the United Regions of Elsewhere</span>
+        <button type="button" id="bannerToggle" aria-expanded="false" aria-controls="bannerDetails">Here’s how you know</button>
+      </div>
+      <div class="ure-banner-details" id="bannerDetails" hidden>
+        <p><strong>Official sites use .ure.</strong> A .ure site belongs to an official United Regions of Elsewhere organization.</p>
+        <p><strong>Secure .ure sites use HTTPS.</strong> A lock or https:// means you’ve safely connected to the .ure website.</p>
+      </div>
+    </div>
+  </section>
+
+  <header class="pu-header">
+    <div class="wrap pu-header-row">
+      <div class="pu-brand">
+        <svg class="pu-mark" viewBox="0 0 40 40" width="40" height="40" aria-hidden="true">
+          <rect x="1" y="1" width="38" height="38" rx="9" fill="currentColor" />
+          <path class="pu-mark-p" d="M12 29V11h9.5a6 6 0 0 1 0 12H12" />
+          <path class="pu-mark-tick" d="M23 29l6-6" />
+        </svg>
+        <div>
+          <span class="pu-wordmark">Pay.ure</span>
+          <span class="pu-tagline">Secure payments to United Regions agencies</span>
+        </div>
+      </div>
+      <p class="pu-operator">Treasury of the United Regions<span>Bureau of Fiscal Wherewithal</span></p>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="wrap pu-layout">
+      <div class="pu-head">
+        <p class="pu-demo"><strong>Demo.</strong> Pay.ure is a practice payment site. Nothing is charged.</p>
+        <div class="pu-error-summary" id="errorBox" role="alert" tabindex="-1" hidden>
+          <h2>There is a problem</h2>
+          <ul id="errorList"></ul>
+        </div>
+        <p class="pu-step" id="stepCount" hidden></p>
+        <h1 id="title" tabindex="-1">Pay.ure</h1>
+        <div id="liveRegion" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+
+      <section class="pu-view" id="view-none" hidden>
+        <p>To pay for a permit or another service, start on the website of the agency you’re paying. It brings you here when you’re ready to pay.</p>
+        <p><a href="../">Go to Bureau of Wandering Lands forest product permits</a></p>
+      </section>
+
+      <section class="pu-view" id="view-finished" hidden>
+        <p id="finishedText"></p>
+        <button class="pu-primary" type="button" id="finishedReturn">Return to Bureau of Wandering Lands</button>
+      </section>
+
+      <section class="pu-order" id="order" aria-labelledby="orderTitle" hidden>
+        <h2 class="sr-only" id="orderTitle">Payment summary</h2>
+        <dl class="pu-summary" id="orderSummary"></dl>
+      </section>
+
+      <aside class="pu-tests" id="testPanel" aria-labelledby="testsTitle" hidden>
+        <h2 id="testsTitle">Demo test numbers</h2>
+        <p>Pay.ure only accepts these numbers. Don’t enter a real card or bank account.</p>
+        <h3>Cards</h3>
+        <p class="pu-hint">Use any future expiry date and any 3-digit security code.</p>
+        <ul class="pu-test-list" id="testCards"></ul>
+        <h3>Bank accounts</h3>
+        <p class="pu-hint">Checking or savings.</p>
+        <ul class="pu-test-list" id="testAccounts"></ul>
+      </aside>
+
+      <form class="pu-view pu-form" id="view-pay" aria-labelledby="title" novalidate hidden>
+        <fieldset class="pu-field" id="methodGroup">
+          <legend>How do you want to pay?</legend>
+          <div class="pu-radios pu-input">
+            <div class="pu-radio">
+              <input type="radio" name="method" id="method_card" value="card" />
+              <label for="method_card">Debit or credit card</label>
+            </div>
+            <div class="pu-radio">
+              <input type="radio" name="method" id="method_bank" value="bank" aria-describedby="methodBankHint" />
+              <label for="method_bank">Bank account</label>
+              <p class="pu-hint" id="methodBankHint">Checking or savings, paid by ACH debit</p>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Browsers would offer saved real cards and accounts, so payment fields turn autofill off. -->
+        <fieldset class="pu-group" id="cardFields" hidden>
+          <legend>Card details</legend>
+          <div class="pu-field">
+            <label for="cardName">Name on card</label>
+            <input class="pu-input" id="cardName" type="text" autocomplete="off" maxlength="80" />
+          </div>
+          <div class="pu-field">
+            <label for="cardNumber">Card number</label>
+            <input class="pu-input" id="cardNumber" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" maxlength="23" />
+          </div>
+          <div class="pu-pair">
+            <div class="pu-field">
+              <label for="cardExpiry">Expiry date</label>
+              <p class="pu-hint" id="cardExpiryHint">Month and year, like 08/29</p>
+              <input class="pu-input" id="cardExpiry" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" maxlength="9" aria-describedby="cardExpiryHint" />
+            </div>
+            <div class="pu-field">
+              <label for="cardCode">Security code</label>
+              <p class="pu-hint" id="cardCodeHint">3 digits on the back</p>
+              <input class="pu-input" id="cardCode" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" maxlength="3" aria-describedby="cardCodeHint" />
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="pu-group" id="bankFields" hidden>
+          <legend>Bank account details</legend>
+          <fieldset class="pu-field" id="accountTypeGroup">
+            <legend>Account type</legend>
+            <div class="pu-radios pu-radios-inline pu-input">
+              <div class="pu-radio">
+                <input type="radio" name="accountType" id="accountType_checking" value="checking" />
+                <label for="accountType_checking">Checking</label>
+              </div>
+              <div class="pu-radio">
+                <input type="radio" name="accountType" id="accountType_savings" value="savings" />
+                <label for="accountType_savings">Savings</label>
+              </div>
+            </div>
+          </fieldset>
+          <div class="pu-field">
+            <label for="routingNumber">Routing number</label>
+            <p class="pu-hint" id="routingHint">9 digits, at the bottom left of a check</p>
+            <input class="pu-input" id="routingNumber" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" maxlength="11" aria-describedby="routingHint" />
+          </div>
+          <div class="pu-field">
+            <label for="accountNumber">Account number</label>
+            <input class="pu-input" id="accountNumber" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" maxlength="20" />
+          </div>
+          <div class="pu-field">
+            <label for="confirmAccount">Confirm account number</label>
+            <p class="pu-hint" id="confirmAccountHint">Enter it again so we can catch typos.</p>
+            <input class="pu-input" id="confirmAccount" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" maxlength="20" aria-describedby="confirmAccountHint" />
+          </div>
+        </fieldset>
+
+        <button class="pu-primary" type="submit">Continue</button>
+        <button class="pu-link" type="button" id="cancelPay">Cancel and return to Bureau of Wandering Lands</button>
+      </form>
+
+      <form class="pu-view pu-form" id="view-review" aria-labelledby="title" novalidate hidden>
+        <dl class="pu-summary" id="methodSummary"></dl>
+        <div class="pu-field" id="authorizeField">
+          <div class="pu-check pu-input">
+            <input type="checkbox" id="authorize" />
+            <label for="authorize" id="authorizeLabel">I authorize this payment.</label>
+          </div>
+        </div>
+        <button class="pu-primary" type="submit" id="payButton">Pay</button>
+        <button class="pu-link" type="button" id="cancelReview">Cancel and return to Bureau of Wandering Lands</button>
+      </form>
+
+      <details class="pu-disclosure" id="demoData" hidden>
+        <summary>Demo payment data</summary>
+        <div class="pu-disclosure-body" id="demoDataBody"></div>
+      </details>
+    </div>
+  </main>
+
+  <footer class="pu-footer">
+    <div class="wrap">
+      <div><strong>pay.ure</strong> — Prototype</div>
+      <div class="pu-footer-links">
+        <span>Treasury of the United Regions</span>
+        <span>Bureau of Fiscal Wherewithal</span>
+        <span>Accessibility</span>
+        <span>Privacy</span>
+      </div>
+      <div class="pu-smallprint">A demo payment page. It accepts only test numbers, charges nothing and stores no card or account numbers.</div>
+    </div>
+  </footer>
+  <script src="app.js" type="module"></script>
+</body>
+</html>

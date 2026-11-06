@@ -49,6 +49,22 @@ async function open(page) {
   await ready(page);
 }
 
+// Pays on Pay.ure with a test card and waits for the BWL page to load again.
+async function payOnPayure(page) {
+  await page.locator('#confirmPay').click();
+  await page.waitForURL(/\/pay-ure\/\?token=/);
+  await ready(page);
+  await page.getByRole('button', { name: 'Use Visa test card ending 1111' }).click();
+  await page.locator('#cardName').fill('Test Purchaser');
+  await page.locator('#cardExpiry').fill('12/30');
+  await page.locator('#cardCode').fill('123');
+  await page.locator('#view-pay button[type=submit]').click();
+  await page.locator('label[for=authorize]').click();
+  await page.locator('#payButton').click();
+  await page.waitForURL(address => !address.pathname.includes('/pay-ure/'));
+  await ready(page);
+}
+
 async function toReview(page) {
   await page.locator('#startButton').click();
   await page.locator('label[for=ptype_fuelwood]').click(); await cont(page);
@@ -119,27 +135,29 @@ try {
     assert.equal(await errorText(page), `${LOAD_ERROR} Try again`);
   });
 
-  await scenario('PDF engine does not download, then pays on retry', async page => {
+  await scenario('PDF engine does not download after paying, then works on retry without paying again', async page => {
     let block = true;
     await page.route('**/vendor/pdfmake.js', route => (block ? route.abort('internetdisconnected') : route.continue()));
     await open(page);
     await toReview(page);
-    await page.locator('#confirmPaygov').click();
+    await payOnPayure(page);
     await page.locator('#errorBox').waitFor({ state: 'visible' });
     assert.equal(await errorText(page), ENGINE_ERROR);
     assert.equal(await screen(page), 'review');
     assert.equal(await page.locator('#agree').isChecked(), true, 'entries are kept');
+    assert.equal(await page.locator('#confirmPay').textContent(), 'Get my permit', 'the payment is kept');
     await checkAccessibility(page, 'PDF engine error');
     block = false;
-    await page.locator('#confirmPaygov').click();
+    await page.locator('#confirmPay').click();
     await page.locator('#screen-done').waitFor({ state: 'visible' });
+    assert.ok(!page.url().includes('pay-ure'), 'no second trip to Pay.ure');
   });
 
   await scenario('PDF font returns a server error', async page => {
     await page.route('**/vendor/permit-font.js', route => route.fulfill({ status: 500, body: '' }));
     await open(page);
     await toReview(page);
-    await page.locator('#confirmPaygov').click();
+    await payOnPayure(page);
     await page.locator('#errorBox').waitFor({ state: 'visible' });
     assert.equal(await errorText(page), ENGINE_ERROR);
   });

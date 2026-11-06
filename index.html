@@ -85,7 +85,7 @@
           <ul class="check-list">
             <li>Your mailing address. The law requires it on every permit.</li>
             <li>An email address.</li>
-            <li>A debit or credit card, or a checking account, if your permit has a fee. You’ll pay on Pay.gov. Some permits are free.</li>
+            <li>A debit or credit card, or a checking or savings account, if your permit has a fee. You’ll pay on Pay.ure, the United Regions’ payment site. Some permits are free.</li>
             <li>A printer. Your permit isn’t valid until you print it and sign it.</li>
           </ul>
         </section>
@@ -236,6 +236,7 @@
 
       <form class="screen" id="screen-review" aria-labelledby="reviewTitle" novalidate hidden>
         <h1 id="reviewTitle" tabindex="-1">Check and pay</h1>
+        <p class="notice" id="paymentNotice" hidden></p>
         <dl class="summary-list" id="reviewSummary"></dl>
         <section class="rules" aria-labelledby="rulesTitle">
           <h2 id="rulesTitle">Before you go</h2>
@@ -265,7 +266,7 @@
             </div>
           </details>
         </div>
-        <button class="primary" type="submit" id="confirmPaygov">Pay on Pay.gov</button>
+        <button class="primary" type="submit" id="confirmPay">Pay on Pay.ure</button>
         <p class="hint center" id="payNote"></p>
         <button class="text-button center" type="button" id="resetAll">Start over</button>
       </form>
@@ -296,7 +297,7 @@
       <div class="wrap narrow">
         <h2 id="helpTitle">Need help?</h2>
         <details class="disclosure">
-          <summary>Pay.gov is down</summary>
+          <summary>Pay.ure is down</summary>
           <div class="disclosure-body">Wait 15 minutes and try again. You can also buy your permit at a local BWL office.</div>
         </details>
         <details class="disclosure">

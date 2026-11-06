@@ -35,12 +35,29 @@ try {
     for (const [id, value] of Object.entries({ FirstName: 'Áłtsé José', LastName: 'Muñoz Żółć', AddressLine1: '123 Test Street', City: 'Test City', Zip: '84037', DeliveryEmail: 'test@example.com', ConfirmEmail: 'test@example.com' })) await fill(id, value);
     await new Select(await element('AddrState')).selectByValue('UT');
   };
-  const pay = async () => {
+  const onPage = (test, what) => driver.wait(async () => test(await driver.getCurrentUrl()), 30000, what);
+  // Pays with a test card on Pay.ure, then waits for the BWL page to load again.
+  const payOnPayure = async () => {
+    await onPage(url => url.includes('/pay-ure/?token='), 'Pay.ure');
+    await ready();
+    await accessibility('Safari Pay.ure payment step');
+    await driver.findElement(By.css('label[for=method_card]')).click();
+    await fill('cardName', 'Test Purchaser'); await fill('cardNumber', '4111 1111 1111 1111'); await fill('cardExpiry', '12/30'); await fill('cardCode', '123');
+    await driver.findElement(By.css('#view-pay button[type=submit]')).click();
+    await driver.wait(() => driver.executeScript("return !document.getElementById('view-review').hidden"), 10000, 'Pay.ure review step');
+    await accessibility('Safari Pay.ure review step');
+    await driver.findElement(By.css('label[for=authorize]')).click();
+    await (await element('payButton')).click();
+    await onPage(url => !url.includes('/pay-ure/'), 'the return from Pay.ure');
+    await ready(); await trackErrors();
+  };
+  const pay = async ({ viaPayure = false } = {}) => {
     await driver.findElement(By.css('label[for=agree]')).click();
-    await (await element('confirmPaygov')).click();
+    await (await element('confirmPay')).click();
+    if (viaPayure) await payOnPayure();
     try { await waitForScreen('done', 30000); }
     catch (error) {
-      console.log('Safari checkout diagnostics:', await driver.executeScript(`return { errors: window.__testErrors, secure: isSecureContext, uuid: typeof crypto.randomUUID, error: document.getElementById('errorList').textContent, holder: [...document.querySelectorAll('#screen-details input, #screen-details select')].map(el => ({ id: el.id, value: el.value })), quantity: document.getElementById('qty').value, product: document.querySelector('input[name=product]:checked')?.id, button: document.getElementById('confirmPaygov').outerHTML };`));
+      console.log('Safari checkout diagnostics:', await driver.executeScript(`return { errors: window.__testErrors, secure: isSecureContext, uuid: typeof crypto.randomUUID, error: document.getElementById('errorList').textContent, holder: [...document.querySelectorAll('#screen-details input, #screen-details select')].map(el => ({ id: el.id, value: el.value })), quantity: document.getElementById('qty').value, product: document.querySelector('input[name=product]:checked')?.id, button: document.getElementById('confirmPay').outerHTML };`));
       throw error;
     }
   };
@@ -66,9 +83,10 @@ try {
   await holder(); await accessibility('Safari purchaser fields');
   await cont(); await waitForScreen('review');
   await accessibility('Safari review');
-  await pay();
+  await pay({ viaPayure: true });
   assert.equal(await driver.executeScript('return document.activeElement.id'), 'doneTitle');
   assert.equal((await payload()).total, 10);
+  assert.equal((await payload()).payment.last4, '1111');
   await accessibility('Safari done');
   await driver.navigate().back(); await waitForScreen('review');
   assert.deepEqual(await driver.executeScript('return window.__testErrors'), []);
@@ -87,7 +105,7 @@ try {
   assert.equal(await driver.executeScript("return sessionStorage.getItem('sfp-demo-state')"), null);
   assert.equal(await driver.executeScript('return document.documentElement.scrollWidth <= innerWidth'), true);
   assert.deepEqual(await driver.executeScript('return window.__testErrors'), []);
-  console.log('PASS actual macOS Safari: screens, browser Back, checkout, Unicode PDF generation, focus, accessibility, reload and reset');
+  console.log('PASS actual macOS Safari: screens, browser Back, Pay.ure payment, checkout, Unicode PDF generation, focus, accessibility, reload and reset');
 } finally {
   await driver?.quit();
   await server.close();
