@@ -137,6 +137,10 @@ try {
     await page.locator('#view-pay button[type=submit]').click();
     await page.locator('#errorBox').waitFor({ state: 'visible' });
     assert.equal(await focused(), 'errorBox', 'Pay.ure’s error summary takes focus');
+    assert.equal(await page.locator('#testPanel').isVisible(), false, 'test numbers wait until a method is chosen');
+    await page.locator('label[for=method_card]').click();
+    assert.equal(await page.locator('#testCardsSection').isVisible(), true);
+    assert.equal(await page.locator('#testAccountsSection').isVisible(), false, 'only the chosen method’s numbers');
     await page.getByRole('button', { name: 'Use Visa test card ending 1111' }).click();
     assert.equal(await focused(), 'cardNumber', 'the filled-in field takes focus');
     assert.equal(await page.locator('#method_card').isChecked(), true);

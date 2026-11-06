@@ -12,6 +12,8 @@ import { createPaymentHandoff, createPaidPermits, checkoutKey, paymentReturnUrls
 import { navigate } from './js/navigate.js';
 // Pay.ure's collection API, which an agency's server would call. See pay-ure/js/collections.js.
 import { createCollectionStore, CollectionError } from './pay-ure/js/collections.js';
+// Demo switches that break things on purpose; see demo/state.js. With none on, nothing changes.
+import { demoBreak, demoCatalogResponse } from './demo/state.js';
 
 // A start page, then one question per screen. "done" follows the five numbered steps once a permit has been prepared.
 const SCREENS = ['start', 'what', 'where', 'permit', 'details', 'review', 'done'];
@@ -398,7 +400,10 @@ async function fetchCatalog({ retry = false } = {}) {
   const timer = setTimeout(() => controller.abort(new Error(`${CATALOG_SOURCE} did not respond within ${CATALOG_TIMEOUT_MS / 1000} seconds.`)), CATALOG_TIMEOUT_MS);
   try {
     // A retry skips the HTTP cache so a cached bad copy cannot fail again.
-    const res = await fetch(CATALOG_SOURCE, { signal: controller.signal, ...(retry ? { cache: 'no-cache' } : {}) });
+    const broken = demoBreak('catalog');
+    const res = broken
+      ? await demoCatalogResponse(broken, controller.signal)
+      : await fetch(CATALOG_SOURCE, { signal: controller.signal, ...(retry ? { cache: 'no-cache' } : {}) });
     if (!res.ok) throw new Error(`${CATALOG_SOURCE} responded with HTTP ${res.status}.`);
     let json;
     try { json = await res.json(); }
@@ -1351,6 +1356,7 @@ function startPayment({ reference, permitNumber, total }) {
   const { successUrl, cancelUrl } = paymentReturnUrls(location.href);
   let token;
   try {
+    if (demoBreak('storage')) throw new Error('Demo: browser storage was switched off');
     token = collections.startCollection({ agencyId: PAYMENT_AGENCY_ID, amount: total, description: paymentDescription(), transactionReference: reference, successUrl, cancelUrl });
     paymentHandoff.save({
       token, reference, permitNumber,
@@ -1414,7 +1420,8 @@ function alreadyPaidNotice(known) {
 // Called when the page opens after Pay.ure, or is shown again by the browser's Back button. The handoff is read
 // once and removed, so purchaser details do not stay in storage. Returns what the page should do next.
 function resumeAfterPayure(paymentReturn) {
-  const handoff = paymentHandoff.read();
+  // The demo switch loses the checkout on a return, as another tab or cleared site data would.
+  const handoff = paymentReturn && demoBreak('lostCheckout') ? null : paymentHandoff.read();
   if (!handoff && !paymentReturn) return null;
   paymentHandoff.clear();
   const matches = handoff && (!paymentReturn || paymentReturn.token === handoff.token);

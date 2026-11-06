@@ -172,3 +172,7 @@ input.pu-input[aria-invalid="true"] { border-color: var(--pu-danger); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; }
 }
+
+/* The quiet footer switch for the facilitators' Demo tools (demo/). */
+.demo-tools-toggle { min-height: 44px; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.demo-tools-toggle[aria-pressed="true"]::after { content: " (on)"; }

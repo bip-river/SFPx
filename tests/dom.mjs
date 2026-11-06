@@ -8,7 +8,7 @@ import { SourceTextModule } from 'node:vm';
 export const root = new URL('../', import.meta.url);
 // Pay.ure's processing pause (PROCESSING_MS in pay-ure/app.js) is skipped in tests.
 const PAYURE_PROCESSING_MS = 800;
-const NAVIGATE_STUB = 'export function navigate(url, options = {}) { globalThis.__navigate(url, options); }';
+const NAVIGATE_STUB = 'export function navigate(url, options = {}) { globalThis.__navigate(url, options); } export function reload() { globalThis.__navigate(location.href, { reload: true }); }';
 export const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 // `blocked` lists dynamically imported modules that fail to download, like a dropped connection. `setup` runs
@@ -32,7 +32,7 @@ export async function loadPage(t, { page = 'index.html', entry = 'app.js', url, 
   w.console.error = () => {};
   w.console.warn = () => {};
   const navigations = [];
-  w.__navigate = (target, options) => navigations.push({ url: new URL(target, w.location.href).href, replace: Boolean(options.replace) });
+  w.__navigate = (target, options) => navigations.push({ url: new URL(target, w.location.href).href, replace: Boolean(options.replace), ...(options.reload ? { reload: true } : {}) });
   for (const [key, value] of Object.entries(storage)) w.sessionStorage.setItem(key, value);
   setup(w);
 
@@ -42,6 +42,7 @@ export async function loadPage(t, { page = 'index.html', entry = 'app.js', url, 
       const source = moduleUrl.pathname.endsWith('/navigate.js') ? NAVIGATE_STUB : await readFile(moduleUrl, 'utf8');
       modules.set(moduleUrl.href, new SourceTextModule(source, {
         context: dom.getInternalVMContext(), identifier: moduleUrl.href,
+        initializeImportMeta: (meta) => { meta.url = moduleUrl.href; },
         importModuleDynamically: async (specifier, referencing) => {
           if ([...blocked].some(path => new URL(specifier, referencing.identifier).href === new URL(path, root).href)) throw new w.TypeError(`Failed to fetch dynamically imported module: ${specifier}`);
           const dependency = await loadModule(new URL(specifier, referencing.identifier));
@@ -53,10 +54,15 @@ export async function loadPage(t, { page = 'index.html', entry = 'app.js', url, 
     }
     return modules.get(moduleUrl.href);
   }
-  const module = await loadModule(new URL(entry, root));
-  await module.link((specifier, referencing) => loadModule(new URL(specifier, referencing.identifier)));
-  await module.evaluate();
-  return { dom, w, navigations, ready: module.namespace.ready };
+  // `entry` may list several scripts, such as the app and the demo tools, loaded in order into one module graph.
+  const namespaces = [];
+  for (const path of [entry].flat()) {
+    const module = await loadModule(new URL(path, root));
+    await module.link((specifier, referencing) => loadModule(new URL(specifier, referencing.identifier)));
+    await module.evaluate();
+    namespaces.push(module.namespace);
+  }
+  return { dom, w, navigations, namespaces, ready: Promise.all(namespaces.map(namespace => namespace.ready)) };
 }
 
 export function dumpStorage(w) {
@@ -66,9 +72,9 @@ export function dumpStorage(w) {
   } catch { return {}; }
 }
 
-export async function openPayure(t, url, { storage = {}, now } = {}) {
+export async function openPayure(t, url, { storage = {}, now, demo = false } = {}) {
   const page = await loadPage(t, {
-    page: 'pay-ure/index.html', entry: 'pay-ure/app.js', url, storage, now,
+    page: 'pay-ure/index.html', entry: demo ? ['pay-ure/app.js', 'demo/boot.js'] : 'pay-ure/app.js', url, storage, now,
     setup: (w) => {
       const native = w.setTimeout;
       w.setTimeout = (fn, ms, ...rest) => native(fn, ms === PAYURE_PROCESSING_MS ? 0 : ms, ...rest);

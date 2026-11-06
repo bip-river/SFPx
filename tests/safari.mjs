@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { Builder, By, Key } from 'selenium-webdriver';
+import { Builder, By, Key, until } from 'selenium-webdriver';
 import { Select } from 'selenium-webdriver/lib/select.js';
 import { readFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
@@ -21,15 +21,21 @@ try {
   const waitForScreen = async (name, timeout = 10000) => {
     try { await driver.wait(async () => (await screen()) === name, timeout); }
     catch (error) {
-      throw new Error(`Waited ${timeout}ms for screen ${name}; at ${await driver.getCurrentUrl()} (“${await driver.getTitle()}”), screen ${await screen()}`, { cause: error });
+      // What stopped the visitor: the error summary, and each field that reports a problem with its value.
+      const state = await driver.executeScript(`return {
+        errors: document.getElementById('errorBox') && !document.getElementById('errorBox').hidden ? document.getElementById('errorList').innerText : '',
+        invalid: [...document.querySelectorAll('[aria-invalid="true"]')].map(el => el.id + '=' + JSON.stringify(el.value)),
+        agreed: document.getElementById('agree')?.checked
+      };`).catch(() => ({}));
+      throw new Error(`Waited ${timeout}ms for screen ${name}; at ${await driver.getCurrentUrl()} (“${await driver.getTitle()}”), screen ${await screen()}; ${JSON.stringify(state)}`, { cause: error });
     }
   };
   const cont = async () => driver.findElement(By.css(`#screen-${await screen()} button[type=submit]`)).click();
   const fill = async (id, value) => { const field = await element(id); await field.clear(); await field.sendKeys(value); };
   const payload = () => driver.executeScript("return JSON.parse(document.querySelector('#handoff .payload-content').textContent)");
+  // axe is injected and run in one script: a page that settles between two calls can drop it ("Can't find variable: axe").
   const accessibility = async stage => {
-    await driver.executeScript(axeSource);
-    const result = await driver.executeAsyncScript(`
+    const result = await driver.executeAsyncScript(`${axeSource}
       const done = arguments[arguments.length - 1];
       axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a','wcag2aa','wcag21aa','wcag22aa'] } })
         .then(result => done(result.violations.map(v => ({ id: v.id, nodes: v.nodes.map(n => n.target) }))))
@@ -47,7 +53,11 @@ try {
     await onPage(url => url.includes('/pay-ure/?token='), 'Pay.ure');
     await ready();
     await accessibility('Safari Pay.ure payment step');
-    await driver.findElement(By.css('label[for=method_card]')).click();
+    // Safari can report the new address before the page is laid out; click once step 1 is on view.
+    await driver.wait(() => driver.executeScript("return document.readyState === 'complete' && !document.getElementById('view-pay').hidden"), 10000, 'Pay.ure step 1');
+    const cardMethod = await driver.findElement(By.css('label[for=method_card]'));
+    await driver.wait(until.elementIsVisible(cardMethod), 10000, 'the card option');
+    await cardMethod.click();
     await fill('cardName', 'Test Purchaser'); await fill('cardNumber', '4111 1111 1111 1111'); await fill('cardExpiry', '12/30'); await fill('cardCode', '123');
     await driver.findElement(By.css('#view-pay button[type=submit]')).click();
     await driver.wait(() => driver.executeScript("return !document.getElementById('view-review').hidden"), 10000, 'Pay.ure review step');
