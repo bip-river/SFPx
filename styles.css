@@ -130,6 +130,7 @@ main { flex: 1; padding: 16px 0 0; }
 .center { text-align: center; }
 .demo-note { margin: -4px 0 0; align-self: flex-start; padding: 6px 12px; border-radius: 999px; background: var(--color-surface-muted); font-size: 14.5px; color: var(--color-text-secondary); }
 .notice { margin: 0; padding: 14px 16px; border-radius: var(--radius-option); background: var(--color-surface-muted); font-size: 15.5px; color: var(--color-text-secondary); }
+.flow-notice { margin-bottom: 20px; border-left: 4px solid var(--color-primary); }
 .production-label { font-weight: 700; color: var(--color-text-secondary); }
 @media (min-width: 760px) {
   main { padding-top: 28px; }

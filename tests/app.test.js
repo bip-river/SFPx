@@ -826,7 +826,12 @@ test('Pay sends the visitor to Pay.ure with a token, and the permit follows the 
   const paid = a.payload();
   assert.equal(paid.idempotencyKey, handoff.reference);
   assert.equal(paid.permitNumber, handoff.permitNumber, 'the permit number chosen before paying is kept');
-  assert.deepEqual(Object.keys(paid.payment).sort(), ['amount', 'cardBrand', 'completedAt', 'last4', 'method', 'processor', 'status', 'token', 'trackingId']);
+  assert.deepEqual(Object.keys(paid.payment).sort(), ['amount', 'cardBrand', 'completedAt', 'last4', 'method', 'processor', 'status', 'token', 'trackingId', 'verification']);
+  assert.deepEqual(paid.payment.verification, { status: 'verified', lookedUpBy: 'token', checks: [
+    { check: 'Pay.ure status', expected: 'success', found: 'success', passed: true },
+    { check: 'Agency reference', expected: handoff.reference, found: handoff.reference, passed: true },
+    { check: 'Amount paid', expected: 10, found: 10, passed: true }
+  ] });
   assert.equal(paid.payment.processor, 'Pay.ure');
   assert.equal(paid.payment.token, token);
   assert.equal(paid.payment.status, 'success');
@@ -869,8 +874,8 @@ test('cancelling on Pay.ure returns to the check screen with every entry kept', 
   assert.equal(JSON.parse(payure.w.sessionStorage.getItem(COLLECTIONS))[payure.w.location.search.slice(7)].status, 'cancelled');
   assert.equal(a.screen(), 'review');
   assert.equal(a.w.location.href, 'http://localhost/#review');
-  assert.equal(a.$('#paymentNotice').hidden, false);
-  assert.equal(a.$('#paymentNotice').textContent, 'You cancelled your payment on Pay.ure, so nothing was charged. Your entries are still here.');
+  assert.equal(a.$('#flowNotice').hidden, false);
+  assert.equal(a.$('#flowNotice').textContent, 'You cancelled your payment on Pay.ure, so nothing was charged. Your entries are still here.');
   assert.equal(a.$('#MiddleName').value, 'Quinn');
   assert.equal(a.$('#agree').checked, true);
   assert.equal(a.$('#confirmPay').textContent, 'Pay $10.00 on Pay.ure');
@@ -878,7 +883,7 @@ test('cancelling on Pay.ure returns to the check screen with every entry kept', 
   assert.equal(a.errors(), '');
   await a.generate();
   assert.equal(a.payload().idempotencyKey, reference, 'paying after a cancel keeps the checkout’s reference');
-  assert.equal(a.$('#paymentNotice').hidden, true, 'the notice goes once the visitor moves on');
+  assert.equal(a.$('#flowNotice').hidden, true, 'the notice goes once the visitor moves on');
 });
 
 test('leaving Pay.ure with the Back button returns to the check screen, from a reload or the back-forward cache', async t => {
@@ -886,7 +891,7 @@ test('leaving Pay.ure with the Back button returns to the check screen, from a r
   a.$('#confirmPay').click();
   await a.revisit('http://localhost/#review');
   assert.equal(a.screen(), 'review');
-  assert.equal(a.$('#paymentNotice').textContent, 'You left Pay.ure without paying, so nothing was charged. Your entries are still here.');
+  assert.equal(a.$('#flowNotice').textContent, 'You left Pay.ure without paying, so nothing was charged. Your entries are still here.');
   assert.equal(a.$('#FirstName').value, 'Test');
   assert.equal(a.w.sessionStorage.getItem(HANDOFF), null);
 
@@ -896,7 +901,7 @@ test('leaving Pay.ure with the Back button returns to the check screen, from a r
   assert.equal(b.screen(), 'review');
   assert.equal(b.$('#FirstName').value, 'Cached');
   assert.equal(b.w.document.activeElement, b.$('#reviewTitle'));
-  assert.equal(b.$('#paymentNotice').hidden, false);
+  assert.equal(b.$('#flowNotice').hidden, false);
 });
 
 test('a return that cannot be matched to a paid checkout never issues a permit', async t => {
@@ -935,4 +940,81 @@ test('Start over forgets a checkout waiting for Pay.ure', async t => {
   assert.ok(a.w.sessionStorage.getItem(HANDOFF));
   a.$('#resetAll').click();
   assert.equal(a.w.sessionStorage.getItem(HANDOFF), null);
+});
+
+const PAID_PERMITS = 'sfp-paid-permits';
+const payWith = number => async (p) => { p.enterCard({ number }); p.cont(); return p.pay(); };
+
+test('when Pay.ure is down, the check screen says nothing was charged and paying again works', async t => {
+  const a = await app(t); a.choose(); a.holder(); a.agree();
+  a.$('#confirmPay').click();
+  await a.visitPayure(async (p) => {
+    p.enterCard({ number: '4000 0000 0000 0119' }); p.cont();
+    p.$('#authorize').click(); p.$('#payButton').click();
+    for (let n = 0; n < 200 && p.view() !== 'unavailable'; n++) await sleep(5);
+    p.$('#unavailableReturn').click();
+    return p.navigations.at(-1);
+  });
+  assert.equal(a.screen(), 'review');
+  assert.equal(a.$('#flowNotice').textContent, 'Pay.ure couldn’t take your payment, so nothing was charged. Wait a few minutes, then try again. Your entries are still here.');
+  assert.equal(a.$('#agree').checked, true);
+  assert.equal(a.$('#confirmPay').textContent, 'Pay $10.00 on Pay.ure');
+  await a.generate();
+  assert.equal(a.payload().payment.verification.status, 'verified');
+});
+
+test('a payment for the wrong amount fails the check on return and no permit is issued', async t => {
+  const a = await app(t); a.choose(); a.holder(); a.agree();
+  a.$('#confirmPay').click();
+  const payure = await a.visitPayure(payWith('4000 0000 0000 0259'));
+  const trackingId = JSON.parse(payure.w.sessionStorage.getItem(COLLECTIONS))[new URL(payure.w.location.href).searchParams.get('token')].result.trackingId;
+  assert.equal(a.screen(), 'review');
+  assert.equal(a.errors(), `Pay.ure reports a payment of $1.00, but this permit costs $10.00, so we haven’t issued it. Don’t pay again. Contact your local BWL office with your name, email address and Pay.ure tracking ID ${trackingId}, and staff will sort out the payment.`);
+  assert.equal(a.urls.size, 0, 'no permit is generated');
+  assert.equal(a.w.sessionStorage.getItem(PAID_PERMITS), null, 'a refused payment does not count as paid');
+  assert.equal(a.$('#confirmPay').textContent, 'Pay $10.00 on Pay.ure');
+});
+
+test('a paid permit is recognized after a reload or a new visit, so it is never paid for twice', async t => {
+  const a = await app(t); a.choose(); a.holder(); a.agree();
+  await a.generate();
+  const paid = a.payload();
+  const stored = a.w.sessionStorage.getItem(PAID_PERMITS);
+  for (const personal of ['Purchaser', 'test@example.com', '123 Test Street', '84037']) assert.ok(!stored.includes(personal), `no ${personal} in the paid-permit record`);
+
+  // A reload, or the Forward button after Back to Pay.ure: the details are entered again, here by the visitor.
+  await a.revisit('http://localhost/#review');
+  assert.equal(a.screen(), 'details');
+  a.holder();
+  assert.equal(a.screen(), 'review');
+  assert.equal(a.$('#confirmPay').textContent, 'Get my permit', 'recognized before the agreement is ticked again');
+  assert.equal(a.$('#payNote').textContent, `You’ve paid $10.00 on Pay.ure with Visa ending 1111. Tracking ID ${paid.payment.trackingId}.`);
+  a.agree();
+  const left = a.navigations.length;
+  await a.generate();
+  assert.equal(a.navigations.length, left, 'no second trip to Pay.ure');
+  assert.equal(a.payload().permitNumber, paid.permitNumber);
+  assert.equal(a.payload().idempotencyKey, paid.idempotencyKey);
+  assert.equal(a.payload().payment.trackingId, paid.payment.trackingId);
+
+  // Different details are a different permit.
+  a.toReview(); a.$('#reviewSummary a[href="#details"]').click(); a.input('#FirstName', 'Other'); a.cont();
+  assert.equal(a.$('#confirmPay').textContent, 'Pay $10.00 on Pay.ure');
+
+  // Pay.ure's "You've already paid" page returns here with the token, after the details have gone.
+  await a.revisit(`http://localhost/?payure=success&token=${paid.payment.token}#review`);
+  assert.equal(a.screen(), 'details');
+  assert.equal(a.w.location.href, 'http://localhost/#details', 'the token comes off the address bar');
+  assert.equal(a.$('#flowNotice').hidden, false);
+  assert.equal(a.$('#flowNotice').textContent, `You’ve already paid $10.00 for permit ${paid.permitNumber} (Pay.ure tracking ID ${paid.payment.trackingId}). To download it again, choose the same permit and enter the same details as before. You won’t be charged again.`);
+  assert.equal(a.errors(), '');
+  a.holder();
+  assert.equal(a.$('#flowNotice').hidden, true, 'the notice goes with its screen');
+  assert.equal(a.$('#confirmPay').textContent, 'Get my permit');
+
+  // Start another permit forgets paid permits, so the same details can buy a second one.
+  a.$('#resetAll').click();
+  assert.equal(a.w.sessionStorage.getItem(PAID_PERMITS), null);
+  a.choose(); a.holder();
+  assert.equal(a.$('#confirmPay').textContent, 'Pay $10.00 on Pay.ure');
 });

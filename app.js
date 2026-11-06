@@ -8,7 +8,7 @@ import { MAX_PAYLOAD_BYTES, createCheckoutIdentity, readPermitHolder, buildCheck
 import { buildPermitPackagePdf, PermitPdfError } from './js/permit-pdf.js';
 import { TYPE_DOCUMENTS, AREA_DOCUMENTS, documentIdFromUrl } from './js/permit-documents.js';
 import { renderProductTypes, buildOption, syncSelectedOptions, money, feeLabelForUnit, totalLabelFor, unitLabel, quantityLabel, quantityRangeLabel, shortProductName, formatDate, validityText, buildDocLinks, buildRequiredDocs, buildDocumentLink, renderPayload } from './js/ui.js';
-import { createPaymentHandoff, paymentReturnUrls, readPaymentReturn, describePayment, PAYMENT_AGENCY_ID } from './js/payment-handoff.js';
+import { createPaymentHandoff, createPaidPermits, checkoutKey, paymentReturnUrls, readPaymentReturn, describePayment, PAYMENT_AGENCY_ID } from './js/payment-handoff.js';
 import { navigate } from './js/navigate.js';
 // Pay.ure's collection API, which an agency's server would call. See pay-ure/js/collections.js.
 import { createCollectionStore, CollectionError } from './pay-ure/js/collections.js';
@@ -35,7 +35,8 @@ const PAYMENT_LOST_ERROR = 'We couldn’t find the permit you were paying for, s
 const PAYMENT_UNCONFIRMED_ERROR = 'We couldn’t confirm your payment with Pay.ure, so we haven’t issued your permit. Try paying again. If Pay.ure says you paid, contact your local BWL office with your name, email address and permit reference.';
 const PAYMENT_NOTICES = {
   cancel: 'You cancelled your payment on Pay.ure, so nothing was charged. Your entries are still here.',
-  left: 'You left Pay.ure without paying, so nothing was charged. Your entries are still here.'
+  left: 'You left Pay.ure without paying, so nothing was charged. Your entries are still here.',
+  unavailable: 'Pay.ure couldn’t take your payment, so nothing was charged. Wait a few minutes, then try again. Your entries are still here.'
 };
 
 let catalogData = {};
@@ -44,6 +45,7 @@ let catalogStatus = 'loading';
 let restoring = false;
 const selectionStorage = createSelectionStorage();
 const paymentHandoff = createPaymentHandoff();
+const paidPermits = createPaidPermits();
 const collections = createCollectionStore();
 const byId = id => document.getElementById(id);
 
@@ -105,7 +107,9 @@ const agreeEl = byId('agree');
 const agreeLabel = byId('agreeLabel');
 const payButton = byId('confirmPay');
 const payNote = byId('payNote');
-const paymentNotice = byId('paymentNotice');
+// A notice for the screen the visitor lands on after Pay.ure; it goes once they move to another screen.
+const flowNotice = byId('flowNotice');
+let flowNoticeScreen = null;
 const resetAllBtn = byId('resetAll');
 
 const doneNote = byId('doneNote');
@@ -153,12 +157,28 @@ let checkoutRevision = 0;
 let checkoutPending = false;
 // The permit package prepared for the current entries: { reference, permitNumber, url, payload, noFee, pageCount, tagCount, payment }.
 let issued = null;
-// A payment Pay.ure confirmed: { fingerprint, reference, permitNumber, token, amount, result }. It pays for the
-// checkout it was made for, so going back from the permit and continuing again does not ask for a second payment.
+// A payment Pay.ure confirmed and this page checked: { key, token, reference, permitNumber, amount, result,
+// verification }. It pays for the checkout it was made for, in this page or, through paidPermits, after a reload.
 let payment = null;
 
+// The checkout's fingerprint. The agreement is left out, so a paid checkout is recognized before it is ticked again.
+function paidKey() {
+  return checkoutKey(JSON.stringify({ ...checkoutSnapshot(), agreed: true }));
+}
+
 function paidForCurrentCheckout() {
-  return payment && payment.fingerprint === JSON.stringify(checkoutSnapshot()) ? payment : null;
+  if (!model.product || model.product.price === 0) return null;
+  const key = paidKey();
+  if (payment?.key === key) return payment;
+  const known = paidPermits.find({ key });
+  if (known) payment = known;
+  return known;
+}
+
+function showFlowNotice(text) {
+  flowNotice.textContent = text;
+  flowNotice.hidden = false;
+  flowNoticeScreen = currentScreen;
 }
 
 function clearIssued() {
@@ -750,7 +770,7 @@ function showScreen(name, { history: mode = 'push', focus = true } = {}) {
   const target = SCREENS[index];
   currentScreen = target;
   if (target === 'review') returnToReview = false;
-  else paymentNotice.hidden = true;
+  if (target !== flowNoticeScreen) flowNotice.hidden = true;
   renderScreen(target);
   for (const [screenName, el] of Object.entries(screens)) el.hidden = screenName !== target;
 
@@ -1217,8 +1237,8 @@ async function confirmCheckout({ history: mode = 'push' } = {}) {
   document.dispatchEvent(new CustomEvent('sfpx:pdf-ready'));
 }
 
-function paymentPayload({ token, amount, result }) {
-  return { processor: 'Pay.ure', token, status: 'success', amount, ...result };
+function paymentPayload({ token, result, verification }) {
+  return { processor: 'Pay.ure', token, status: 'success', ...result, verification };
 }
 
 function paymentDescription() {
@@ -1251,7 +1271,7 @@ function startPayment({ reference, permitNumber, total }) {
     showErrors([error instanceof CollectionError ? CHECKOUT_ERROR : STORAGE_ERROR]);
     return;
   }
-  paymentNotice.hidden = true;
+  flowNotice.hidden = true;
   persistState();
   navigate(new URL(`${PAYURE_PAGE}?token=${encodeURIComponent(token)}`, location.href).href);
 }
@@ -1273,12 +1293,28 @@ function restoreCheckout(handoff) {
   return true;
 }
 
-// The server-to-server lookup: only a paid collection for this checkout's reference and amount counts.
-function confirmedPayment(handoff, collection) {
-  if (collection?.status !== 'success') return null;
+// The agency's check on what the server-to-server lookup returned: the permit is issued only for a successful
+// payment of this checkout's total, under this checkout's reference. The checks go into the payload either way.
+function verifyPayment(handoff, collection) {
   const total = Math.round(model.product.price * model.qty * 100) / 100;
-  if (collection.request.transactionReference !== handoff.reference || collection.request.amount !== total) return null;
-  return { fingerprint: handoff.fingerprint, reference: handoff.reference, permitNumber: handoff.permitNumber, token: collection.token, amount: collection.request.amount, result: collection.result };
+  const checks = [
+    { check: 'Pay.ure status', expected: 'success', found: collection.status },
+    { check: 'Agency reference', expected: handoff.reference, found: collection.request.transactionReference },
+    { check: 'Amount paid', expected: total, found: collection.result?.amount ?? null }
+  ].map(check => ({ ...check, passed: check.expected === check.found }));
+  return { status: checks.every(check => check.passed) ? 'verified' : 'refused', lookedUpBy: 'token', checks };
+}
+
+function refusalMessage(verification, collection) {
+  const amount = verification.checks.find(check => check.check === 'Amount paid');
+  if (verification.checks.every(check => check.passed || check === amount) && typeof amount.found === 'number') {
+    return `Pay.ure reports a payment of ${money(amount.found)}, but this permit costs ${money(amount.expected)}, so we haven’t issued it. Don’t pay again. Contact your local BWL office with your name, email address and Pay.ure tracking ID ${collection.result.trackingId}, and staff will sort out the payment.`;
+  }
+  return PAYMENT_UNCONFIRMED_ERROR;
+}
+
+function alreadyPaidNotice(known) {
+  return `You’ve already paid ${money(known.amount)} for permit ${known.permitNumber} (Pay.ure tracking ID ${known.result.trackingId}). To download it again, choose the same permit and enter the same details as before. You won’t be charged again.`;
 }
 
 // Called when the page opens after Pay.ure, or is shown again by the browser's Back button. The handoff is read
@@ -1289,23 +1325,27 @@ function resumeAfterPayure(paymentReturn) {
   paymentHandoff.clear();
   const matches = handoff && (!paymentReturn || paymentReturn.token === handoff.token);
   if (!matches || catalogStatus !== 'ready' || !restoreCheckout(handoff)) {
-    return paymentReturn?.outcome === 'success' ? { error: PAYMENT_LOST_ERROR } : null;
+    if (paymentReturn?.outcome !== 'success') return null;
+    // A payment this tab already issued a permit for, such as Pay.ure's Return link after paying.
+    const known = paidPermits.find({ token: paymentReturn.token });
+    return known ? { notice: alreadyPaidNotice(known) } : { error: PAYMENT_LOST_ERROR };
   }
   const collection = collections.getCollection(handoff.token);
   if (collection?.status === 'success') {
-    payment = confirmedPayment(handoff, collection);
-    return payment ? { screen: 'review', issue: true } : { screen: 'review', error: PAYMENT_UNCONFIRMED_ERROR };
+    const verification = verifyPayment(handoff, collection);
+    if (verification.status !== 'verified') return { screen: 'review', error: refusalMessage(verification, collection) };
+    payment = { key: paidKey(), token: collection.token, reference: handoff.reference, permitNumber: handoff.permitNumber, amount: collection.result.amount, result: collection.result, verification };
+    paidPermits.remember(payment);
+    return { screen: 'review', issue: true };
   }
+  if (collection?.status === 'failed') return { screen: 'review', notice: PAYMENT_NOTICES.unavailable };
   if (paymentReturn?.outcome === 'success') return { screen: 'review', error: PAYMENT_UNCONFIRMED_ERROR };
   return { screen: 'review', notice: paymentReturn?.outcome === 'cancel' ? PAYMENT_NOTICES.cancel : PAYMENT_NOTICES.left };
 }
 
 function applyResume(resume, { history: mode, focus }) {
   if (resume.screen) showScreen(resume.screen, { history: mode, focus });
-  if (resume.notice && currentScreen === 'review') {
-    paymentNotice.textContent = resume.notice;
-    paymentNotice.hidden = false;
-  }
+  if (resume.notice) showFlowNotice(resume.notice);
   if (resume.error) showErrors([resume.error], { focus });
   if (resume.issue && currentScreen === 'review') {
     confirmCheckout({ history: 'replace' }).catch((error) => {
@@ -1357,6 +1397,7 @@ function resetAll() {
   payment = null;
   selectionStorage.clear();
   paymentHandoff.clear();
+  paidPermits.clear();
   showScreen('what');
 }
 
@@ -1399,6 +1440,7 @@ async function boot() {
     const resume = furthest > SCREENS.indexOf('what') ? SCREENS[furthest] : 'start';
     showScreen(SCREENS.includes(requested) ? requested : resume, { history: 'replace', focus: false });
     if (afterPayure?.error) showErrors([afterPayure.error], { focus: false });
+    if (afterPayure?.notice) showFlowNotice(afterPayure.notice);
   }
   document.documentElement.dataset.appReady = 'true';
   document.dispatchEvent(new CustomEvent('sfpx:ready'));

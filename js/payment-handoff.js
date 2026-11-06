@@ -51,3 +51,50 @@ export function describePayment(result) {
   if (result.method === 'card') return `${result.cardBrand} ending ${result.last4}`;
   return `${result.accountType === 'savings' ? 'savings' : 'checking'} account ending ${result.last4}`;
 }
+
+// Permits this tab has paid for, so a paid checkout is never offered for payment again: after the browser's
+// Forward button reloads the page (and the browser refills the form), after Pay.ure's "Return" link on a payment it
+// has already taken, or when the visitor enters the same details again. In production the agency's server would
+// know. Each record holds the payment's token, references, amount, method and last 4 digits, and a one-way
+// fingerprint of the checkout in place of the purchaser's details. The fingerprint is a 53-bit hash (cyrb53): enough
+// to recognize the same entries in one tab, not a cryptographic protection.
+export const PAID_PERMITS_KEY = 'sfp-paid-permits';
+const MAX_PAID_PERMITS = 20;
+
+export function checkoutKey(text) {
+  let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+    h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36);
+}
+
+export function createPaidPermits(getStorage = () => sessionStorage) {
+  const list = () => {
+    try {
+      const value = JSON.parse(getStorage().getItem(PAID_PERMITS_KEY) || '[]');
+      return Array.isArray(value) ? value.filter(record => record && typeof record === 'object') : [];
+    } catch { return []; }
+  };
+  return {
+    list,
+    // By the checkout's fingerprint, or by the Pay.ure token a return carries.
+    find({ key, token }) {
+      return list().find(record => (key && record.key === key) || (token && record.token === token)) || null;
+    },
+    // "Start over" forgets them, so the same details can buy a second permit.
+    clear() {
+      try { getStorage().removeItem(PAID_PERMITS_KEY); }
+      catch { /* Storage can be unavailable in private contexts. */ }
+    },
+    remember({ key, token, reference, permitNumber, amount, result, verification }) {
+      const kept = list().filter(record => record.token !== token).slice(-(MAX_PAID_PERMITS - 1));
+      try { getStorage().setItem(PAID_PERMITS_KEY, JSON.stringify([...kept, { key, token, reference, permitNumber, amount, result, verification }])); }
+      catch { /* Without storage the payment is still remembered in memory for this page. */ }
+    }
+  };
+}

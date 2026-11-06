@@ -1,7 +1,7 @@
 import { createCollectionStore, AGENCIES } from './js/collections.js';
 import { navigate } from './js/navigate.js';
 import {
-  TEST_CARDS, TEST_ROUTING_NUMBERS, TEST_BANK_ACCOUNTS, digitsOnly, groupCardNumber, findTestCard,
+  TEST_CARDS, TEST_ROUTING_NUMBERS, TEST_BANK_ACCOUNTS, digitsOnly, groupCardNumber, findTestCard, findTestAccount,
   cardNumberError, expiryError, formatExpiry, securityCodeError, routingNumberError, accountNumberError, confirmAccountError
 } from './js/test-instruments.js';
 
@@ -25,7 +25,7 @@ const stepCount = byId('stepCount');
 const errorBox = byId('errorBox');
 const errorList = byId('errorList');
 const liveRegion = byId('liveRegion');
-const views = { none: byId('view-none'), finished: byId('view-finished'), pay: byId('view-pay'), review: byId('view-review') };
+const views = { none: byId('view-none'), finished: byId('view-finished'), unavailable: byId('view-unavailable'), pay: byId('view-pay'), review: byId('view-review') };
 const order = byId('order');
 const orderSummary = byId('orderSummary');
 const testPanel = byId('testPanel');
@@ -44,6 +44,20 @@ const fields = Object.fromEntries(['cardName', 'cardNumber', 'cardExpiry', 'card
 let collection = null;
 let currentView = 'none';
 let paying = false;
+// A decline waiting to be explained once the visitor is back on step 1.
+let declined = null;
+
+// A decline names what happened and what to do next; the entries stay so another method can be chosen.
+const DECLINES = {
+  card: {
+    decline: 'Your card was declined, so nothing was charged. Use another card, or pay from a bank account.',
+    insufficient_funds: 'Your card was declined because there isn’t enough money or credit available, so nothing was charged. Use another card, or pay from a bank account.'
+  },
+  bank: {
+    decline: 'Your bank declined this payment, so nothing was charged. Check the account details, or use another account or a card.',
+    insufficient_funds: 'This account doesn’t have enough money for this payment, so nothing was charged. Use another account, or pay by card.'
+  }
+};
 
 const money = amount => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
 const agencyName = () => collection?.request.agencyName || AGENCIES['BWL-SFP'].name;
@@ -248,8 +262,8 @@ function paymentDetails() {
     const card = findTestCard(fields.cardNumber.value);
     return { method: 'card', cardBrand: card.brand, last4: card.number.slice(-4), outcome: card.outcome };
   }
-  const account = digitsOnly(fields.accountNumber.value);
-  return { method: 'bank', accountType: checked('accountType'), routingNumber: digitsOnly(fields.routingNumber.value), last4: account.slice(-4), outcome: 'approve' };
+  const account = findTestAccount(fields.accountNumber.value);
+  return { method: 'bank', accountType: checked('accountType'), routingNumber: digitsOnly(fields.routingNumber.value), last4: account.number.slice(-4), outcome: account.outcome };
 }
 
 function describeMethod(details) {
@@ -273,7 +287,7 @@ function renderReview() {
 function renderDemoData() {
   const note = document.createElement('p');
   note.className = 'pu-hint';
-  note.textContent = `The ${agencyName()} started this collection and sent you here with its token. In production that happens server to server; this demo keeps it in your browser tab. Card and account numbers are never saved. When you pay, ${SITE} sends you back with the token, and the agency looks up the result: a tracking ID, the method and the last 4 digits.`;
+  note.textContent = `The ${agencyName()} started this collection and sent you here with its token. In production that happens server to server; this demo keeps it in your browser tab. Card and account numbers are never saved; a declined attempt is recorded with its last 4 digits. When you pay, ${SITE} sends you back with the token, and the agency looks up the result: a tracking ID, the amount paid, the method and the last 4 digits.`;
   const pre = document.createElement('pre');
   pre.className = 'pu-payload';
   pre.textContent = JSON.stringify(collection, null, 2);
@@ -283,7 +297,8 @@ function renderDemoData() {
 const VIEW_TITLES = {
   none: 'There’s no payment in progress',
   pay: () => `Pay the ${agencyName()}`,
-  review: 'Check your payment'
+  review: 'Check your payment',
+  unavailable: `${SITE} isn’t working right now`
 };
 
 function showView(name, { history: mode = 'none', focus = true } = {}) {
@@ -315,23 +330,35 @@ function showView(name, { history: mode = 'none', focus = true } = {}) {
   }
 }
 
+const FINISHED = {
+  success: () => ['You’ve already paid', `${SITE} received this payment of ${money(collection.result.amount ?? collection.request.amount)}. Tracking ID ${collection.result.trackingId}. You won’t be charged again.`],
+  cancelled: () => ['This payment was cancelled', 'You cancelled this payment, so nothing was charged. To pay, go back to the agency’s website and start again.'],
+  failed: () => ['This payment didn’t go through', `${SITE} couldn’t process this payment, and you weren’t charged. To pay, go back to the agency’s website and try again.`]
+};
+
 function renderFinished() {
-  const paid = collection.status === 'success';
-  VIEW_TITLES.finished = paid ? 'You’ve already paid' : 'This payment was cancelled';
-  byId('finishedText').textContent = paid
-    ? `${SITE} received this payment of ${money(collection.request.amount)}. Tracking ID ${collection.result.trackingId}. You won’t be charged again.`
-    : 'You cancelled this payment, so nothing was charged. To pay, go back to the agency’s website and start again.';
+  const [heading, text] = FINISHED[collection.status]();
+  VIEW_TITLES.finished = heading;
+  byId('finishedText').textContent = text;
 }
 
-function returnToAgency(outcome) {
-  navigate(store.returnUrl(collection, outcome), { replace: true });
+// Only a paid collection returns to the success address; every other outcome returns to the cancel address,
+// and the agency learns which by looking the collection up.
+function returnToAgency() {
+  navigate(store.returnUrl(collection, collection.status === 'success' ? 'success' : 'cancel'), { replace: true });
 }
 
 function cancel() {
   if (paying) return;
   collection = store.cancelCollection(collection.token);
   // Another tab may have paid meanwhile; the agency then hears about the payment, not a cancellation.
-  returnToAgency(collection.status === 'success' ? 'success' : 'cancel');
+  returnToAgency();
+}
+
+function resetPayButton() {
+  paying = false;
+  payButton.removeAttribute('aria-busy');
+  payButton.removeAttribute('aria-disabled');
 }
 
 async function pay() {
@@ -348,9 +375,29 @@ async function pay() {
   announce('Processing your payment. Don’t close this page.');
   await new Promise(resolve => setTimeout(resolve, PROCESSING_MS));
   const { outcome, ...details } = paymentDetails();
-  collection = store.completeCollection(collection.token, details);
+  const { token, request } = collection;
+  if (outcome === 'decline' || outcome === 'insufficient_funds') {
+    collection = store.recordDecline(token, { method: details.method, last4: details.last4, reason: outcome });
+    resetPayButton();
+    if (collection.status !== 'pending') { returnToAgency(); return; }
+    renderDemoData();
+    declined = { message: DECLINES[details.method][outcome], field: details.method === 'card' ? fields.cardNumber : fields.accountNumber };
+    // Back to step 1, where the popstate handler explains the decline.
+    history.back();
+    return;
+  }
+  if (outcome === 'unavailable') {
+    collection = store.failCollection(token, 'unavailable');
+    clearPaymentFields();
+    resetPayButton();
+    showView(collection.status === 'failed' ? 'unavailable' : 'finished', { history: 'replace' });
+    return;
+  }
+  // The wrong-amount card pays a tenth of the amount, standing in for a payment that doesn't match the order.
+  const amount = outcome === 'wrong_amount' ? Math.round(request.amount * 10) / 100 : request.amount;
+  collection = store.completeCollection(token, { ...details, amount });
   clearPaymentFields();
-  returnToAgency(collection.status === 'cancelled' ? 'cancel' : 'success');
+  returnToAgency();
 }
 
 function clearPaymentFields() {
@@ -392,13 +439,20 @@ Object.values(fields).forEach((el) => {
 });
 byId('cancelPay').addEventListener('click', cancel);
 byId('cancelReview').addEventListener('click', cancel);
-byId('finishedReturn').addEventListener('click', () => returnToAgency(collection.status === 'success' ? 'success' : 'cancel'));
+byId('finishedReturn').addEventListener('click', returnToAgency);
+byId('unavailableReturn').addEventListener('click', returnToAgency);
 
 // The review step needs the entries from step 1, which live only in memory.
 window.addEventListener('popstate', () => {
   if (!collection || collection.status !== 'pending') return;
   const wanted = history.state?.view === 'review' && method() && !payErrors().length ? 'review' : 'pay';
   showView(wanted, { history: wanted === 'review' ? 'none' : 'replace' });
+  if (declined && wanted === 'pay') {
+    const { message, field } = declined;
+    declined = null;
+    setFieldError(field, message);
+    showErrors([{ text: message, field }]);
+  }
 });
 
 // A page restored from the back-forward cache must not show card details or offer a finished payment again.
@@ -406,9 +460,7 @@ window.addEventListener('pageshow', (event) => {
   if (!event.persisted || !collection) return;
   clearPaymentFields();
   syncMethod();
-  paying = false;
-  payButton.removeAttribute('aria-busy');
-  payButton.removeAttribute('aria-disabled');
+  resetPayButton();
   collection = store.getCollection(collection.token);
   showView(collection?.status === 'pending' ? 'pay' : collection ? 'finished' : 'none', { history: 'replace' });
 });
